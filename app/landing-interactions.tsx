@@ -26,7 +26,7 @@ export function Brand() {
   return (
     <span className={styles.brand}>
       <span className={styles.brandMark}>
-        <Image src="/techsoil-mark.png" alt="" width={48} height={48} priority />
+        <Image src="/techsoil-mark.png" alt="" width={128} height={128} priority />
       </span>
       <span>
         <strong>TECHSOIL</strong>

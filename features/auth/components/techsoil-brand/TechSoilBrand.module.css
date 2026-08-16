@@ -1,0 +1,6 @@
+.brand { display: inline-flex; align-items: center; gap: 12px; width: fit-content; letter-spacing: .12em; }
+.mark { position: relative; width: 48px; height: 48px; display: grid; place-items: center; }
+.mark img { position: absolute; top: 50%; left: 50%; width: 108px; height: 108px; max-width: none; object-fit: contain; transform: translate(-50%, -50%); }
+.name strong, .name small { display: block; }
+.name strong { font: 800 15px/1 var(--font-display), sans-serif; }
+.name small { margin-top: 5px; color: #b8e681; font: 700 8px/1 var(--font-body), sans-serif; letter-spacing: .26em; }

@@ -1,0 +1,41 @@
+.sidebar { position: fixed; z-index: 40; inset: 0 auto 0 0; width: 252px; padding: 28px 18px 20px; display: flex; flex-direction: column; color: #dfe9df; background: #10271c; border-right: 1px solid rgba(255,255,255,.08); transition: transform .28s ease; }
+.brand { height: 46px; padding: 0 8px; display: flex; align-items: center; gap: 11px; letter-spacing: .13em; }
+.logo { position: relative; width: 38px; height: 42px; display: block; }
+.logo img { position: absolute; top: 50%; left: 50%; width: 95px; height: 95px; max-width: none; object-fit: contain; transform: translate(-50%,-50%); }
+.brand strong, .brand small { display: block; }
+.brand strong { font: 800 13px/1 var(--font-display), sans-serif; }
+.brand small { margin-top: 5px; color: #9edb64; font-size: 7px; letter-spacing: .25em; }
+.plantation { margin: 27px 0 20px; padding: 12px; display: grid; grid-template-columns: 35px 1fr auto; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,.1); border-radius: 13px; background: rgba(255,255,255,.045); cursor: pointer; }
+.plantationMark { width: 35px; height: 35px; display: grid; place-items: center; color: #193221; border-radius: 9px; background: #aedf76; font-size: 10px; font-weight: 800; }
+.plantation small, .plantation strong { display: block; }
+.plantation small { margin-bottom: 5px; color: #718b78; font-size: 6px; letter-spacing: .14em; }
+.plantation strong { font-size: 11px; }
+.plantation > svg { color: #718b78; transform: rotate(90deg); }
+.navigation { margin-top: 10px; }
+.navigation p { margin: 0 11px 8px; color: #587060; font-size: 8px; font-weight: 700; letter-spacing: .16em; }
+.navigation a { min-height: 44px; padding: 0 12px; display: flex; align-items: center; gap: 12px; color: #91a799; border-radius: 10px; font-size: 12px; transition: color .2s, background .2s; }
+.navigation a:hover { color: #e7efe7; background: rgba(255,255,255,.05); }
+.navigation .active { color: #f4f7f2; background: rgba(161,218,104,.12); }
+.navigation .active svg { color: #a8dc6e; }
+.navigation a b { min-width: 20px; margin-left: auto; padding: 4px 6px; color: #1a3322; border-radius: 99px; background: #b6e57f; font-size: 8px; text-align: center; }
+.supportCard { margin-top: auto; padding: 16px; border: 1px solid rgba(173,226,118,.15); border-radius: 14px; background: linear-gradient(145deg, rgba(161,218,104,.11), rgba(255,255,255,.025)); }
+.supportCard > span { width: 25px; height: 25px; display: grid; place-items: center; color: #1b3323; border-radius: 8px; background: #aadf70; font-weight: 800; }
+.supportCard strong { display: block; margin-top: 12px; font-size: 11px; }
+.supportCard p { margin: 4px 0 11px; color: #809588; font-size: 9px; }
+.supportCard a { color: #addf76; font-size: 9px; font-weight: 700; }
+.profile { margin-top: 15px; padding: 14px 8px 0; display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; border-top: 1px solid rgba(255,255,255,.08); }
+.profile > span { width: 34px; height: 34px; display: grid; place-items: center; color: #e5edde; border-radius: 50%; background: #385242; font-size: 9px; font-weight: 700; }
+.profile strong, .profile small { display: block; }
+.profile strong { font-size: 10px; }
+.profile small { margin-top: 4px; color: #6d8475; font-size: 8px; }
+.profile button { color: #708476; border: 0; background: none; cursor: pointer; }
+.backdrop { display: none; }
+
+@media (max-width: 980px) {
+  .sidebar { transform: translateX(-105%); box-shadow: 25px 0 60px rgba(4,20,12,.28); }
+  .sidebarOpen { transform: translateX(0); }
+  .backdrop { position: fixed; z-index: 35; inset: 0; display: block; visibility: hidden; opacity: 0; border: 0; background: rgba(5,18,10,.48); transition: opacity .25s, visibility .25s; }
+  .backdropVisible { visibility: visible; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) { .sidebar, .backdrop { transition: none; } }
