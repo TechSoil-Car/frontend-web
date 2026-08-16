@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DashboardScreen } from "@/features/dashboard";
+import { DashboardOverview } from "@/features/dashboard";
 
 export const metadata: Metadata = {
   title: "Visão geral | TechSoil Systems",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardPage() {
-  return <DashboardScreen />;
+  return <DashboardOverview />;
 }

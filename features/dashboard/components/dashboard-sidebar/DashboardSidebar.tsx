@@ -1,10 +1,14 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { DashboardIcon } from "../dashboard-icons/DashboardIcon";
 import styles from "./DashboardSidebar.module.css";
 
 const navigation = [
   { label: "Visão geral", icon: "overview", href: "/dashboard", badge: undefined },
-  { label: "Plantações", icon: "field", href: "/dashboard#plantacao", badge: undefined },
+  { label: "Plantações", icon: "field", href: "/dashboard/plantacoes", badge: undefined },
   { label: "Sensores", icon: "sensor", href: "/dashboard#dispositivos", badge: undefined },
   { label: "Missões", icon: "mission", href: "/dashboard#atividade", badge: undefined },
   { label: "Alertas", icon: "alert", href: "/dashboard#alertas", badge: "2" },
@@ -16,6 +20,8 @@ type DashboardSidebarProps = {
 };
 
 export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
+  const pathname = usePathname();
+
   return (
     <>
       <button className={`${styles.backdrop} ${open ? styles.backdropVisible : ""}`} type="button" aria-label="Fechar menu" onClick={onClose} />
@@ -33,13 +39,16 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
 
         <nav className={styles.navigation} aria-label="Navegação do painel">
           <p>MONITORAMENTO</p>
-          {navigation.map((item, index) => (
-            <a className={index === 0 ? styles.active : ""} href={item.href} key={item.label} onClick={onClose}>
+          {navigation.map((item) => {
+            const isActive = item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href);
+
+            return (
+            <Link className={isActive ? styles.active : ""} href={item.href} key={item.label} onClick={onClose}>
               <DashboardIcon name={item.icon} />
               <span>{item.label}</span>
               {item.badge && <b>{item.badge}</b>}
-            </a>
-          ))}
+            </Link>
+          );})}
         </nav>
 
         <nav className={styles.navigation} aria-label="Configurações">

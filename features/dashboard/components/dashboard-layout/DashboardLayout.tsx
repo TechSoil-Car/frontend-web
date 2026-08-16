@@ -1,12 +1,12 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useState } from "react";
 import { DashboardHeader } from "../dashboard-header/DashboardHeader";
-import { DashboardOverview } from "../dashboard-overview/DashboardOverview";
 import { DashboardSidebar } from "../dashboard-sidebar/DashboardSidebar";
-import styles from "./DashboardScreen.module.css";
+import styles from "./DashboardLayout.module.css";
 
-export function DashboardScreen() {
+export function DashboardLayout({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -14,7 +14,7 @@ export function DashboardScreen() {
       <DashboardSidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
       <div className={styles.content}>
         <DashboardHeader onMenuOpen={() => setMenuOpen(true)} />
-        <DashboardOverview />
+        {children}
       </div>
     </div>
   );

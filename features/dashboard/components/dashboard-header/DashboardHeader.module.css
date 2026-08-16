@@ -1,12 +1,12 @@
 .header { height: 76px; padding: 0 clamp(22px, 3.2vw, 48px); display: flex; align-items: center; gap: 14px; border-bottom: 1px solid #e2e3da; background: rgba(247,246,240,.88); backdrop-filter: blur(18px); }
 .menuButton { display: none; }
 .search { width: min(330px, 35vw); min-height: 40px; padding: 0 13px; display: flex; align-items: center; gap: 9px; color: #879188; border: 1px solid #dedfd7; border-radius: 11px; background: #fff; }
-.search input { width: 100%; border: 0; outline: 0; color: #28342b; background: transparent; font: 11px var(--font-body), sans-serif; }
+.search input { width: 100%; border: 0; outline: 0; color: #28342b; background: transparent; font: 13px var(--font-body), sans-serif; }
 .search input::placeholder { color: #9ba39c; }
 .weather { margin-left: auto; padding-right: 18px; display: flex; align-items: center; gap: 9px; color: #6f8d5c; border-right: 1px solid #dcddd5; }
 .weather span strong, .weather span small { display: block; }
-.weather span strong { color: #344037; font-size: 11px; }
-.weather span small { margin-top: 3px; color: #8b948c; font-size: 8px; }
+.weather span strong { color: #344037; font-size: 12px; }
+.weather span small { margin-top: 3px; color: #78837b; font-size: 10px; }
 .notification, .menuButton { position: relative; width: 40px; height: 40px; place-items: center; color: #647068; border: 1px solid #dedfd7; border-radius: 11px; background: #fff; cursor: pointer; }
 .notification { display: grid; }
 .notification i { position: absolute; top: 9px; right: 9px; width: 6px; height: 6px; border: 2px solid #fff; border-radius: 50%; background: #86c64d; }

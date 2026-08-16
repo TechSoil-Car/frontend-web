@@ -1,10 +1,10 @@
 .overview { padding: 34px clamp(22px, 3.2vw, 48px) 50px; }
 .welcome { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; }
-.welcome p, .cardHeader p { margin: 0 0 8px; color: #7a9d60; font-size: 8px; font-weight: 800; letter-spacing: .17em; }
+.welcome p, .cardHeader p { margin: 0 0 8px; color: #668c4c; font-size: 10px; font-weight: 800; letter-spacing: .15em; }
 .welcome h1 { margin: 0; font: 600 clamp(2rem, 3.3vw, 3rem)/1 var(--font-display), sans-serif; letter-spacing: -.055em; }
-.welcome > div > span { display: block; margin-top: 9px; color: #7d877f; font-size: 12px; }
+.welcome > div > span { display: block; margin-top: 10px; color: #68746b; font-size: 14px; }
 .welcomeActions { display: flex; gap: 9px; }
-.dateButton, .primaryButton, .secondaryButton { min-height: 42px; padding: 0 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 10px; font: 700 10px var(--font-body), sans-serif; cursor: pointer; transition: transform .2s, background .2s; }
+.dateButton, .primaryButton, .secondaryButton { min-height: 44px; padding: 0 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 10px; font: 700 12px var(--font-body), sans-serif; cursor: pointer; transition: transform .2s, background .2s; }
 .dateButton { color: #5e6b61; border: 1px solid #dcddd4; background: #fff; }
 .primaryButton { color: #17321f; border: 1px solid #a9da71; background: #a9dc70; box-shadow: 0 8px 20px rgba(93,139,57,.15); }
 .dateButton:hover, .primaryButton:hover { transform: translateY(-1px); }
@@ -13,33 +13,33 @@
 .statusStrip > div { min-height: 35px; padding-right: 18px; display: flex; align-items: center; gap: 11px; border-right: 1px solid rgba(255,255,255,.1); }
 .statusStrip > div > i { width: 9px; height: 9px; flex: 0 0 auto; border-radius: 50%; background: #a9df6f; box-shadow: 0 0 0 5px rgba(169,223,111,.12); }
 .statusStrip small, .statusStrip strong { display: block; }
-.statusStrip small { margin-bottom: 5px; color: #779182; font-size: 6px; letter-spacing: .13em; }
-.statusStrip strong { font-size: 9px; }
-.statusStrip a { display: flex; align-items: center; gap: 7px; color: #addd7d; font-size: 9px; font-weight: 700; white-space: nowrap; }
+.statusStrip small { margin-bottom: 5px; color: #9bb0a2; font-size: 8px; letter-spacing: .12em; }
+.statusStrip strong { font-size: 11px; }
+.statusStrip a { display: flex; align-items: center; gap: 7px; color: #b9e58c; font-size: 11px; font-weight: 700; white-space: nowrap; }
 .metricGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.metricCard, .fieldCard, .alertCard, .chartCard, .deviceCard { border: 1px solid #dfe0d7; background: #fff; box-shadow: 0 8px 28px rgba(43,60,45,.045); }
+.metricCard, .fieldCard, .alertCard, .chartCard, .deviceCard { position: relative; border: 1px solid #dfe0d7; background: #fff; box-shadow: 0 8px 28px rgba(43,60,45,.045); transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease; }
 .metricCard { min-height: 152px; padding: 18px; border-radius: 15px; }
-.metricHead { display: flex; align-items: center; justify-content: space-between; color: #747f77; font-size: 9px; }
-.metricHead i { padding: 5px 7px; border-radius: 99px; font-size: 7px; font-style: normal; font-weight: 700; }
+.metricHead { display: flex; align-items: center; justify-content: space-between; color: #59665d; font-size: 11px; }
+.metricHead i { padding: 5px 8px; border-radius: 99px; font-size: 9px; font-style: normal; font-weight: 700; }
 .metricHead .green { color: #4e743e; background: #e7f1df; }
 .metricHead .amber { color: #866d2f; background: #f2ebd8; }
 .metricHead .orange { color: #a05c32; background: #f4e5da; }
 .metricValue { margin-top: 19px; display: flex; align-items: flex-end; gap: 6px; }
 .metricValue strong { font: 600 31px/1 var(--font-display), sans-serif; letter-spacing: -.06em; }
-.metricValue span { margin-bottom: 3px; color: #819087; font-size: 9px; }
-.metricFoot { margin-top: 17px; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; color: #929a93; font-size: 7px; }
+.metricValue span { margin-bottom: 3px; color: #68766d; font-size: 11px; }
+.metricFoot { margin-top: 17px; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; color: #7c867f; font-size: 9px; }
 .metricFoot b { color: #659942; }
 .metricFoot svg { width: 78px; height: 26px; overflow: visible; }
 .metricFoot polyline { fill: none; stroke: #78ac56; stroke-width: 2; vector-effect: non-scaling-stroke; }
 .mainGrid { margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(280px, .72fr); gap: 14px; }
 .fieldCard, .alertCard, .chartCard, .deviceCard { padding: 20px; border-radius: 17px; }
 .cardHeader { min-height: 39px; display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
-.cardHeader h2 { margin: 0; font: 650 16px/1.1 var(--font-display), sans-serif; letter-spacing: -.035em; }
-.cardHeader a { display: flex; align-items: center; gap: 5px; color: #65824f; font-size: 8px; font-weight: 700; }
+.cardHeader h2 { margin: 0; font: 650 19px/1.1 var(--font-display), sans-serif; letter-spacing: -.035em; }
+.cardHeader a { display: flex; align-items: center; gap: 5px; color: #54733e; font-size: 10px; font-weight: 700; }
 .fieldMap { position: relative; height: 350px; margin-top: 17px; overflow: hidden; border-radius: 13px; background: #1b3a25; isolation: isolate; }
 .fieldMap > img { z-index: -3; object-fit: cover; }
 .mapShade { position: absolute; inset: 0; z-index: -2; background: linear-gradient(180deg, rgba(8,25,14,.36), rgba(8,25,14,.03) 50%, rgba(8,25,14,.46)); }
-.mapTop { position: absolute; top: 15px; right: 17px; left: 17px; display: flex; justify-content: space-between; color: rgba(255,255,255,.75); font-size: 8px; }
+.mapTop { position: absolute; top: 15px; right: 17px; left: 17px; display: flex; justify-content: space-between; color: rgba(255,255,255,.9); font-size: 10px; }
 .mapTop span { display: flex; align-items: center; gap: 7px; }
 .mapTop i { width: 6px; height: 6px; border-radius: 50%; background: #abdf72; box-shadow: 0 0 0 4px rgba(171,223,114,.15); }
 .sector { position: absolute; width: 33px; height: 33px; padding: 0; display: grid; place-items: center; color: #eff6eb; border: 1px solid rgba(255,255,255,.55); border-radius: 50%; background: rgba(19,53,31,.72); box-shadow: 0 5px 15px rgba(0,0,0,.2); backdrop-filter: blur(6px); cursor: pointer; transition: transform .2s, background .2s, box-shadow .2s; }
@@ -50,55 +50,60 @@
 .sectorC { top: 64%; left: 75%; }
 .sectorPanel { position: absolute; left: 16px; bottom: 16px; width: 235px; padding: 15px; color: #243128; border: 1px solid rgba(255,255,255,.65); border-radius: 12px; background: rgba(248,247,240,.9); box-shadow: 0 14px 35px rgba(0,0,0,.18); backdrop-filter: blur(16px); }
 .sectorPanel > div:first-child { display: flex; justify-content: space-between; align-items: center; }
-.sectorPanel > div > span { color: #8a948c; font-size: 6px; letter-spacing: .13em; }
-.sectorPanel > div > i { padding: 4px 6px; color: #527a3e; border-radius: 99px; background: #e1ecd9; font-size: 6px; font-style: normal; }
+.sectorPanel > div > span { color: #69756c; font-size: 8px; letter-spacing: .12em; }
+.sectorPanel > div > i { padding: 4px 7px; color: #527a3e; border-radius: 99px; background: #e1ecd9; font-size: 8px; font-style: normal; }
 .sectorPanel > div > .warningDot { color: #925d25; background: #f1e4ce; }
-.sectorPanel h3 { margin: 12px 0 5px; font: 650 16px var(--font-display), sans-serif; }
-.sectorPanel p { margin: 0; color: #7c867e; font-size: 8px; }
+.sectorPanel h3 { margin: 12px 0 5px; font: 650 18px var(--font-display), sans-serif; }
+.sectorPanel p { margin: 0; color: #657168; font-size: 10px; }
 .sectorPanel p strong { color: #2e3c32; }
 .sectorScale { height: 4px; margin: 12px 0 8px; overflow: hidden; border-radius: 99px; background: #dfe4dc; }
 .sectorScale i { height: 100%; display: block; border-radius: inherit; background: #76ad50; transition: width .3s; }
-.sectorPanel > small { color: #929a94; font-size: 7px; }
-.mapLegend { position: absolute; right: 15px; bottom: 15px; padding: 8px 10px; display: flex; gap: 12px; color: rgba(255,255,255,.8); border-radius: 8px; background: rgba(11,32,18,.58); font-size: 7px; backdrop-filter: blur(8px); }
+.sectorPanel > small { color: #707b73; font-size: 9px; }
+.mapLegend { position: absolute; right: 15px; bottom: 15px; padding: 9px 11px; display: flex; gap: 12px; color: rgba(255,255,255,.92); border-radius: 8px; background: rgba(11,32,18,.66); font-size: 9px; backdrop-filter: blur(8px); }
 .mapLegend span { display: flex; align-items: center; gap: 5px; }
 .mapLegend i { width: 6px; height: 6px; border-radius: 50%; background: #9dd967; }
 .mapLegend span:last-child i { background: #e5b45b; }
-.alertCount, .onlineBadge { padding: 6px 8px; color: #7d5b2e; border-radius: 99px; background: #f0e7d6; font-size: 7px; font-weight: 700; }
+.alertCount, .onlineBadge { padding: 6px 9px; color: #765225; border-radius: 99px; background: #f0e7d6; font-size: 9px; font-weight: 700; }
 .alertList { margin-top: 16px; }
 .alertList article { padding: 15px 0; display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 11px; border-bottom: 1px solid #e8e9e2; }
 .alertIcon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; }
 .alertIcon.warning { color: #a2672d; background: #f3e6d3; }
 .alertIcon.success { color: #5e8d43; background: #e6f0de; }
 .alertIcon.info { color: #5b7565; background: #e5ebe6; }
-.alertList strong { display: block; color: #344037; font-size: 9px; }
-.alertList p { margin: 5px 0 6px; color: #7f8881; font-size: 8px; }
-.alertList small { color: #a1a7a2; font-size: 7px; }
+.alertList strong { display: block; color: #344037; font-size: 11px; line-height: 1.35; }
+.alertList p { margin: 5px 0 6px; color: #68736b; font-size: 10px; line-height: 1.4; }
+.alertList small { color: #858e87; font-size: 9px; }
 .alertList article > svg { color: #a8afa9; }
 .secondaryButton { width: 100%; margin-top: 16px; color: #5e745f; border: 1px solid #dfe1d9; background: #f8f8f4; }
 .secondaryButton:hover { color: #38563c; background: #f0f4ed; }
 .lowerGrid { margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, .75fr); gap: 14px; }
 .rangePicker { padding: 3px; display: flex; border-radius: 8px; background: #f0f1eb; }
-.rangePicker button { min-width: 38px; height: 27px; padding: 0 8px; color: #8b938d; border: 0; border-radius: 6px; background: transparent; font: 700 8px var(--font-body), sans-serif; cursor: pointer; }
+.rangePicker button { min-width: 40px; height: 29px; padding: 0 8px; color: #717c74; border: 0; border-radius: 6px; background: transparent; font: 700 10px var(--font-body), sans-serif; cursor: pointer; }
 .rangePicker .rangeActive { color: #38533d; background: #fff; box-shadow: 0 2px 7px rgba(46,61,48,.08); }
 .chartSummary { margin: 18px 0 5px; display: flex; align-items: center; gap: 13px; }
 .chartSummary strong { font: 650 25px/1 var(--font-display), sans-serif; letter-spacing: -.05em; }
-.chartSummary span { display: flex; align-items: center; gap: 6px; color: #728078; font-size: 8px; }
+.chartSummary span { display: flex; align-items: center; gap: 6px; color: #5f6d63; font-size: 10px; }
 .chartSummary i { width: 6px; height: 6px; border-radius: 50%; background: #7eb551; }
 .chartWrap { position: relative; height: 105px; padding-left: 34px; background: repeating-linear-gradient(to bottom, transparent 0 25px, #eceee8 26px 27px); }
 .chartWrap > svg { width: 100%; height: 100%; overflow: visible; }
-.chartLabels { position: absolute; inset: 0 auto 0 0; display: flex; flex-direction: column; justify-content: space-between; color: #a0a7a1; font-size: 6px; }
+.chartLabels { position: absolute; inset: 0 auto 0 0; display: flex; flex-direction: column; justify-content: space-between; color: #7f8982; font-size: 8px; }
 .chartArea { fill: url(#dashboardChartFill); }
 .chartLine { fill: none; stroke: #6ea443; stroke-width: 2.5; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
-.chartAxis { margin: 7px 0 0 34px; display: flex; justify-content: space-between; color: #9ca39e; font-size: 6px; }
+.chartAxis { margin: 8px 0 0 34px; display: flex; justify-content: space-between; color: #7f8982; font-size: 8px; }
 .onlineBadge { display: flex; align-items: center; gap: 5px; color: #50763d; background: #e5efde; }
 .onlineBadge i { width: 5px; height: 5px; border-radius: 50%; background: #75ae4b; }
 .deviceList { margin-top: 11px; }
 .deviceList article { padding: 12px 0; display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; border-bottom: 1px solid #e9eae4; }
 .deviceIcon { width: 34px; height: 34px; display: grid; place-items: center; color: #62854e; border-radius: 10px; background: #edf2e9; }
 .deviceList strong, .deviceList small { display: block; }
-.deviceList strong { color: #39443c; font-size: 9px; }
-.deviceList small { margin-top: 4px; color: #939a94; font-size: 7px; }
-.battery { display: flex; align-items: center; gap: 4px; color: #77827a; font-size: 7px; }
+.deviceList strong { color: #39443c; font-size: 11px; }
+.deviceList small { margin-top: 4px; color: #737e76; font-size: 9px; }
+.battery { display: flex; align-items: center; gap: 4px; color: #606d64; font-size: 9px; }
+
+@media (hover: hover) and (pointer: fine) {
+  .metricCard:hover { z-index: 2; border-color: #cbd8c2; box-shadow: 0 18px 38px rgba(42,68,45,.12); transform: translateY(-5px) scale(1.018); }
+  .fieldCard:hover, .alertCard:hover, .chartCard:hover, .deviceCard:hover { z-index: 2; border-color: #cbd8c2; box-shadow: 0 20px 44px rgba(42,68,45,.1); transform: translateY(-4px) scale(1.006); }
+}
 
 @media (max-width: 1180px) {
   .metricGrid { grid-template-columns: repeat(2, 1fr); }
@@ -135,4 +140,7 @@
   .cardHeader a { display: none; }
 }
 
-@media (prefers-reduced-motion: reduce) { .dateButton, .primaryButton, .sector { transition: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .dateButton, .primaryButton, .sector, .metricCard, .fieldCard, .alertCard, .chartCard, .deviceCard { transition: none; }
+  .metricCard:hover, .fieldCard:hover, .alertCard:hover, .chartCard:hover, .deviceCard:hover { transform: none; }
+}
