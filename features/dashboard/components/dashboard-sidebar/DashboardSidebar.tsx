@@ -13,7 +13,7 @@ const navigation = [
   { label: "Plantações", icon: "field", href: "/dashboard/plantacoes", badge: undefined },
   { label: "Sensores", icon: "sensor", href: "/dashboard/sensores", badge: undefined },
   { label: "Missões", icon: "mission", href: "/dashboard#atividade", badge: undefined },
-  { label: "Alertas", icon: "alert", href: "/dashboard#alertas", badge: "2" },
+  { label: "Alertas", icon: "alert", href: "/dashboard#alertas", badge: undefined },
 ] as const;
 
 type DashboardSidebarProps = {

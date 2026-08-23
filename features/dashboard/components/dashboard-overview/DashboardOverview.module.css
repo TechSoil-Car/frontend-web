@@ -9,12 +9,14 @@
 .primaryButton { color: #17321f; border: 1px solid #a9da71; background: #a9dc70; box-shadow: 0 8px 20px rgba(93,139,57,.15); }
 .dateButton:hover, .primaryButton:hover { transform: translateY(-1px); }
 .primaryButton:hover { background: #b7e580; }
+.dateButton:disabled { cursor: wait; opacity: .65; transform: none; }
 .statusStrip { min-height: 68px; margin: 27px 0 15px; padding: 12px 18px; display: grid; grid-template-columns: 1.45fr .75fr .75fr auto; align-items: center; gap: 20px; color: #dfe8df; border-radius: 14px; background: #183426; box-shadow: 0 13px 30px rgba(29,52,37,.1); }
 .statusStrip > div { min-height: 35px; padding-right: 18px; display: flex; align-items: center; gap: 11px; border-right: 1px solid rgba(255,255,255,.1); }
 .statusStrip > div > i { width: 9px; height: 9px; flex: 0 0 auto; border-radius: 50%; background: #a9df6f; box-shadow: 0 0 0 5px rgba(169,223,111,.12); }
 .statusStrip small, .statusStrip strong { display: block; }
 .statusStrip small { margin-bottom: 5px; color: #9bb0a2; font-size: 8px; letter-spacing: .12em; }
 .statusStrip strong { font-size: 11px; }
+.statusError { background: #58392b; }
 .statusStrip a { display: flex; align-items: center; gap: 7px; color: #b9e58c; font-size: 11px; font-weight: 700; white-space: nowrap; }
 .metricGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .metricCard, .fieldCard, .alertCard, .chartCard, .deviceCard { position: relative; border: 1px solid #dfe0d7; background: #fff; box-shadow: 0 8px 28px rgba(43,60,45,.045); transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease; }
@@ -29,6 +31,7 @@
 .metricValue span { margin-bottom: 3px; color: #68766d; font-size: 11px; }
 .metricFoot { margin-top: 17px; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; color: #7c867f; font-size: 9px; }
 .metricFoot b { color: #659942; }
+.metricFoot small { color: #8a938d; white-space: nowrap; }
 .metricFoot svg { width: 78px; height: 26px; overflow: visible; }
 .metricFoot polyline { fill: none; stroke: #78ac56; stroke-width: 2; vector-effect: non-scaling-stroke; }
 .mainGrid { margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(280px, .72fr); gap: 14px; }
@@ -59,6 +62,16 @@
 .sectorScale { height: 4px; margin: 12px 0 8px; overflow: hidden; border-radius: 99px; background: #dfe4dc; }
 .sectorScale i { height: 100%; display: block; border-radius: inherit; background: #76ad50; transition: width .3s; }
 .sectorPanel > small { color: #707b73; font-size: 9px; }
+.sensorPoint { position: absolute; width: 35px; height: 35px; padding: 0; display: grid; place-items: center; color: #193220; border: 1px solid rgba(255,255,255,.72); border-radius: 50%; background: #b2e378; box-shadow: 0 0 0 6px rgba(178,227,120,.17), 0 7px 18px rgba(0,0,0,.2); cursor: pointer; transition: transform .2s, box-shadow .2s; }
+.sensorPoint:hover, .sensorPointActive { transform: scale(1.12); box-shadow: 0 0 0 8px rgba(178,227,120,.22), 0 10px 22px rgba(0,0,0,.23); }
+.sensorPoint.attention { color: #432f19; background: #e8b75e; box-shadow: 0 0 0 6px rgba(232,183,94,.2); }
+.sensorPoint.offline { color: #e9efea; background: #53625a; box-shadow: 0 0 0 6px rgba(83,98,90,.23); }
+.point1 { top: 35%; left: 25%; }.point2 { top: 25%; left: 61%; }.point3 { top: 57%; left: 72%; }.point4 { top: 63%; left: 42%; }.point5 { top: 40%; left: 84%; }.point6 { top: 19%; left: 43%; }
+.liveReading { margin-top: 12px; display: flex; align-items: baseline; gap: 8px; }
+.liveReading strong { font: 650 19px var(--font-display),sans-serif; }
+.liveReading span { color: #69756d; font-size: 9px; }
+.noSensorOverlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; color: rgba(255,255,255,.9); text-align: center; }
+.noSensorOverlay strong { margin-top: 8px; font-size: 12px; }.noSensorOverlay small { margin-top: 5px; font-size: 9px; }
 .mapLegend { position: absolute; right: 15px; bottom: 15px; padding: 9px 11px; display: flex; gap: 12px; color: rgba(255,255,255,.92); border-radius: 8px; background: rgba(11,32,18,.66); font-size: 9px; backdrop-filter: blur(8px); }
 .mapLegend span { display: flex; align-items: center; gap: 5px; }
 .mapLegend i { width: 6px; height: 6px; border-radius: 50%; background: #9dd967; }
@@ -74,6 +87,9 @@
 .alertList p { margin: 5px 0 6px; color: #68736b; font-size: 10px; line-height: 1.4; }
 .alertList small { color: #858e87; font-size: 9px; }
 .alertList article > svg { color: #a8afa9; }
+.dashboardEmpty { min-height: 190px; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #748078; text-align: center; }
+.dashboardEmpty > span { width: 40px; height: 40px; display: grid; place-items: center; color: #517a3e; border-radius: 50%; background: #e6f0df; }
+.dashboardEmpty strong { margin-top: 10px; color: #435047; font-size: 11px; }.dashboardEmpty p { max-width: 230px; margin: 6px 0 0; font-size: 9px; line-height: 1.45; }
 .secondaryButton { width: 100%; margin-top: 16px; color: #5e745f; border: 1px solid #dfe1d9; background: #f8f8f4; }
 .secondaryButton:hover { color: #38563c; background: #f0f4ed; }
 .lowerGrid { margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, .75fr); gap: 14px; }
@@ -99,6 +115,13 @@
 .deviceList strong { color: #39443c; font-size: 11px; }
 .deviceList small { margin-top: 4px; color: #737e76; font-size: 9px; }
 .battery { display: flex; align-items: center; gap: 4px; color: #606d64; font-size: 9px; }
+.deviceIcon.attention { color: #9b652f; background: #f3e6d5; }.deviceIcon.offline { color: #717c75; background: #e9ece8; }
+.deviceState { color: #657268; font-size: 9px; font-weight: 700; }
+.nutrientOverview { margin-top: 22px; display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.nutrientOverview article { min-height: 96px; padding: 16px; display: grid; grid-template-columns: 40px 1fr; align-items: center; gap: 12px; border: 1px solid #e2e5dc; border-radius: 12px; background: #f8faf5; }
+.nutrientOverview article > span { width: 40px; height: 40px; display: grid; place-items: center; color: #4f773b; border-radius: 11px; background: #e5efde; font-weight: 800; }
+.nutrientOverview small, .nutrientOverview strong { display: block; }.nutrientOverview small { color: #727e75; font-size: 9px; }.nutrientOverview strong { margin-top: 7px; color: #3e4b41; font: 650 18px var(--font-display),sans-serif; }.nutrientOverview strong i { color: #7a857d; font: 500 8px var(--font-body),sans-serif; }
+.dataNote { margin: 14px 0 0; color: #79847c; font-size: 9px; line-height: 1.45; }
 
 @media (hover: hover) and (pointer: fine) {
   .metricCard:hover { z-index: 2; border-color: #cbd8c2; box-shadow: 0 18px 38px rgba(42,68,45,.12); transform: translateY(-5px) scale(1.018); }
@@ -130,6 +153,7 @@
   .sectorPanel { width: calc(100% - 32px); }
   .mapLegend { display: none; }
   .alertList { grid-template-columns: 1fr; }
+  .nutrientOverview { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 460px) {
