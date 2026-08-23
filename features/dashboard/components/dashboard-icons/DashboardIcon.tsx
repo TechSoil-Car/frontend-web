@@ -1,4 +1,4 @@
-type IconName = "overview" | "field" | "sensor" | "mission" | "alert" | "team" | "settings" | "search" | "bell" | "chevron" | "calendar" | "cloud" | "menu" | "close" | "arrow" | "battery";
+type IconName = "overview" | "field" | "sensor" | "mission" | "alert" | "team" | "settings" | "search" | "bell" | "chevron" | "calendar" | "cloud" | "menu" | "close" | "arrow" | "battery" | "location";
 
 type DashboardIconProps = {
   name: IconName;
@@ -22,6 +22,7 @@ const paths: Record<IconName, React.ReactNode> = {
   close: <path d="m6 6 12 12M18 6 6 18"/>,
   arrow: <path d="M5 12h14M14 7l5 5-5 5"/>,
   battery: <><rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10v4"/></>,
+  location: <><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></>,
 };
 
 export function DashboardIcon({ name, size = 20 }: DashboardIconProps) {

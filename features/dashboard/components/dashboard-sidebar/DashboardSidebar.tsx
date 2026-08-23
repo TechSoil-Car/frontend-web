@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/features/auth";
+import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { DashboardIcon } from "../dashboard-icons/DashboardIcon";
 import styles from "./DashboardSidebar.module.css";
 
@@ -21,6 +23,15 @@ type DashboardSidebarProps = {
 
 export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const { selectedPlantation } = usePlantations();
+  const initials = user?.name.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase() ?? "TS";
+
+  async function handleLogout() {
+    await logout();
+    router.replace("/login");
+  }
 
   return (
     <>
@@ -31,11 +42,11 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
           <span><strong>TECHSOIL</strong><small>SYSTEMS</small></span>
         </div>
 
-        <div className={styles.plantation}>
-          <span className={styles.plantationMark}>FF</span>
-          <span><small>PROPRIEDADE</small><strong>Fazenda Ferragut</strong></span>
+        <Link className={styles.plantation} href="/dashboard/plantacoes" onClick={onClose}>
+          <span className={styles.plantationMark}>{selectedPlantation ? selectedPlantation.name.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase() : "TS"}</span>
+          <span><small>PROPRIEDADE ATIVA</small><strong>{selectedPlantation?.name ?? "Selecionar plantação"}</strong></span>
           <DashboardIcon name="chevron" size={16} />
-        </div>
+        </Link>
 
         <nav className={styles.navigation} aria-label="Navegação do painel">
           <p>MONITORAMENTO</p>
@@ -65,9 +76,9 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
         </div>
 
         <div className={styles.profile}>
-          <span>AF</span>
-          <div><strong>Arthur Ferragut</strong><small>Proprietário</small></div>
-          <button type="button" aria-label="Opções do perfil">•••</button>
+          <span>{initials}</span>
+          <div><strong>{user?.name}</strong><small>{user?.email}</small></div>
+          <button type="button" aria-label="Sair do painel" title="Sair" onClick={handleLogout}>↪</button>
         </div>
       </aside>
     </>

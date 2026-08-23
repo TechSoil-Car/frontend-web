@@ -1,13 +1,34 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/features/auth";
+import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { DashboardHeader } from "../dashboard-header/DashboardHeader";
 import { DashboardSidebar } from "../dashboard-sidebar/DashboardSidebar";
 import styles from "./DashboardLayout.module.css";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { status: authStatus } = useAuth();
+  const { selectedPlantation, status: plantationsStatus } = usePlantations();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (authStatus === "unauthenticated") {
+      router.replace("/login");
+      return;
+    }
+    if (authStatus === "authenticated" && plantationsStatus === "ready" && !selectedPlantation && pathname !== "/dashboard/plantacoes") {
+      router.replace("/dashboard/plantacoes");
+    }
+  }, [authStatus, pathname, plantationsStatus, router, selectedPlantation]);
+
+  if (authStatus !== "authenticated" || (plantationsStatus === "loading" && pathname !== "/dashboard/plantacoes")) {
+    return <div className={styles.sessionLoading} role="status"><span />Preparando seu painel...</div>;
+  }
 
   return (
     <div className={styles.dashboard}>

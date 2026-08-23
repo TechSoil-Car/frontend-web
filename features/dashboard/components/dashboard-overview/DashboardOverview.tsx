@@ -2,22 +2,28 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useAuth } from "@/features/auth";
+import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { alerts, chartSeries, devices, sectors, soilMetrics, type ChartRange } from "../../data/dashboard-data";
 import { DashboardIcon } from "../dashboard-icons/DashboardIcon";
 import styles from "./DashboardOverview.module.css";
 
 export function DashboardOverview() {
+  const { user } = useAuth();
+  const { selectedPlantation } = usePlantations();
   const [range, setRange] = useState<ChartRange>("24h");
   const [selectedSectorId, setSelectedSectorId] = useState("A");
   const selectedSector = sectors.find((sector) => sector.id === selectedSectorId) ?? sectors[0];
+  const firstName = user?.name.split(/\s+/)[0] ?? "produtor";
+  const today = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "2-digit", month: "long" }).format(new Date()).toLocaleUpperCase("pt-BR");
 
   return (
     <div className={styles.overview}>
       <section className={styles.welcome} id="visao-geral">
         <div>
-          <p>DOMINGO, 16 DE AGOSTO</p>
-          <h1>Bom dia, Arthur.</h1>
-          <span>Veja o que está acontecendo na sua plantação hoje.</span>
+          <p>{today}</p>
+          <h1>Olá, {firstName}.</h1>
+          <span>Visão geral de {selectedPlantation?.name ?? "sua plantação"}.</span>
         </div>
         <div className={styles.welcomeActions}>
           <button className={styles.dateButton} type="button"><DashboardIcon name="calendar" size={17} /> Últimas 24 horas</button>
@@ -52,7 +58,7 @@ export function DashboardOverview() {
             <a href="/dashboard#plantacao">Ver análise completa <DashboardIcon name="arrow" size={15} /></a>
           </div>
           <div className={styles.fieldMap}>
-            <Image src="/vineyard-sectors.png" alt="Vista aérea dos setores da Fazenda Ferragut" fill sizes="(max-width: 980px) 100vw, 60vw" />
+            <Image src="/vineyard-sectors.png" alt={`Vista ilustrativa dos setores de ${selectedPlantation?.name ?? "sua plantação"}`} fill sizes="(max-width: 980px) 100vw, 60vw" />
             <div className={styles.mapShade} />
             <div className={styles.mapTop}><span><i /> Monitoramento ao vivo</span><small>42,8 hectares</small></div>
             {sectors.map((sector) => (

@@ -1,4 +1,7 @@
 .dashboard { min-height: 100svh; color: #263229; background: #f4f3ed; }
 .content { min-width: 0; margin-left: 252px; }
+.sessionLoading { min-height: 100svh; display: flex; align-items: center; justify-content: center; gap: 12px; color: #4b6252; background: #f4f3ed; font: 600 13px var(--font-body), sans-serif; }
+.sessionLoading span { width: 20px; height: 20px; border: 2px solid #d2dbc9; border-top-color: #6d9849; border-radius: 50%; animation: session-spin .8s linear infinite; }
+@keyframes session-spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 980px) { .content { margin-left: 0; } }
