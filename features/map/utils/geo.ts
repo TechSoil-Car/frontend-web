@@ -30,3 +30,16 @@ export function formatDistance(meters: number) {
   if (meters >= 1_000) return `${(meters / 1_000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} km`;
   return `${Math.round(meters).toLocaleString("pt-BR")} m`;
 }
+
+export function polygonAreaHectares(points: MapPoint[]) {
+  if (points.length < 3) return 0;
+  const ring = [...points, points[0]];
+  let sum = 0;
+  for (let index = 0; index < ring.length - 1; index += 1) {
+    const first = ring[index];
+    const second = ring[index + 1];
+    sum += toRadians(second.longitude - first.longitude)
+      * (2 + Math.sin(toRadians(first.latitude)) + Math.sin(toRadians(second.latitude)));
+  }
+  return Math.abs(sum) * EARTH_RADIUS_METERS ** 2 / 2 / 10_000;
+}

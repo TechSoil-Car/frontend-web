@@ -3,6 +3,9 @@
 .heading p { margin: 0 0 8px; color: #668c4c; font-size: 10px; font-weight: 800; letter-spacing: .15em; }
 .heading h1 { margin: 0; color: #26342b; font: 600 clamp(2rem, 3.3vw, 3rem)/1 var(--font-display), sans-serif; letter-spacing: -.055em; }
 .heading span { display: block; margin-top: 10px; color: #68746b; font-size: 14px; }
+.headingActions { display: flex; align-items: center; gap: 8px; }
+.editMapButton { min-height: 44px; padding: 0 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; color: #4c6250; border: 1px solid #d5ddd1; border-radius: 10px; background: #fff; font: 700 11px var(--font-body), sans-serif; cursor: pointer; transition: transform .2s, border-color .2s, box-shadow .2s; }
+.editMapButton:hover { border-color: #afc5a2; box-shadow: 0 9px 22px rgba(53,79,55,.08); transform: translateY(-2px); }
 .addButton { min-height: 44px; padding: 0 18px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; color: #17321f; border: 1px solid #a9da71; border-radius: 10px; background: #a9dc70; box-shadow: 0 8px 20px rgba(93,139,57,.15); font: 700 12px var(--font-body), sans-serif; cursor: pointer; transition: transform .2s, background .2s, box-shadow .2s; }
 .addButton b { font-size: 20px; font-weight: 400; }
 .addButton:hover { background: #b7e580; box-shadow: 0 12px 25px rgba(93,139,57,.2); transform: translateY(-2px); }
@@ -80,6 +83,6 @@
 
 @media (hover: hover) and (pointer: fine) { .summary article:hover { border-color: #c9d7c1; box-shadow: 0 15px 32px rgba(42,68,45,.09); transform: translateY(-4px) scale(1.01); } }
 @media (max-width: 1120px) { .workspace { height: auto; min-height: 0; grid-template-columns: 1fr; overflow: visible; } .mapCard { height: 570px; border-right: 0; border-bottom: 1px solid #dde0d8; } .rowsPanel { min-height: 310px; } .rowList { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; } .rowCard { margin-top: 0; } }
-@media (max-width: 720px) { .page { padding: 25px 15px 40px; } .heading { align-items: flex-start; flex-direction: column; } .addButton { width: 100%; } .summary { grid-template-columns: 1fr; } .summary article { min-height: 90px; } .mapCard { height: 520px; } .drawingGuide { top: 67px; width: calc(100% - 24px); min-width: 0; } .mapBadge { left: 12px; } .savePanel { right: 12px; bottom: 28px; width: calc(100% - 24px); } .rowList { grid-template-columns: 1fr; } }
+@media (max-width: 720px) { .page { padding: 25px 15px 40px; } .heading { align-items: flex-start; flex-direction: column; } .headingActions { width: 100%; } .headingActions > button { flex: 1; } .summary { grid-template-columns: 1fr; } .summary article { min-height: 90px; } .mapCard { height: 520px; } .drawingGuide { top: 67px; width: calc(100% - 24px); min-width: 0; } .mapBadge { left: 12px; } .savePanel { right: 12px; bottom: 28px; width: calc(100% - 24px); } .rowList { grid-template-columns: 1fr; } }
 @media (max-width: 440px) { .mapCard { height: 480px; } .drawingGuide { grid-template-columns: 34px 1fr; } .drawingGuide > button { grid-column: 1 / -1; } }
-@media (prefers-reduced-motion: reduce) { .addButton, .summary article, .rowCard { transition: none; } .addButton:hover, .summary article:hover, .rowCard:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .addButton, .editMapButton, .summary article, .rowCard { transition: none; } .addButton:hover, .editMapButton:hover, .summary article:hover, .rowCard:hover { transform: none; } }

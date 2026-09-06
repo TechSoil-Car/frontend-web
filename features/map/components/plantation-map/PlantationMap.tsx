@@ -11,6 +11,7 @@ import {
   setWorkerUrl,
 } from "maplibre-gl";
 import type { MapLayerMouseEvent } from "maplibre-gl";
+import type { BoundaryPolygon } from "@/features/plantations";
 import type { MapPoint, PlantationRow } from "../../types/plantation-row.types";
 import { hasCoordinates } from "../../types/plantation-row.types";
 import styles from "./PlantationMap.module.css";
@@ -20,6 +21,9 @@ const ROWS_LAYER = "techsoil-rows-line";
 const ROWS_HITBOX_LAYER = "techsoil-rows-hitbox";
 const ENDPOINTS_SOURCE = "techsoil-row-endpoints";
 const DRAFT_SOURCE = "techsoil-row-draft";
+const BOUNDARY_SOURCE = "techsoil-boundary";
+const BOUNDARY_DRAFT_SOURCE = "techsoil-boundary-draft";
+const LOCATION_SOURCE = "techsoil-location";
 const DEFAULT_CENTER: [number, number] = [-47.0608, -22.9056];
 const STYLE_URL = process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "https://tiles.openfreemap.org/styles/liberty";
 
@@ -28,7 +32,11 @@ type PlantationMapProps = {
   selectedRowId: string | null;
   draftStart: MapPoint | null;
   draftEnd: MapPoint | null;
-  drawing: boolean;
+  center: MapPoint | null;
+  zoom: number;
+  boundary: BoundaryPolygon | null;
+  boundaryDraft: MapPoint[];
+  interactionMode: "row" | "boundary" | null;
   onMapClick: (point: MapPoint) => void;
   onSelectRow: (rowId: string) => void;
 };
@@ -77,20 +85,53 @@ function draftGeoJson(start: MapPoint | null, end: MapPoint | null): FeatureColl
   return { type: "FeatureCollection", features };
 }
 
-export function PlantationMap({ rows, selectedRowId, draftStart, draftEnd, drawing, onMapClick, onSelectRow }: PlantationMapProps) {
+function boundaryGeoJson(boundary: BoundaryPolygon | null): FeatureCollection {
+  return {
+    type: "FeatureCollection",
+    features: boundary ? [{ type: "Feature", properties: {}, geometry: boundary }] : [],
+  };
+}
+
+function boundaryDraftGeoJson(points: MapPoint[]): FeatureCollection {
+  if (!points.length) return { type: "FeatureCollection", features: [] };
+  const coordinates = points.map((point) => [point.longitude, point.latitude]);
+  const features: Feature[] = [{ type: "Feature", properties: {}, geometry: { type: "LineString", coordinates } }];
+  points.forEach((point, index) => features.push({
+    type: "Feature",
+    properties: { index },
+    geometry: { type: "Point", coordinates: [point.longitude, point.latitude] },
+  }));
+  if (points.length >= 3) {
+    features.unshift({
+      type: "Feature",
+      properties: {},
+      geometry: { type: "Polygon", coordinates: [[...coordinates, coordinates[0]]] },
+    });
+  }
+  return { type: "FeatureCollection", features };
+}
+
+function locationGeoJson(center: MapPoint | null): FeatureCollection<Point> {
+  return {
+    type: "FeatureCollection",
+    features: center ? [{ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [center.longitude, center.latitude] } }] : [],
+  };
+}
+
+export function PlantationMap({ rows, selectedRowId, draftStart, draftEnd, center, zoom, boundary, boundaryDraft, interactionMode, onMapClick, onSelectRow }: PlantationMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
   const onMapClickRef = useRef(onMapClick);
   const onSelectRowRef = useRef(onSelectRow);
-  const drawingRef = useRef(drawing);
+  const interactionModeRef = useRef(interactionMode);
   const fittedRowsRef = useRef("");
 
   useEffect(() => { onMapClickRef.current = onMapClick; }, [onMapClick]);
   useEffect(() => { onSelectRowRef.current = onSelectRow; }, [onSelectRow]);
   useEffect(() => {
-    drawingRef.current = drawing;
-    if (mapRef.current) mapRef.current.getCanvas().style.cursor = drawing ? "crosshair" : "grab";
-  }, [drawing]);
+    interactionModeRef.current = interactionMode;
+    if (mapRef.current) mapRef.current.getCanvas().style.cursor = interactionMode ? "crosshair" : "grab";
+  }, [interactionMode]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -109,6 +150,16 @@ export function PlantationMap({ rows, selectedRowId, draftStart, draftEnd, drawi
 
     map.on("load", () => {
       map.addSource(ROWS_SOURCE, { type: "geojson", data: rowsGeoJson([], null) });
+      map.addSource(BOUNDARY_SOURCE, { type: "geojson", data: boundaryGeoJson(null) });
+      map.addLayer({ id: "techsoil-boundary-fill", type: "fill", source: BOUNDARY_SOURCE, paint: { "fill-color": "#79ae50", "fill-opacity": .18 } });
+      map.addLayer({ id: "techsoil-boundary-line", type: "line", source: BOUNDARY_SOURCE, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#416f35", "line-width": 3 } });
+      map.addSource(BOUNDARY_DRAFT_SOURCE, { type: "geojson", data: boundaryDraftGeoJson([]) });
+      map.addLayer({ id: "techsoil-boundary-draft-fill", type: "fill", source: BOUNDARY_DRAFT_SOURCE, filter: ["==", ["geometry-type"], "Polygon"], paint: { "fill-color": "#f0b75d", "fill-opacity": .2 } });
+      map.addLayer({ id: "techsoil-boundary-draft-line", type: "line", source: BOUNDARY_DRAFT_SOURCE, filter: ["==", ["geometry-type"], "LineString"], layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#e49a36", "line-width": 4, "line-dasharray": [1.3, 1.3] } });
+      map.addLayer({ id: "techsoil-boundary-draft-points", type: "circle", source: BOUNDARY_DRAFT_SOURCE, filter: ["==", ["geometry-type"], "Point"], paint: { "circle-radius": 6, "circle-color": "#f0b75d", "circle-stroke-color": "#fff", "circle-stroke-width": 2.5 } });
+      map.addSource(LOCATION_SOURCE, { type: "geojson", data: locationGeoJson(null) });
+      map.addLayer({ id: "techsoil-location-halo", type: "circle", source: LOCATION_SOURCE, paint: { "circle-radius": 15, "circle-color": "rgba(112,165,74,.2)" } });
+      map.addLayer({ id: "techsoil-location-point", type: "circle", source: LOCATION_SOURCE, paint: { "circle-radius": 6, "circle-color": "#315d32", "circle-stroke-color": "#dfff9e", "circle-stroke-width": 3 } });
       map.addLayer({ id: ROWS_HITBOX_LAYER, type: "line", source: ROWS_SOURCE, paint: { "line-color": "rgba(0,0,0,0)", "line-width": 22 } });
       map.addLayer({
         id: ROWS_LAYER,
@@ -147,17 +198,19 @@ export function PlantationMap({ rows, selectedRowId, draftStart, draftEnd, drawi
     });
 
     map.on("click", (event: MapLayerMouseEvent) => {
-      if (drawingRef.current) {
+      if (interactionModeRef.current) {
         onMapClickRef.current({ latitude: event.lngLat.lat, longitude: event.lngLat.lng });
         return;
       }
+      if (!map.getLayer(ROWS_HITBOX_LAYER)) return;
       const feature = map.queryRenderedFeatures(event.point, { layers: [ROWS_HITBOX_LAYER] })[0];
       const rowId = feature?.properties?.rowId;
       if (typeof rowId === "string") onSelectRowRef.current(rowId);
     });
 
     map.on("mousemove", (event: MapLayerMouseEvent) => {
-      if (drawingRef.current) return;
+      if (interactionModeRef.current) return;
+      if (!map.getLayer(ROWS_HITBOX_LAYER)) return;
       const feature = map.queryRenderedFeatures(event.point, { layers: [ROWS_HITBOX_LAYER] })[0];
       map.getCanvas().style.cursor = feature ? "pointer" : "grab";
     });
@@ -175,16 +228,34 @@ export function PlantationMap({ rows, selectedRowId, draftStart, draftEnd, drawi
       (map.getSource(ROWS_SOURCE) as GeoJSONSource | undefined)?.setData(rowsGeoJson(rows, selectedRowId));
       (map.getSource(ENDPOINTS_SOURCE) as GeoJSONSource | undefined)?.setData(endpointsGeoJson(rows));
       (map.getSource(DRAFT_SOURCE) as GeoJSONSource | undefined)?.setData(draftGeoJson(draftStart, draftEnd));
+      (map.getSource(BOUNDARY_SOURCE) as GeoJSONSource | undefined)?.setData(boundaryGeoJson(boundary));
+      (map.getSource(BOUNDARY_DRAFT_SOURCE) as GeoJSONSource | undefined)?.setData(boundaryDraftGeoJson(boundaryDraft));
+      (map.getSource(LOCATION_SOURCE) as GeoJSONSource | undefined)?.setData(locationGeoJson(center));
     };
-    if (map.loaded()) updateSources();
+    if (map.getSource(ROWS_SOURCE)) updateSources();
     else map.once("load", updateSources);
-  }, [draftEnd, draftStart, rows, selectedRowId]);
+  }, [boundary, boundaryDraft, center, draftEnd, draftStart, rows, selectedRowId]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !center || boundaryDraft.length) return;
+    map.flyTo({ center: [center.longitude, center.latitude], zoom, duration: 900 });
+  }, [boundaryDraft.length, center, zoom]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const ring = boundary?.coordinates[0];
+    if (!map || !ring?.length) return;
+    const bounds = new LngLatBounds();
+    ring.forEach((coordinate) => bounds.extend([coordinate[0], coordinate[1]]));
+    map.fitBounds(bounds, { padding: 75, maxZoom: 18, duration: 800 });
+  }, [boundary]);
 
   useEffect(() => {
     const map = mapRef.current;
     const mappedRows = rows.filter(hasCoordinates);
     const rowsKey = mappedRows.map((row) => row.id).join(":");
-    if (!map || !mappedRows.length || fittedRowsRef.current === rowsKey) return;
+    if (!map || boundary || !mappedRows.length || fittedRowsRef.current === rowsKey) return;
     fittedRowsRef.current = rowsKey;
 
     const bounds = new LngLatBounds();
@@ -193,7 +264,7 @@ export function PlantationMap({ rows, selectedRowId, draftStart, draftEnd, drawi
       bounds.extend([row.endLongitude, row.endLatitude]);
     });
     map.fitBounds(bounds, { padding: 90, maxZoom: 17, duration: 800 });
-  }, [rows]);
+  }, [boundary, rows]);
 
   useEffect(() => {
     const map = mapRef.current;

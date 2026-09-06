@@ -3,21 +3,42 @@
 import { FormEvent, useMemo, useState } from "react";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
 import { usePlantations } from "@/features/plantations";
+import type { BoundaryPolygon, Plantation } from "@/features/plantations";
 import { ApiError } from "@/shared/api/api-client";
 import { usePlantationRows } from "../../hooks/use-plantation-rows";
 import type { MapPoint } from "../../types/plantation-row.types";
 import { hasCoordinates } from "../../types/plantation-row.types";
 import { distanceInMeters, formatDistance, rowLength } from "../../utils/geo";
+import { FarmLocationSetup } from "../farm-location-setup/FarmLocationSetup";
 import { PlantationMap } from "../plantation-map/PlantationMap";
 import styles from "./PlantationMapScreen.module.css";
 
+function getBoundaryPoints(boundary: BoundaryPolygon | null): MapPoint[] {
+  const ring = boundary?.type === "Polygon" ? boundary.coordinates[0] : null;
+  if (!ring || ring.length < 4) return [];
+  return ring.slice(0, -1).map(([longitude, latitude]) => ({ longitude, latitude }));
+}
+
 export function PlantationMapScreen() {
   const { selectedPlantation } = usePlantations();
-  const { rows, status, error, reload, createRow, deleteRow } = usePlantationRows(selectedPlantation?.id);
+  if (!selectedPlantation) {
+    return <main className={styles.statePage}><span><DashboardIcon name="map" size={25} /></span><strong>Selecione uma plantação</strong><p>Escolha uma propriedade para abrir o mapa e visualizar suas linhas.</p></main>;
+  }
+  return <PlantationMapContent key={selectedPlantation.id} plantation={selectedPlantation} />;
+}
+
+function PlantationMapContent({ plantation }: { plantation: Plantation }) {
+  const { updatePlantationMap } = usePlantations();
+  const { rows, status, error, reload, createRow, deleteRow } = usePlantationRows(plantation.id);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
-  const [drawing, setDrawing] = useState(false);
+  const [drawingRow, setDrawingRow] = useState(false);
   const [draftStart, setDraftStart] = useState<MapPoint | null>(null);
   const [draftEnd, setDraftEnd] = useState<MapPoint | null>(null);
+  const [setupOpen, setSetupOpen] = useState(plantation.centerLatitude === null || plantation.centerLongitude === null || !plantation.boundaryGeoJson);
+  const [center, setCenter] = useState<MapPoint | null>(plantation.centerLatitude !== null && plantation.centerLongitude !== null ? { latitude: plantation.centerLatitude, longitude: plantation.centerLongitude } : null);
+  const [locationLabel, setLocationLabel] = useState(plantation.location ?? "");
+  const [perimeterPoints, setPerimeterPoints] = useState<MapPoint[]>(getBoundaryPoints(plantation.boundaryGeoJson));
+  const [drawingBoundary, setDrawingBoundary] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -26,54 +47,75 @@ export function PlantationMapScreen() {
   const mappedRows = useMemo(() => rows.filter(hasCoordinates), [rows]);
   const totalDistance = useMemo(() => mappedRows.reduce((total, row) => total + rowLength(row), 0), [mappedRows]);
   const nextRowNumber = useMemo(() => Math.max(0, ...rows.map((row) => row.rowNumber)) + 1, [rows]);
-  const isOwner = selectedPlantation?.role === "OWNER";
+  const isOwner = plantation.role === "OWNER";
+  const savedBoundary = plantation.boundaryGeoJson;
 
-  function resetDraft() {
-    setDrawing(false);
+  function resetRowDraft() {
+    setDrawingRow(false);
     setDraftStart(null);
     setDraftEnd(null);
     setFormError(null);
   }
 
-  function startDrawing() {
+  function startDrawingRow() {
+    setSetupOpen(false);
     setSelectedRowId(null);
     setDraftStart(null);
     setDraftEnd(null);
     setFormError(null);
-    setDrawing(true);
+    setDrawingRow(true);
+  }
+
+  function openSetup() {
+    resetRowDraft();
+    setCenter(plantation.centerLatitude !== null && plantation.centerLongitude !== null ? { latitude: plantation.centerLatitude, longitude: plantation.centerLongitude } : null);
+    setLocationLabel(plantation.location ?? "");
+    setPerimeterPoints(getBoundaryPoints(savedBoundary));
+    setDrawingBoundary(false);
+    setSetupOpen(true);
   }
 
   function handleMapClick(point: MapPoint) {
-    if (!drawing) return;
-    if (!draftStart) {
-      setDraftStart(point);
+    if (drawingBoundary) {
+      setPerimeterPoints((current) => current.length < 500 ? [...current, point] : current);
       return;
     }
-    if (!draftEnd) {
+    if (!drawingRow) return;
+    if (!draftStart) setDraftStart(point);
+    else if (!draftEnd) {
       setDraftEnd(point);
-      setDrawing(false);
+      setDrawingRow(false);
     }
   }
 
-  async function handleSave(event: FormEvent<HTMLFormElement>) {
+  async function handleSaveRow(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!draftStart || !draftEnd) return;
     setSaving(true);
     setFormError(null);
-
     const form = new FormData(event.currentTarget);
     try {
-      const created = await createRow({
-        rowNumber: Number(form.get("rowNumber")),
-        startLatitude: draftStart.latitude,
-        startLongitude: draftStart.longitude,
-        endLatitude: draftEnd.latitude,
-        endLongitude: draftEnd.longitude,
-      });
-      resetDraft();
+      const created = await createRow({ rowNumber: Number(form.get("rowNumber")), startLatitude: draftStart.latitude, startLongitude: draftStart.longitude, endLatitude: draftEnd.latitude, endLongitude: draftEnd.longitude });
+      resetRowDraft();
       setSelectedRowId(created.id);
     } catch (requestError) {
       setFormError(requestError instanceof ApiError ? requestError.message : "Não foi possível salvar esta linha.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleSaveBoundary() {
+    if (!center || perimeterPoints.length < 3) return;
+    setSaving(true);
+    setFormError(null);
+    const ring = [...perimeterPoints.map((point) => [point.longitude, point.latitude]), [perimeterPoints[0].longitude, perimeterPoints[0].latitude]];
+    try {
+      await updatePlantationMap({ location: (locationLabel || "Localização definida pelo mapa").slice(0, 240), centerLatitude: center.latitude, centerLongitude: center.longitude, mapZoom: 16, boundaryGeoJson: { type: "Polygon", coordinates: [ring] } });
+      setDrawingBoundary(false);
+      setSetupOpen(false);
+    } catch (requestError) {
+      setFormError(requestError instanceof ApiError ? requestError.message : "Não foi possível salvar o perímetro.");
     } finally {
       setSaving(false);
     }
@@ -92,64 +134,40 @@ export function PlantationMapScreen() {
     }
   }
 
-  if (!selectedPlantation) {
-    return <main className={styles.statePage}><span><DashboardIcon name="map" size={25} /></span><strong>Selecione uma plantação</strong><p>Escolha uma propriedade para abrir o mapa e visualizar suas linhas.</p></main>;
-  }
-
   const draftDistance = draftStart && draftEnd ? distanceInMeters(draftStart, draftEnd) : 0;
+  const interactionMode = drawingBoundary ? "boundary" as const : drawingRow ? "row" as const : null;
 
-  return (
-    <main className={styles.page}>
-      <header className={styles.heading}>
-        <div><p>PLANEJAMENTO DA LAVOURA</p><h1>Mapa da plantação</h1><span>Desenhe linhas de plantio e organize a base das próximas missões.</span></div>
-        {isOwner && <button className={styles.addButton} type="button" onClick={startDrawing} disabled={drawing || Boolean(draftEnd)}><b>+</b> Nova linha</button>}
-      </header>
+  return <main className={styles.page}>
+    <header className={styles.heading}>
+      <div><p>PLANEJAMENTO DA LAVOURA</p><h1>Mapa da plantação</h1><span>Localize sua propriedade, delimite o terreno e organize as linhas de plantio.</span></div>
+      {isOwner && <div className={styles.headingActions}>{savedBoundary && <button className={styles.editMapButton} type="button" onClick={openSetup}><DashboardIcon name="map" size={16} /> Editar perímetro</button>}<button className={styles.addButton} type="button" onClick={startDrawingRow} disabled={setupOpen || drawingRow || Boolean(draftEnd) || !savedBoundary}><b>+</b> Nova linha</button></div>}
+    </header>
 
-      <section className={styles.summary} aria-label="Resumo do mapeamento">
-        <article><span><DashboardIcon name="field" /></span><div><small>LINHAS CADASTRADAS</small><strong>{rows.length}</strong><p>{mappedRows.length} com traçado no mapa</p></div></article>
-        <article><span><DashboardIcon name="map" /></span><div><small>EXTENSÃO MAPEADA</small><strong>{formatDistance(totalDistance)}</strong><p>Soma aproximada das linhas</p></div></article>
-        <article><span><DashboardIcon name="location" /></span><div><small>PROPRIEDADE ATIVA</small><strong>{selectedPlantation.name}</strong><p>{selectedPlantation.location ?? "Localização não informada"}</p></div></article>
-      </section>
+    <section className={styles.summary} aria-label="Resumo do mapeamento">
+      <article><span><DashboardIcon name="field" /></span><div><small>LINHAS CADASTRADAS</small><strong>{rows.length}</strong><p>{mappedRows.length} com traçado no mapa</p></div></article>
+      <article><span><DashboardIcon name="map" /></span><div><small>ÁREA DELIMITADA</small><strong>{plantation.areaHectares !== null ? `${plantation.areaHectares.toLocaleString("pt-BR")} ha` : "Pendente"}</strong><p>{formatDistance(totalDistance)} em linhas</p></div></article>
+      <article><span><DashboardIcon name="location" /></span><div><small>PROPRIEDADE ATIVA</small><strong>{plantation.name}</strong><p>{plantation.location ?? "Localização não informada"}</p></div></article>
+    </section>
 
-      <section className={styles.workspace}>
-        <div className={styles.mapCard}>
-          <PlantationMap rows={rows} selectedRowId={selectedRowId} draftStart={draftStart} draftEnd={draftEnd} drawing={drawing} onMapClick={handleMapClick} onSelectRow={setSelectedRowId} />
-          <div className={styles.mapBadge}><i /> Base cartográfica interativa</div>
-          {drawing && <div className={styles.drawingGuide}><span>{draftStart ? "2" : "1"}</span><div><strong>{draftStart ? "Agora marque o ponto final" : "Marque o início da linha"}</strong><small>Clique diretamente no mapa</small></div><button type="button" onClick={resetDraft}>Cancelar</button></div>}
-          {draftStart && draftEnd && <form className={styles.savePanel} onSubmit={handleSave}>
-            <div><small>NOVO TRAÇADO</small><strong>{formatDistance(draftDistance)}</strong></div>
-            <label htmlFor="row-number">Número da linha</label>
-            <input id="row-number" name="rowNumber" type="number" min="1" max="10000" defaultValue={nextRowNumber} required />
-            {formError && <p role="alert">{formError}</p>}
-            <div><button type="button" onClick={resetDraft} disabled={saving}>Descartar</button><button type="submit" disabled={saving}>{saving ? "Salvando..." : "Salvar linha"}</button></div>
-          </form>}
-          {!drawing && !draftEnd && rows.length === 0 && status === "ready" && <div className={styles.emptyMap}><span><DashboardIcon name="map" size={25} /></span><strong>O mapa está pronto para receber a primeira linha</strong><p>Use dois pontos para representar o início e o fim de uma fileira.</p>{isOwner && <button type="button" onClick={startDrawing}>Desenhar primeira linha</button>}</div>}
-        </div>
+    <section className={styles.workspace}>
+      <div className={styles.mapCard}>
+        <PlantationMap rows={rows} selectedRowId={selectedRowId} draftStart={draftStart} draftEnd={draftEnd} center={center} zoom={plantation.mapZoom ?? 16} boundary={savedBoundary} boundaryDraft={setupOpen ? perimeterPoints : []} interactionMode={interactionMode} onMapClick={handleMapClick} onSelectRow={setSelectedRowId} />
+        <div className={styles.mapBadge}><i /> {setupOpen ? "Configuração da propriedade" : "Mapa operacional"}</div>
+        {drawingBoundary && <div className={styles.drawingGuide}><span>{perimeterPoints.length + 1}</span><div><strong>Marque os limites da propriedade</strong><small>Clique nos cantos do terreno para formar o contorno</small></div></div>}
+        {drawingRow && <div className={styles.drawingGuide}><span>{draftStart ? "2" : "1"}</span><div><strong>{draftStart ? "Agora marque o ponto final" : "Marque o início da linha"}</strong><small>Clique diretamente no mapa</small></div><button type="button" onClick={resetRowDraft}>Cancelar</button></div>}
+        {draftStart && draftEnd && <form className={styles.savePanel} onSubmit={handleSaveRow}><div><small>NOVO TRAÇADO</small><strong>{formatDistance(draftDistance)}</strong></div><label htmlFor="row-number">Número da linha</label><input id="row-number" name="rowNumber" type="number" min="1" max="10000" defaultValue={nextRowNumber} required />{formError && <p role="alert">{formError}</p>}<div><button type="button" onClick={resetRowDraft} disabled={saving}>Descartar</button><button type="submit" disabled={saving}>{saving ? "Salvando..." : "Salvar linha"}</button></div></form>}
+      </div>
 
-        <aside className={styles.rowsPanel}>
+      <aside className={styles.rowsPanel}>
+        {setupOpen ? <FarmLocationSetup center={center} points={perimeterPoints} drawing={drawingBoundary} saving={saving} error={formError} canCancel={Boolean(savedBoundary)} onSelectLocation={(point, label) => { setCenter(point); setLocationLabel(label); setPerimeterPoints([]); }} onStartDrawing={() => setDrawingBoundary(true)} onUndo={() => setPerimeterPoints((current) => current.slice(0, -1))} onRestartDrawing={() => { setPerimeterPoints([]); setDrawingBoundary(true); }} onClearLocation={() => { setCenter(null); setLocationLabel(""); setPerimeterPoints([]); setDrawingBoundary(false); }} onSave={() => void handleSaveBoundary()} onCancel={() => { setSetupOpen(false); setDrawingBoundary(false); setPerimeterPoints(getBoundaryPoints(savedBoundary)); }} /> : <>
           <div className={styles.panelHeader}><div><p>LINHAS DE PLANTIO</p><h2>Traçados da lavoura</h2></div><button type="button" aria-label="Atualizar linhas" onClick={() => void reload()} disabled={status === "loading"}><DashboardIcon name="refresh" size={17} /></button></div>
           {status === "loading" && <div className={styles.loading}><span />Carregando traçados...</div>}
           {status === "error" && <div className={styles.panelError}><strong>Não foi possível carregar</strong><p>{error}</p><button type="button" onClick={() => void reload()}>Tentar novamente</button></div>}
-          {status === "ready" && rows.length === 0 && <div className={styles.emptyList}><strong>Nenhuma linha cadastrada</strong><p>Os traçados aparecerão aqui em ordem numérica.</p></div>}
-          {status === "ready" && rows.length > 0 && <div className={styles.rowList}>
-            {rows.map((row) => {
-              const mapped = hasCoordinates(row);
-              const selected = selectedRowId === row.id;
-              return <article className={`${styles.rowCard} ${selected ? styles.rowSelected : ""}`} key={row.id}>
-                <button className={styles.rowMain} type="button" onClick={() => mapped && setSelectedRowId(row.id)} disabled={!mapped}>
-                  <span>{String(row.rowNumber).padStart(2, "0")}</span>
-                  <div><strong>Linha {row.rowNumber}</strong><small>{mapped ? `${formatDistance(rowLength(row))} mapeados` : "Sem coordenadas"}</small></div>
-                  {mapped && <DashboardIcon name="focus" size={17} />}
-                </button>
-                {isOwner && <div className={styles.rowActions}>
-                  {pendingDeleteId === row.id ? <><button type="button" onClick={() => setPendingDeleteId(null)} disabled={deletingId === row.id}>Cancelar</button><button className={styles.confirmDelete} type="button" onClick={() => void handleDelete(row.id)} disabled={deletingId === row.id}>{deletingId === row.id ? "Excluindo..." : "Confirmar"}</button></> : <button type="button" aria-label={`Excluir linha ${row.rowNumber}`} onClick={() => setPendingDeleteId(row.id)}><DashboardIcon name="trash" size={15} /> Excluir</button>}
-                </div>}
-              </article>;
-            })}
-          </div>}
+          {status === "ready" && rows.length === 0 && <div className={styles.emptyList}><strong>Nenhuma linha cadastrada</strong><p>Use “Nova linha” para marcar o primeiro traçado dentro da propriedade.</p></div>}
+          {status === "ready" && rows.length > 0 && <div className={styles.rowList}>{rows.map((row) => { const mapped = hasCoordinates(row); const selected = selectedRowId === row.id; return <article className={`${styles.rowCard} ${selected ? styles.rowSelected : ""}`} key={row.id}><button className={styles.rowMain} type="button" onClick={() => mapped && setSelectedRowId(row.id)} disabled={!mapped}><span>{String(row.rowNumber).padStart(2, "0")}</span><div><strong>Linha {row.rowNumber}</strong><small>{mapped ? `${formatDistance(rowLength(row))} mapeados` : "Sem coordenadas"}</small></div>{mapped && <DashboardIcon name="focus" size={17} />}</button>{isOwner && <div className={styles.rowActions}>{pendingDeleteId === row.id ? <><button type="button" onClick={() => setPendingDeleteId(null)} disabled={deletingId === row.id}>Cancelar</button><button className={styles.confirmDelete} type="button" onClick={() => void handleDelete(row.id)} disabled={deletingId === row.id}>{deletingId === row.id ? "Excluindo..." : "Confirmar"}</button></> : <button type="button" aria-label={`Excluir linha ${row.rowNumber}`} onClick={() => setPendingDeleteId(row.id)}><DashboardIcon name="trash" size={15} /> Excluir</button>}</div>}</article>; })}</div>}
           <footer><span><i /> Linha mapeada</span><span><i /> Traçado selecionado</span></footer>
-        </aside>
-      </section>
-    </main>
-  );
+        </>}
+      </aside>
+    </section>
+  </main>;
 }

@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/features/auth";
 import * as plantationsApi from "../services/plantations-api";
-import type { CreatePlantationInput, Plantation, PlantationsStatus } from "../types/plantation.types";
+import type { CreatePlantationInput, Plantation, PlantationsStatus, UpdatePlantationMapInput } from "../types/plantation.types";
 
 const ACTIVE_PLANTATION_KEY = "techsoil:active-plantation";
 
@@ -13,6 +13,7 @@ type PlantationContextValue = {
   status: PlantationsStatus;
   selectPlantation: (plantationId: string) => void;
   createPlantation: (input: CreatePlantationInput) => Promise<Plantation>;
+  updatePlantationMap: (input: UpdatePlantationMapInput) => Promise<Plantation>;
   reloadPlantations: () => Promise<void>;
 };
 
@@ -67,6 +68,13 @@ export function PlantationProvider({ children }: { children: React.ReactNode }) 
     return created;
   }, []);
 
+  const updatePlantationMap = useCallback(async (input: UpdatePlantationMapInput) => {
+    if (!selectedId) throw new Error("Selecione uma plantação antes de atualizar o mapa.");
+    const updated = await plantationsApi.updatePlantationMap(selectedId, input);
+    setPlantations((current) => current.map((plantation) => plantation.id === updated.id ? updated : plantation));
+    return updated;
+  }, [selectedId]);
+
   const selectedPlantation = plantations.find((plantation) => plantation.id === selectedId) ?? null;
   const value = useMemo(() => ({
     plantations,
@@ -74,8 +82,9 @@ export function PlantationProvider({ children }: { children: React.ReactNode }) 
     status,
     selectPlantation,
     createPlantation,
+    updatePlantationMap,
     reloadPlantations,
-  }), [createPlantation, plantations, reloadPlantations, selectPlantation, selectedPlantation, status]);
+  }), [createPlantation, plantations, reloadPlantations, selectPlantation, selectedPlantation, status, updatePlantationMap]);
 
   return <PlantationContext.Provider value={value}>{children}</PlantationContext.Provider>;
 }
