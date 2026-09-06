@@ -32,8 +32,9 @@
 .savePanel small { color: #668c4c; font-size: 8px; font-weight: 800; letter-spacing: .13em; }
 .savePanel strong { font-size: 12px; }
 .savePanel label { display: block; margin-top: 14px; color: #59675e; font-size: 9px; font-weight: 700; }
-.savePanel input { width: 100%; min-height: 42px; margin-top: 6px; padding: 0 12px; color: #2e3b33; border: 1px solid #d4dbd0; border-radius: 9px; outline: 0; background: #fff; font: 700 12px var(--font-body), sans-serif; }
-.savePanel input:focus { border-color: #84b163; box-shadow: 0 0 0 4px rgba(132,177,99,.13); }
+.savePanel input, .savePanel select { width: 100%; min-height: 42px; margin-top: 6px; padding: 0 12px; color: #2e3b33; border: 1px solid #d4dbd0; border-radius: 9px; outline: 0; background: #fff; font: 700 11px var(--font-body), sans-serif; }
+.savePanel input:focus, .savePanel select:focus { border-color: #84b163; box-shadow: 0 0 0 4px rgba(132,177,99,.13); }
+.rowFormFields { margin-top: 2px; display: grid; grid-template-columns: .8fr 1.2fr; gap: 9px; }
 .savePanel > p { margin: 9px 0 0; color: #943f34; font-size: 9px; line-height: 1.4; }
 .savePanel > div:last-child { margin-top: 13px; display: grid; grid-template-columns: 1fr 1.35fr; gap: 8px; }
 .savePanel button { min-height: 39px; border-radius: 8px; font: 700 10px var(--font-body), sans-serif; cursor: pointer; }
@@ -46,6 +47,10 @@
 .emptyMap p { margin: 7px 0 0; color: #6d7a71; font-size: 10px; line-height: 1.5; }
 .emptyMap button { min-height: 39px; margin-top: 15px; padding: 0 14px; color: #18341f; border: 0; border-radius: 8px; background: #ace072; font: 700 10px var(--font-body), sans-serif; cursor: pointer; }
 .rowsPanel { min-width: 0; padding: 18px 16px 0; display: flex; flex-direction: column; background: #fbfcf8; }
+.panelTabs { margin-bottom: 16px; padding: 4px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; border-radius: 10px; background: #ecefe8; }
+.panelTabs button { min-height: 35px; display: flex; align-items: center; justify-content: center; gap: 7px; color: #707c72; border: 0; border-radius: 7px; background: transparent; font: 700 9px var(--font-body), sans-serif; cursor: pointer; }
+.panelTabs button[aria-selected="true"] { color: #34513a; background: #fff; box-shadow: 0 3px 10px rgba(45,65,47,.08); }
+.panelTabs span { min-width: 18px; height: 18px; padding: 0 5px; display: grid; place-items: center; border-radius: 99px; background: #e5ecdf; font-size: 7px; }
 .panelHeader { padding: 0 2px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e5dd; }
 .panelHeader p { margin: 0 0 6px; color: #6b934f; font-size: 8px; font-weight: 800; letter-spacing: .13em; }
 .panelHeader h2 { margin: 0; color: #334138; font: 650 17px var(--font-display), sans-serif; letter-spacing: -.03em; }

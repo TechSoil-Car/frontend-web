@@ -1,6 +1,7 @@
 export type PlantationRow = {
   id: string;
   rowNumber: number;
+  plotId: string | null;
   startLatitude: number | null;
   startLongitude: number | null;
   endLatitude: number | null;
@@ -19,6 +20,7 @@ export type RowCoordinates = {
 
 export type CreatePlantationRowInput = RowCoordinates & {
   rowNumber: number;
+  plotId?: string;
 };
 
 export type MapPoint = {
