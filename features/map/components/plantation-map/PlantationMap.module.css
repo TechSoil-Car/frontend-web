@@ -1,0 +1,6 @@
+.map { position: absolute; inset: 0; background: #dfe8da; }
+.map :global(.maplibregl-ctrl-group) { overflow: hidden; border: 1px solid rgba(31,62,38,.12); border-radius: 10px; box-shadow: 0 8px 20px rgba(17,40,22,.12); }
+.map :global(.maplibregl-ctrl-group button) { width: 34px; height: 34px; }
+.map :global(.maplibregl-ctrl-scale) { color: #26372a; border-color: #506952; border-top: 0; background: rgba(250,251,247,.86); font-family: var(--font-body), sans-serif; backdrop-filter: blur(7px); }
+.map :global(.maplibregl-ctrl-attrib) { color: #526158; background: rgba(250,251,247,.86); font: 9px var(--font-body), sans-serif; backdrop-filter: blur(7px); }
+.map :global(.maplibregl-ctrl-attrib a) { color: #355840; }

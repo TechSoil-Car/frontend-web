@@ -1,4 +1,4 @@
-type IconName = "overview" | "field" | "sensor" | "mission" | "alert" | "team" | "settings" | "search" | "bell" | "chevron" | "calendar" | "cloud" | "menu" | "close" | "arrow" | "battery" | "location" | "refresh";
+type IconName = "overview" | "field" | "map" | "sensor" | "mission" | "alert" | "team" | "settings" | "search" | "bell" | "chevron" | "calendar" | "cloud" | "menu" | "close" | "arrow" | "battery" | "location" | "refresh" | "focus" | "trash";
 
 type DashboardIconProps = {
   name: IconName;
@@ -8,6 +8,7 @@ type DashboardIconProps = {
 const paths: Record<IconName, React.ReactNode> = {
   overview: <><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></>,
   field: <><path d="M4 20c3-6 6-9 8-16 2 7 5 10 8 16"/><path d="M8 15h8M10 10h4"/></>,
+  map: <><path d="m3 6 5-3 8 3 5-3v15l-5 3-8-3-5 3V6Z"/><path d="M8 3v15M16 6v15"/></>,
   sensor: <><path d="M8.5 15.5a5 5 0 1 1 7 0"/><path d="M6 18a8.5 8.5 0 1 1 12 0"/><circle cx="12" cy="12" r="1.5"/></>,
   mission: <><path d="M5 17h14l-1.5-6h-11L5 17Z"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/><path d="M9 8h6M12 8V5"/></>,
   alert: <><path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v5M12 17.5v.5"/></>,
@@ -24,6 +25,8 @@ const paths: Record<IconName, React.ReactNode> = {
   battery: <><rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10v4"/></>,
   location: <><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></>,
   refresh: <><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M6.1 9a7 7 0 0 1 11.3-2.6L20 9M4 15l2.6 2.6A7 7 0 0 0 17.9 15"/></>,
+  focus: <><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/><circle cx="12" cy="12" r="3"/></>,
+  trash: <><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/></>,
 };
 
 export function DashboardIcon({ name, size = 20 }: DashboardIconProps) {
