@@ -70,7 +70,7 @@
 .connection { display: flex; align-items: center; gap: 8px; }
 .connection > span { padding: 7px 9px; font-size: 9px; }
 .connection button { color: #7c867f; border: 0; background: none; cursor: pointer; }
-.metaStrip { margin-top: 18px; padding: 12px 0; display: grid; grid-template-columns: repeat(3,1fr); border-top: 1px solid #e6e7e0; border-bottom: 1px solid #e6e7e0; }
+.metaStrip { margin-top: 18px; padding: 12px 0; display: grid; grid-template-columns: repeat(4,1fr); border-top: 1px solid #e6e7e0; border-bottom: 1px solid #e6e7e0; }
 .metaStrip > span { padding: 0 15px; display: grid; grid-template-columns: 20px 1fr; align-items: center; column-gap: 8px; color: #698050; border-left: 1px solid #e5e7df; }
 .metaStrip > span:first-child { padding-left: 0; border-left: 0; }
 .metaStrip small,.metaStrip strong { display: block; grid-column: 2; }
@@ -80,13 +80,17 @@
 .tabs button { min-height: 34px; padding: 0 17px; display: flex; align-items: center; gap: 7px; color: #717c74; border: 0; border-radius: 7px; background: transparent; font: 700 10px var(--font-body),sans-serif; cursor: pointer; }
 .tabs button span { min-width: 17px; padding: 3px 5px; color: #855521; border-radius: 99px; background: #ebd9bf; font-size: 9px; }
 .tabs .tabActive { color: #35503b; background: #fff; box-shadow: 0 2px 8px rgba(45,59,47,.08); }
-.readingGrid { margin-top: 15px; display: grid; grid-template-columns: 1.45fr repeat(3,1fr); gap: 9px; }
+.readingGrid { margin-top: 15px; display: grid; grid-template-columns: 1.45fr repeat(4,1fr); gap: 9px; }
 .readingGrid > article { min-height: 125px; padding: 14px; border: 1px solid #e1e3dc; border-radius: 12px; background: #fafaf7; }
 .readingGrid > article > small { color: #6f7b72; font-size: 9px; font-weight: 700; letter-spacing: .08em; }
 .readingGrid > article > strong { display: block; margin-top: 23px; font: 650 22px/1 var(--font-display),sans-serif; letter-spacing: -.04em; }
 .readingGrid > article > strong span { color: #77837a; font-size: 9px; font-weight: 500; letter-spacing: 0; }
 .readingGrid > article > p { margin: 8px 0 0; color: #6e7971; font-size: 9px; }
 .readingGrid .moistureCard { padding: 11px; display: flex; align-items: center; gap: 10px; background: #f3f7ef; }
+.locationTelemetry { margin-top: 9px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; color: #5d8247; border: 1px solid #e1e3dc; border-radius: 12px; background: #fafaf7; }
+.locationTelemetry small,.locationTelemetry strong { display: block; }
+.locationTelemetry small { color: #737e76; font-size: 8px; font-weight: 800; letter-spacing: .09em; }
+.locationTelemetry strong { margin-top: 3px; color: #445047; font-size: 10px; }
 .gauge { position: relative; width: 92px; height: 92px; flex: 0 0 auto; display: grid; place-items: center; }
 .gauge svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
 .gauge circle { fill: none; stroke: #dfe8d8; stroke-width: 8; }
