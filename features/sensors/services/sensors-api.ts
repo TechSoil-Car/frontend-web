@@ -1,5 +1,5 @@
 import { apiRequest } from "@/shared/api/api-client";
-import type { Device, PaginatedSensorReadings, SensorAlert, SensorLatest } from "../types/sensor.types";
+import type { AlertSettings, Device, PaginatedSensorReadings, SensorAlert, SensorLatest, UpdateAlertSettingsInput } from "../types/sensor.types";
 
 export function getLatestSensors(plantationId: string) {
   return apiRequest<SensorLatest[]>(`/plantations/${plantationId}/sensors/latest`);
@@ -7,6 +7,17 @@ export function getLatestSensors(plantationId: string) {
 
 export function getAlerts(plantationId: string) {
   return apiRequest<SensorAlert[]>(`/plantations/${plantationId}/alerts`);
+}
+
+export function getAlertSettings(plantationId: string) {
+  return apiRequest<AlertSettings>(`/plantations/${plantationId}/alerts/settings`);
+}
+
+export function updateAlertSettings(plantationId: string, input: UpdateAlertSettingsInput) {
+  return apiRequest<AlertSettings>(`/plantations/${plantationId}/alerts/settings`, {
+    method: "PATCH",
+    body: JSON.stringify(input),
+  });
 }
 
 export function getSensorHistory(plantationId: string, deviceId: string, limit = 100) {

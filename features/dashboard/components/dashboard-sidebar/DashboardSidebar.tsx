@@ -66,7 +66,7 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
         <nav className={styles.navigation} aria-label="Configurações">
           <p>GESTÃO</p>
           <a href="/dashboard#equipe" onClick={onClose}><DashboardIcon name="team" /><span>Equipe</span></a>
-          <a href="/dashboard#configuracoes" onClick={onClose}><DashboardIcon name="settings" /><span>Configurações</span></a>
+          <Link className={pathname.startsWith("/dashboard/configuracoes") ? styles.active : ""} href="/dashboard/configuracoes/alertas" onClick={onClose}><DashboardIcon name="settings" /><span>Configurações</span></Link>
         </nav>
 
         <div className={styles.supportCard}>

@@ -42,3 +42,24 @@ export type SensorAlert = {
 
 export type PaginatedSensorReadings = { data: SensorReading[]; nextCursor: string | null };
 export type MonitoringStatus = "idle" | "loading" | "ready" | "error";
+
+export type AlertSettings = {
+  plantationId: string;
+  noDataEnabled: boolean;
+  offlineEnabled: boolean;
+  offlineAfterMinutes: number;
+  lowBatteryEnabled: boolean;
+  lowBatteryPercentage: number;
+  moistureEnabled: boolean;
+  moistureMin: number | null;
+  moistureMax: number | null;
+  temperatureEnabled: boolean;
+  temperatureMin: number | null;
+  temperatureMax: number | null;
+  phEnabled: boolean;
+  phMin: number | null;
+  phMax: number | null;
+  updatedAt: string | null;
+};
+
+export type UpdateAlertSettingsInput = Omit<AlertSettings, "plantationId" | "updatedAt">;
