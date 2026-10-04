@@ -14,14 +14,14 @@ export function LoginForm() {
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const loginStarted = useRef(false);
-  const { status, login } = useAuth();
+  const { status, user, login } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (status === "authenticated" && !loginStarted.current) {
-      router.replace("/dashboard");
+      router.replace(user?.systemRole === "SUPERADMIN" ? "/dashboard/admin" : "/dashboard");
     }
-  }, [router, status]);
+  }, [router, status, user?.systemRole]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -34,7 +34,11 @@ export function LoginForm() {
     const password = String(form.get("password") ?? "");
 
     try {
-      await login({ email, password });
+      const account = await login({ email, password });
+      if (account.systemRole === "SUPERADMIN") {
+        router.replace("/dashboard/admin");
+        return;
+      }
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
         setFeedback("E-mail ou senha inválidos.");

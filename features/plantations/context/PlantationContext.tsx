@@ -1,9 +1,21 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useAuth } from "@/features/auth";
 import * as plantationsApi from "../services/plantations-api";
-import type { CreatePlantationInput, Plantation, PlantationsStatus, UpdatePlantationMapInput } from "../types/plantation.types";
+import type {
+  CreatePlantationInput,
+  Plantation,
+  PlantationsStatus,
+  UpdatePlantationMapInput,
+} from "../types/plantation.types";
 
 const ACTIVE_PLANTATION_KEY = "techsoil:active-plantation";
 
@@ -19,7 +31,46 @@ type PlantationContextValue = {
 
 const PlantationContext = createContext<PlantationContextValue | null>(null);
 
-export function PlantationProvider({ children }: { children: React.ReactNode }) {
+const adminPlantationContext: PlantationContextValue = {
+  plantations: [],
+  selectedPlantation: null,
+  status: "ready",
+  selectPlantation: () => {},
+  createPlantation: () =>
+    Promise.reject(
+      new Error("Superadmin não pode criar uma plantação própria."),
+    ),
+  updatePlantationMap: () =>
+    Promise.reject(new Error("Superadmin não possui acesso operacional.")),
+  reloadPlantations: () => Promise.resolve(),
+};
+
+export function PlantationProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { user } = useAuth();
+  const isAdmin = user?.systemRole === "SUPERADMIN";
+  useEffect(() => {
+    if (isAdmin) window.localStorage.removeItem(ACTIVE_PLANTATION_KEY);
+  }, [isAdmin]);
+  if (isAdmin)
+    return (
+      <PlantationContext.Provider value={adminPlantationContext}>
+        {children}
+      </PlantationContext.Provider>
+    );
+  return (
+    <OperationalPlantationProvider>{children}</OperationalPlantationProvider>
+  );
+}
+
+function OperationalPlantationProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { status: authStatus } = useAuth();
   const [plantations, setPlantations] = useState<Plantation[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -29,7 +80,12 @@ export function PlantationProvider({ children }: { children: React.ReactNode }) 
     setPlantations(items);
     setSelectedId((current) => {
       const stored = window.localStorage.getItem(ACTIVE_PLANTATION_KEY);
-      const next = [current, stored].find((id) => id && items.some((item) => item.id === id)) ?? items[0]?.id ?? null;
+      const next =
+        [current, stored].find(
+          (id) => id && items.some((item) => item.id === id),
+        ) ??
+        items[0]?.id ??
+        null;
 
       if (next) window.localStorage.setItem(ACTIVE_PLANTATION_KEY, next);
       else window.localStorage.removeItem(ACTIVE_PLANTATION_KEY);
@@ -53,11 +109,15 @@ export function PlantationProvider({ children }: { children: React.ReactNode }) 
     return () => window.clearTimeout(loadTimer);
   }, [authStatus, reloadPlantations]);
 
-  const selectPlantation = useCallback((plantationId: string) => {
-    if (!plantations.some((plantation) => plantation.id === plantationId)) return;
-    setSelectedId(plantationId);
-    window.localStorage.setItem(ACTIVE_PLANTATION_KEY, plantationId);
-  }, [plantations]);
+  const selectPlantation = useCallback(
+    (plantationId: string) => {
+      if (!plantations.some((plantation) => plantation.id === plantationId))
+        return;
+      setSelectedId(plantationId);
+      window.localStorage.setItem(ACTIVE_PLANTATION_KEY, plantationId);
+    },
+    [plantations],
+  );
 
   const createPlantation = useCallback(async (input: CreatePlantationInput) => {
     const created = await plantationsApi.createPlantation(input);
@@ -68,29 +128,59 @@ export function PlantationProvider({ children }: { children: React.ReactNode }) 
     return created;
   }, []);
 
-  const updatePlantationMap = useCallback(async (input: UpdatePlantationMapInput) => {
-    if (!selectedId) throw new Error("Selecione uma plantação antes de atualizar o mapa.");
-    const updated = await plantationsApi.updatePlantationMap(selectedId, input);
-    setPlantations((current) => current.map((plantation) => plantation.id === updated.id ? updated : plantation));
-    return updated;
-  }, [selectedId]);
+  const updatePlantationMap = useCallback(
+    async (input: UpdatePlantationMapInput) => {
+      if (!selectedId)
+        throw new Error("Selecione uma plantação antes de atualizar o mapa.");
+      const updated = await plantationsApi.updatePlantationMap(
+        selectedId,
+        input,
+      );
+      setPlantations((current) =>
+        current.map((plantation) =>
+          plantation.id === updated.id ? updated : plantation,
+        ),
+      );
+      return updated;
+    },
+    [selectedId],
+  );
 
-  const selectedPlantation = plantations.find((plantation) => plantation.id === selectedId) ?? null;
-  const value = useMemo(() => ({
-    plantations,
-    selectedPlantation,
-    status,
-    selectPlantation,
-    createPlantation,
-    updatePlantationMap,
-    reloadPlantations,
-  }), [createPlantation, plantations, reloadPlantations, selectPlantation, selectedPlantation, status, updatePlantationMap]);
+  const selectedPlantation =
+    plantations.find((plantation) => plantation.id === selectedId) ?? null;
+  const value = useMemo(
+    () => ({
+      plantations,
+      selectedPlantation,
+      status,
+      selectPlantation,
+      createPlantation,
+      updatePlantationMap,
+      reloadPlantations,
+    }),
+    [
+      createPlantation,
+      plantations,
+      reloadPlantations,
+      selectPlantation,
+      selectedPlantation,
+      status,
+      updatePlantationMap,
+    ],
+  );
 
-  return <PlantationContext.Provider value={value}>{children}</PlantationContext.Provider>;
+  return (
+    <PlantationContext.Provider value={value}>
+      {children}
+    </PlantationContext.Provider>
+  );
 }
 
 export function usePlantations() {
   const context = useContext(PlantationContext);
-  if (!context) throw new Error("usePlantations deve ser usado dentro de PlantationProvider");
+  if (!context)
+    throw new Error(
+      "usePlantations deve ser usado dentro de PlantationProvider",
+    );
   return context;
 }

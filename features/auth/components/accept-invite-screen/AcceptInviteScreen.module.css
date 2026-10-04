@@ -1,0 +1,98 @@
+.page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #f0f4e9;
+  color: #24452b;
+}
+.card {
+  width: 100%;
+  max-width: 460px;
+  padding: 36px;
+  border: 1px solid #d8e4ce;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 16px 48px #24452b12;
+}
+.brand {
+  display: block;
+  margin-bottom: 30px;
+  color: #315d32;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  font-size: 16px;
+  text-decoration: none;
+}
+.card > small {
+  color: #63815b;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+.card h1 {
+  margin: 10px 0 14px;
+  font-size: 28px;
+}
+.card p {
+  color: #60715d;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.card form {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+.card label {
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.card input {
+  width: 100%;
+  border: 1px solid #d5e0cd;
+  border-radius: 9px;
+  padding: 12px;
+  background: #fafcf7;
+  font: inherit;
+}
+.card input:focus-visible,
+.card button:focus-visible,
+.card a:focus-visible {
+  outline: 2px solid #4e8240;
+  outline-offset: 3px;
+}
+.card form small {
+  color: #60715d;
+  font-size: 11px;
+}
+.card button,
+.login {
+  display: block;
+  border: 0;
+  border-radius: 9px;
+  padding: 13px;
+  color: #fff;
+  background: #315d32;
+  font: inherit;
+  font-size: 13px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.card button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.login {
+  margin-top: 24px;
+}
+.card .error {
+  color: #9f3f2f;
+}
+@media (max-width: 480px) {
+  .card {
+    padding: 24px;
+  }
+}

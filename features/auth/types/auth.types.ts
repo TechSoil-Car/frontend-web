@@ -2,6 +2,7 @@ export type AuthUser = {
   id: string;
   name: string;
   email: string;
+  systemRole: "USER" | "SUPERADMIN";
 };
 
 export type AuthResponse = {

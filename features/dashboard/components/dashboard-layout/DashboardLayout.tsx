@@ -11,23 +11,56 @@ import styles from "./DashboardLayout.module.css";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { status: authStatus } = useAuth();
+  const { status: authStatus, user } = useAuth();
   const { selectedPlantation, status: plantationsStatus } = usePlantations();
   const router = useRouter();
   const pathname = usePathname();
+  const isAdmin = user?.systemRole === "SUPERADMIN";
+  const isAdminPage =
+    pathname === "/dashboard/admin" || pathname.startsWith("/dashboard/admin/");
 
   useEffect(() => {
     if (authStatus === "unauthenticated") {
       router.replace("/login");
       return;
     }
-    if (authStatus === "authenticated" && plantationsStatus === "ready" && !selectedPlantation && pathname !== "/dashboard/plantacoes") {
+    if (authStatus === "authenticated" && isAdmin) {
+      if (!isAdminPage) router.replace("/dashboard/admin");
+      return;
+    }
+    if (
+      authStatus === "authenticated" &&
+      plantationsStatus === "ready" &&
+      !selectedPlantation &&
+      pathname !== "/dashboard/plantacoes" &&
+      !pathname.startsWith("/dashboard/admin")
+    ) {
       router.replace("/dashboard/plantacoes");
     }
-  }, [authStatus, pathname, plantationsStatus, router, selectedPlantation]);
+  }, [
+    authStatus,
+    pathname,
+    plantationsStatus,
+    router,
+    selectedPlantation,
+    isAdmin,
+    isAdminPage,
+  ]);
 
-  if (authStatus !== "authenticated" || (plantationsStatus === "loading" && pathname !== "/dashboard/plantacoes")) {
-    return <div className={styles.sessionLoading} role="status"><span />Preparando seu painel...</div>;
+  if (
+    authStatus !== "authenticated" ||
+    (isAdmin && !isAdminPage) ||
+    (!isAdmin &&
+      plantationsStatus === "loading" &&
+      pathname !== "/dashboard/plantacoes" &&
+      !isAdminPage)
+  ) {
+    return (
+      <div className={styles.sessionLoading} role="status">
+        <span />
+        Preparando seu painel...
+      </div>
+    );
   }
 
   return (
