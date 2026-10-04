@@ -32,6 +32,11 @@ function chartPoints(readings: SensorReading[]) {
 
 export function SensorsScreen() {
   const { selectedPlantation } = usePlantations();
+  return <SensorsScreenContent key={selectedPlantation?.id ?? "none"} />;
+}
+
+function SensorsScreenContent() {
+  const { selectedPlantation } = usePlantations();
   const { sensors, alerts, status, lastUpdatedAt, reload } = useSensorMonitoring(selectedPlantation?.id);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<SensorFilter>("all");
@@ -43,34 +48,30 @@ export function SensorsScreen() {
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
-  const alertCountByDevice = useMemo(() => alerts.reduce<Record<string, number>>((counts, alert) => {
-    counts[alert.device.deviceId] = (counts[alert.device.deviceId] ?? 0) + 1;
-    return counts;
-  }, {}), [alerts]);
-
   const visibleSensors = useMemo(() => sensors.filter((sensor) => {
-    const state = getSensorState(sensor, alertCountByDevice[sensor.device.deviceId] ?? 0);
+    const state = getSensorState(sensor, alerts);
     const term = query.trim().toLocaleLowerCase("pt-BR");
     return (filter === "all" || filter === state) && (!term || `${sensor.device.name} ${sensor.device.deviceId}`.toLocaleLowerCase("pt-BR").includes(term));
-  }), [alertCountByDevice, filter, query, sensors]);
+  }), [alerts, filter, query, sensors]);
 
   const selected = sensors.find((sensor) => sensor.device.id === selectedId) ?? visibleSensors[0] ?? sensors[0] ?? null;
   const selectedAlerts = selected ? alerts.filter((alert) => alert.device.deviceId === selected.device.deviceId) : [];
-  const selectedState = selected ? getSensorState(selected, selectedAlerts.length) : "offline";
+  const selectedState = selected ? getSensorState(selected, alerts) : "offline";
   const reading = selected?.reading ?? null;
-  const onlineCount = sensors.filter((sensor) => getSensorState(sensor, alertCountByDevice[sensor.device.deviceId] ?? 0) !== "offline").length;
-  const attentionCount = sensors.filter((sensor) => getSensorState(sensor, alertCountByDevice[sensor.device.deviceId] ?? 0) === "attention").length;
+  const onlineCount = sensors.filter((sensor) => getSensorState(sensor, alerts) !== "offline").length;
+  const attentionCount = sensors.filter((sensor) => getSensorState(sensor, alerts) === "attention").length;
   const offlineCount = sensors.length - onlineCount;
 
   useEffect(() => {
     if (tab !== "history" || !selectedPlantation || !selected) return;
+    let cancelled = false;
     const timer = window.setTimeout(() => {
       setHistoryStatus("loading");
       sensorsApi.getSensorHistory(selectedPlantation.id, selected.device.deviceId, 100)
-        .then((response) => { setHistory(response.data); setHistoryStatus("ready"); })
-        .catch(() => setHistoryStatus("error"));
+        .then((response) => { if (!cancelled) { setHistory(response.data); setHistoryStatus("ready"); } })
+        .catch(() => { if (!cancelled) setHistoryStatus("error"); });
     }, 0);
-    return () => window.clearTimeout(timer);
+    return () => { cancelled = true; window.clearTimeout(timer); };
   }, [selected, selectedPlantation, tab]);
 
   async function handleCreate(event: FormEvent<HTMLFormElement>) {
@@ -114,7 +115,7 @@ export function SensorsScreen() {
         <section className={styles.sensorList} aria-label="Lista de sensores">
           <div className={styles.listHeader}><span>{visibleSensors.length} {visibleSensors.length === 1 ? "sensor encontrado" : "sensores encontrados"}</span><small>Atualizado {lastUpdatedAt ? formatRelativeTime(lastUpdatedAt.toISOString()) : "agora"}</small></div>
           <div className={styles.cards}>{visibleSensors.length ? visibleSensors.map((sensor) => {
-            const state = getSensorState(sensor, alertCountByDevice[sensor.device.deviceId] ?? 0);
+            const state = getSensorState(sensor, alerts);
             return <button className={`${styles.sensorCard} ${selected?.device.id === sensor.device.id ? styles.cardSelected : ""}`} type="button" key={sensor.device.id} onClick={() => { setSelectedId(sensor.device.id); setTab("now"); }}>
               <span className={`${styles.sensorGlyph} ${styles[state]}`}><DashboardIcon name="sensor" size={22} /></span>
               <span className={styles.sensorInfo}><span className={styles.sensorTitle}><span><strong>{sensor.device.name}</strong><small>{sensor.device.deviceId}</small></span><i className={styles[state]}><b />{state === "online" ? "Online" : state === "attention" ? "Atenção" : "Offline"}</i></span>

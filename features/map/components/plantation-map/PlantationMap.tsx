@@ -18,7 +18,9 @@ import type { PlantationPlot } from "../../types/plantation-plot.types";
 import type { MapPoint, PlantationRow } from "../../types/plantation-row.types";
 import { hasCoordinates } from "../../types/plantation-row.types";
 import type { SensorAlert, SensorLatest } from "@/features/sensors/types/sensor.types";
-import { sensorCoordinates, sensorMapDetails, sensorMapStatus } from "../../utils/sensor-map";
+import { sensorCoordinates, sensorMapStatus } from "../../utils/sensor-map";
+import { createSensorPopup } from "./sensor-popup";
+import { popupPanOffset } from "../../utils/popup-pan";
 import styles from "./PlantationMap.module.css";
 
 const ROWS_SOURCE = "techsoil-rows";
@@ -295,6 +297,29 @@ export function PlantationMap({ sensors, alerts, sensorFocus, rows, plots, selec
     if (!map) return;
     const markers: Marker[] = [];
     const popups: Popup[] = [];
+    let fitFrame: number | null = null;
+    const fitOpenPopup = () => {
+      if (fitFrame !== null) cancelAnimationFrame(fitFrame);
+      fitFrame = requestAnimationFrame(() => {
+        fitFrame = null;
+        const popup = popups.find((item) => item.isOpen());
+        const element = popup?.getElement();
+        if (!element) return;
+        const viewport = map.getContainer().getBoundingClientRect();
+        const content = element.querySelector<HTMLElement>(`.${styles.sensorPopup}`);
+        if (!content || viewport.width < 40 || viewport.height < 100) return;
+        content.style.maxWidth = `${viewport.width - 34}px`;
+        content.style.maxHeight = `${viewport.height - 94}px`;
+        const offset = popupPanOffset(element.getBoundingClientRect(), {
+          left: viewport.left + 16, right: viewport.right - 16,
+          top: viewport.top + 56, bottom: viewport.bottom - 24,
+        });
+        if (Math.abs(offset[0]) > 1 || Math.abs(offset[1]) > 1) {
+          map.panBy(offset, { duration: 250 });
+        }
+      });
+    };
+    map.on("resize", fitOpenPopup);
     const renderSensors = () => {
       for (const sensor of sensors) {
         const coordinates = sensorCoordinates(sensor);
@@ -308,24 +333,17 @@ export function PlantationMap({ sensors, alerts, sensorFocus, rows, plots, selec
         button.title = `${sensor.device.name} · ${state.label}`;
         button.style.pointerEvents = interactionMode ? "none" : "auto";
         button.disabled = Boolean(interactionMode);
-        const content = document.createElement("div");
-        content.className = styles.sensorPopup;
-        const name = document.createElement("strong");
-        name.textContent = sensor.device.name;
-        content.append(name);
-        for (const detail of [sensor.device.deviceId, state.label, ...sensorMapDetails(sensor), `GPS: ${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}`]) {
-          const line = document.createElement("p");
-          line.textContent = detail;
-          content.append(line);
-        }
-        const popup = new Popup({ offset: 20, maxWidth: "280px" }).setDOMContent(content);
+        const content = createSensorPopup(sensor, alerts, coordinates);
+        const popup = new Popup({ anchor: "bottom", offset: 20, maxWidth: "min(300px, calc(100vw - 48px))", className: styles.popupShell }).setDOMContent(content);
         const marker = new Marker({ element: button }).setLngLat(coordinates).addTo(map);
         button.addEventListener("click", (event) => {
           event.stopPropagation();
           if (popup.isOpen()) popup.remove();
           else {
             popups.forEach((other) => other.remove());
+            map.stop();
             popup.setLngLat(coordinates).addTo(map);
+            fitOpenPopup();
           }
         });
         markers.push(marker);
@@ -336,6 +354,8 @@ export function PlantationMap({ sensors, alerts, sensorFocus, rows, plots, selec
     else map.once("load", renderSensors);
     return () => {
       map.off("load", renderSensors);
+      map.off("resize", fitOpenPopup);
+      if (fitFrame !== null) cancelAnimationFrame(fitFrame);
       popups.forEach((popup) => popup.remove());
       markers.forEach((marker) => marker.remove());
     };

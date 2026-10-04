@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/features/auth";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { useSensorMonitoring } from "@/features/sensors/hooks/use-sensor-monitoring";
@@ -15,6 +15,11 @@ function average(values: number[]) {
 }
 
 export function DashboardOverview() {
+  const { selectedPlantation } = usePlantations();
+  return <DashboardOverviewContent key={selectedPlantation?.id ?? "none"} />;
+}
+
+function DashboardOverviewContent() {
   const { user } = useAuth();
   const { selectedPlantation } = usePlantations();
   const { sensors, alerts, status, lastUpdatedAt, reload } = useSensorMonitoring(selectedPlantation?.id);
@@ -22,14 +27,10 @@ export function DashboardOverview() {
   const firstName = user?.name.split(/\s+/)[0] ?? "produtor";
   const today = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "2-digit", month: "long" }).format(new Date()).toLocaleUpperCase("pt-BR");
 
-  const alertCountByDevice = useMemo(() => alerts.reduce<Record<string, number>>((counts, alert) => {
-    counts[alert.device.deviceId] = (counts[alert.device.deviceId] ?? 0) + 1;
-    return counts;
-  }, {}), [alerts]);
   const readings = sensors.flatMap((sensor) => sensor.reading ? [sensor.reading] : []);
-  const onlineSensors = sensors.filter((sensor) => getSensorState(sensor, alertCountByDevice[sensor.device.deviceId] ?? 0) !== "offline");
+  const onlineSensors = sensors.filter((sensor) => getSensorState(sensor, alerts) !== "offline");
   const selectedSensor = sensors.find((sensor) => sensor.device.id === selectedSensorId) ?? sensors[0] ?? null;
-  const selectedState = selectedSensor ? getSensorState(selectedSensor, alertCountByDevice[selectedSensor.device.deviceId] ?? 0) : "offline";
+  const selectedState = selectedSensor ? getSensorState(selectedSensor, alerts) : "offline";
 
   const metrics = [
     { id: "moisture", label: "Umidade média", value: formatSensorNumber(average(readings.map((reading) => reading.moisture))), unit: "%", hint: "Faixa ideal: 55–70%", tone: "green" },
@@ -68,7 +69,7 @@ export function DashboardOverview() {
             <Image src="/vineyard-sectors.png" alt="Vista ilustrativa da propriedade monitorada" fill sizes="(max-width: 980px) 100vw, 60vw" /><div className={styles.mapShade} />
             <div className={styles.mapTop}><span><i /> Dados reais sobre imagem ilustrativa</span><small>{sensors.length} pontos cadastrados</small></div>
             {sensors.slice(0, 6).map((sensor, index) => {
-              const state = getSensorState(sensor, alertCountByDevice[sensor.device.deviceId] ?? 0);
+              const state = getSensorState(sensor, alerts);
               return <button className={`${styles.sensorPoint} ${styles[`point${index + 1}`]} ${styles[state]} ${selectedSensor?.device.id === sensor.device.id ? styles.sensorPointActive : ""}`} type="button" key={sensor.device.id} onClick={() => setSelectedSensorId(sensor.device.id)} aria-label={`Selecionar ${sensor.device.name}`}><DashboardIcon name="sensor" size={15} /></button>;
             })}
             {selectedSensor ? <div className={styles.sectorPanel}><div><span>SENSOR SELECIONADO</span><i className={selectedState === "offline" ? styles.warningDot : ""}>{selectedState === "online" ? "Online" : selectedState === "attention" ? "Atenção" : "Offline"}</i></div><h3>{selectedSensor.device.name}</h3><p>{selectedSensor.device.deviceId}</p>{selectedSensor.reading ? <><div className={styles.liveReading}><strong>{formatSensorNumber(selectedSensor.reading.moisture)}%</strong><span>umidade · {formatRelativeTime(selectedSensor.reading.timestamp)}</span></div><div className={styles.sectorScale}><i style={{ width: `${Math.max(0, Math.min(100, selectedSensor.reading.moisture))}%` }} /></div></> : <small>Aguardando a primeira leitura</small>}</div> : <div className={styles.noSensorOverlay}><DashboardIcon name="sensor" /><strong>Sem pontos monitorados</strong><small>Cadastre um sensor para iniciar.</small></div>}
@@ -92,7 +93,7 @@ export function DashboardOverview() {
 
         <section className={styles.deviceCard} id="dispositivos">
           <div className={styles.cardHeader}><div><p>SENSORES</p><h2>Operação atual</h2></div><span className={styles.onlineBadge}><i /> {onlineSensors.length} online</span></div>
-          <div className={styles.deviceList}>{sensors.length ? sensors.slice(0, 4).map((sensor) => { const state = getSensorState(sensor, alertCountByDevice[sensor.device.deviceId] ?? 0); return <article key={sensor.device.id}><span className={`${styles.deviceIcon} ${styles[state]}`}><DashboardIcon name="sensor" size={19} /></span><div><strong>{sensor.device.name}</strong><small>{sensor.device.deviceId} · {formatRelativeTime(sensor.reading?.timestamp)}</small></div><span className={styles.deviceState}>{state === "online" ? "Online" : state === "attention" ? "Atenção" : "Offline"}</span></article>; }) : <div className={styles.dashboardEmpty}><strong>Nenhum sensor cadastrado</strong><p>Adicione dispositivos na tela de sensores.</p></div>}</div>
+          <div className={styles.deviceList}>{sensors.length ? sensors.slice(0, 4).map((sensor) => { const state = getSensorState(sensor, alerts); return <article key={sensor.device.id}><span className={`${styles.deviceIcon} ${styles[state]}`}><DashboardIcon name="sensor" size={19} /></span><div><strong>{sensor.device.name}</strong><small>{sensor.device.deviceId} · {formatRelativeTime(sensor.reading?.timestamp)}</small></div><span className={styles.deviceState}>{state === "online" ? "Online" : state === "attention" ? "Atenção" : "Offline"}</span></article>; }) : <div className={styles.dashboardEmpty}><strong>Nenhum sensor cadastrado</strong><p>Adicione dispositivos na tela de sensores.</p></div>}</div>
           <Link className={styles.secondaryButton} href="/dashboard/sensores">Gerenciar sensores</Link>
         </section>
       </div>

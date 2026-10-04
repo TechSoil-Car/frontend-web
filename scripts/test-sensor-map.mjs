@@ -6,8 +6,32 @@ import ts from "typescript";
 const source = readFileSync(new URL("../features/map/utils/sensor-map.ts", import.meta.url), "utf8");
 const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext } });
 const { sensorCoordinates, sensorMapStatus, sensorMapDetails } = await import(`data:text/javascript;base64,${Buffer.from(outputText).toString("base64")}`);
+const panSource = readFileSync(new URL("../features/map/utils/popup-pan.ts", import.meta.url), "utf8");
+const panOutput = ts.transpileModule(panSource, { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText;
+const { popupPanOffset } = await import(`data:text/javascript;base64,${Buffer.from(panOutput).toString("base64")}`);
+const statusSource = readFileSync(new URL("../features/sensors/utils/sensor-status.ts", import.meta.url), "utf8");
+const statusOutput = ts.transpileModule(statusSource, { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText;
+const { getSensorState, formatRelativeTime } = await import(`data:text/javascript;base64,${Buffer.from(statusOutput).toString("base64")}`);
 const sensor = (reading) => ({ device: { id: "sensor-1", name: "Sensor 1" }, reading });
 const alert = (kind, deviceId = "sensor-1") => ({ kind, device: { id: deviceId } });
+
+test("dashboard, sensores e mapa usam o mesmo estado dos alertas configurados", () => {
+  const item = sensor({ timestamp: "2020-01-01" });
+  for (const active of [[], [alert("low_battery")], [alert("offline")], [alert("no_data")], [alert("offline", "other-device")]]) {
+    const state = getSensorState(item, active);
+    const mapState = sensorMapStatus(item, active).key;
+    assert.equal(state, mapState === "normal" ? "online" : mapState);
+  }
+  assert.equal(getSensorState(sensor(null), []), "offline");
+  assert.equal(formatRelativeTime("invalid-date"), "data inválida");
+});
+
+test("popup calcula deslocamento nas quatro bordas sem modificar o zoom", () => {
+  const viewport = { left: 16, right: 584, top: 56, bottom: 506 };
+  assert.deepEqual(popupPanOffset({ left: 100, right: 400, top: 80, bottom: 480 }, viewport), [0, 0]);
+  assert.deepEqual(popupPanOffset({ left: 0, right: 300, top: 20, bottom: 420 }, viewport), [-16, -36]);
+  assert.deepEqual(popupPanOffset({ left: 320, right: 620, top: 150, bottom: 550 }, viewport), [36, 44]);
+});
 
 test("GPS usa longitude primeiro e aceita coordenadas zero e limites", () => {
   assert.deepEqual(sensorCoordinates(sensor({ latitude: -22, longitude: -47 })), [-47, -22]);
