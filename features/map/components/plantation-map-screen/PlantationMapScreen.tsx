@@ -5,6 +5,9 @@ import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/D
 import { usePlantations } from "@/features/plantations";
 import type { BoundaryPolygon, Plantation } from "@/features/plantations";
 import { ApiError } from "@/shared/api/api-client";
+import { useSensorMonitoring } from "@/features/sensors/hooks/use-sensor-monitoring";
+import { sensorCoordinates } from "../../utils/sensor-map";
+import { SensorsMapPanel } from "../sensors-map-panel/SensorsMapPanel";
 import { usePlantationPlots } from "../../hooks/use-plantation-plots";
 import { usePlantationRows } from "../../hooks/use-plantation-rows";
 import type { CreatePlantationPlotInput, UpdatePlantationPlotInput } from "../../types/plantation-plot.types";
@@ -35,7 +38,9 @@ function PlantationMapContent({ plantation }: { plantation: Plantation }) {
   const { rows, status, error, reload, createRow, deleteRow } = usePlantationRows(plantation.id);
   const plotsState = usePlantationPlots(plantation.id);
   const { plots } = plotsState;
-  const [panelTab, setPanelTab] = useState<"plots" | "rows">("plots");
+  const monitoring = useSensorMonitoring(plantation.id);
+  const [sensorFocus, setSensorFocus] = useState<{ coordinates: [number, number]; request: number } | null>(null);
+  const [panelTab, setPanelTab] = useState<"plots" | "rows" | "sensors">("plots");
   const [selectedPlotId, setSelectedPlotId] = useState<string | null>(null);
   const [drawingPlot, setDrawingPlot] = useState(false);
   const [plotDraft, setPlotDraft] = useState<MapPoint[]>([]);
@@ -213,7 +218,7 @@ function PlantationMapContent({ plantation }: { plantation: Plantation }) {
 
     <section className={styles.workspace}>
       <div className={styles.mapCard}>
-        <PlantationMap rows={rows} plots={plots} selectedRowId={selectedRowId} selectedPlotId={selectedPlotId} draftStart={draftStart} draftEnd={draftEnd} center={center} zoom={plantation.mapZoom ?? 16} boundary={savedBoundary} boundaryDraft={setupOpen ? perimeterPoints : []} plotDraft={plotDraft} interactionMode={interactionMode} onMapClick={handleMapClick} onSelectRow={(rowId) => { setSelectedRowId(rowId); setPanelTab("rows"); }} onSelectPlot={(plotId) => { setSelectedPlotId(plotId); setPanelTab("plots"); }} />
+        <PlantationMap sensors={monitoring.sensors} alerts={monitoring.alerts} sensorFocus={sensorFocus} rows={rows} plots={plots} selectedRowId={selectedRowId} selectedPlotId={selectedPlotId} draftStart={draftStart} draftEnd={draftEnd} center={center} zoom={plantation.mapZoom ?? 16} boundary={savedBoundary} boundaryDraft={setupOpen ? perimeterPoints : []} plotDraft={plotDraft} interactionMode={interactionMode} onMapClick={handleMapClick} onSelectRow={(rowId) => { setSelectedRowId(rowId); setPanelTab("rows"); }} onSelectPlot={(plotId) => { setSelectedPlotId(plotId); setPanelTab("plots"); }} />
         <div className={styles.mapBadge}><i /> {setupOpen ? "Configuração da propriedade" : "Mapa operacional"}</div>
         {drawingBoundary && <div className={styles.drawingGuide}><span>{perimeterPoints.length + 1}</span><div><strong>Marque os limites da propriedade</strong><small>Clique nos cantos do terreno para formar o contorno</small></div></div>}
         {drawingPlot && <div className={styles.drawingGuide}><span>{plotDraft.length + 1}</span><div><strong>Marque os limites do talhão</strong><small>Clique nos cantos da área; o polígono fecha ao salvar</small></div></div>}
@@ -223,8 +228,8 @@ function PlantationMapContent({ plantation }: { plantation: Plantation }) {
 
       <aside className={styles.rowsPanel}>
         {setupOpen ? <FarmLocationSetup center={center} points={perimeterPoints} drawing={drawingBoundary} saving={saving} error={formError} canCancel={Boolean(savedBoundary)} onSelectLocation={(point, label) => { setCenter(point); setLocationLabel(label); setPerimeterPoints([]); }} onStartDrawing={() => setDrawingBoundary(true)} onUndo={() => setPerimeterPoints((current) => current.slice(0, -1))} onRestartDrawing={() => { setPerimeterPoints([]); setDrawingBoundary(true); }} onClearLocation={() => { setCenter(null); setLocationLabel(""); setPerimeterPoints([]); setDrawingBoundary(false); }} onSave={() => void handleSaveBoundary()} onCancel={() => { setSetupOpen(false); setDrawingBoundary(false); setPerimeterPoints(getBoundaryPoints(savedBoundary)); }} /> : <>
-          {!drawingPlot && <div className={styles.panelTabs} role="tablist"><button type="button" role="tab" aria-selected={panelTab === "plots"} onClick={() => setPanelTab("plots")}>Talhões <span>{plots.length}</span></button><button type="button" role="tab" aria-selected={panelTab === "rows"} onClick={() => setPanelTab("rows")}>Linhas <span>{rows.length}</span></button></div>}
-          {panelTab === "plots" ? <PlotsPanel plots={plots} status={plotsState.status} error={plotsState.error} isOwner={isOwner} selectedPlotId={selectedPlotId} drawing={drawingPlot} draftPoints={plotDraft} saving={saving} onReload={() => void plotsState.reload()} onSelect={setSelectedPlotId} onStartDrawing={startDrawingPlot} onUndo={() => setPlotDraft((current) => current.slice(0, -1))} onRestart={() => setPlotDraft([])} onCancelDrawing={() => { setDrawingPlot(false); setPlotDraft([]); }} onCreate={handleCreatePlot} onUpdate={handleUpdatePlot} onDelete={handleDeletePlot} /> : <>
+          {!drawingPlot && <div className={styles.panelTabs} role="tablist"><button type="button" role="tab" aria-selected={panelTab === "plots"} onClick={() => setPanelTab("plots")}>Talhões <span>{plots.length}</span></button><button type="button" role="tab" aria-selected={panelTab === "rows"} onClick={() => setPanelTab("rows")}>Linhas <span>{rows.length}</span></button><button type="button" role="tab" aria-selected={panelTab === "sensors"} onClick={() => setPanelTab("sensors")}>Sensores <span>{monitoring.sensors.length}</span></button></div>}
+          {panelTab === "sensors" ? <SensorsMapPanel sensors={monitoring.sensors} alerts={monitoring.alerts} status={monitoring.status} refreshFailed={monitoring.refreshFailed} lastUpdatedAt={monitoring.lastUpdatedAt} disabled={Boolean(interactionMode)} onReload={() => void monitoring.reload()} onFocus={(sensor) => { const coordinates = sensorCoordinates(sensor); if (coordinates) setSensorFocus((current) => ({ coordinates, request: (current?.request ?? 0) + 1 })); }} /> : panelTab === "plots" ? <PlotsPanel plots={plots} status={plotsState.status} error={plotsState.error} isOwner={isOwner} selectedPlotId={selectedPlotId} drawing={drawingPlot} draftPoints={plotDraft} saving={saving} onReload={() => void plotsState.reload()} onSelect={setSelectedPlotId} onStartDrawing={startDrawingPlot} onUndo={() => setPlotDraft((current) => current.slice(0, -1))} onRestart={() => setPlotDraft([])} onCancelDrawing={() => { setDrawingPlot(false); setPlotDraft([]); }} onCreate={handleCreatePlot} onUpdate={handleUpdatePlot} onDelete={handleDeletePlot} /> : <>
             <div className={styles.panelHeader}><div><p>LINHAS DE PLANTIO</p><h2>Traçados da lavoura</h2></div><button type="button" aria-label="Atualizar linhas" onClick={() => void reload()} disabled={status === "loading"}><DashboardIcon name="refresh" size={17} /></button></div>
             {status === "loading" && <div className={styles.loading}><span />Carregando traçados...</div>}
             {status === "error" && <div className={styles.panelError}><strong>Não foi possível carregar</strong><p>{error}</p><button type="button" onClick={() => void reload()}>Tentar novamente</button></div>}

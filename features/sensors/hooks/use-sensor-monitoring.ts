@@ -11,6 +11,7 @@ export function useSensorMonitoring(plantationId: string | undefined) {
   const [alerts, setAlerts] = useState<SensorAlert[]>([]);
   const [status, setStatus] = useState<MonitoringStatus>(plantationId ? "loading" : "idle");
   const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
+  const [refreshFailed, setRefreshFailed] = useState(false);
 
   const reload = useCallback(async (silent = false) => {
     if (!plantationId) return;
@@ -24,8 +25,10 @@ export function useSensorMonitoring(plantationId: string | undefined) {
       setSensors(latest);
       setAlerts(activeAlerts);
       setLastUpdatedAt(new Date());
+      setRefreshFailed(false);
       setStatus("ready");
     } catch {
+      setRefreshFailed(true);
       if (!silent) setStatus("error");
     }
   }, [plantationId]);
@@ -40,5 +43,5 @@ export function useSensorMonitoring(plantationId: string | undefined) {
     };
   }, [plantationId, reload]);
 
-  return { sensors, alerts, status, lastUpdatedAt, reload };
+  return { sensors, alerts, status, lastUpdatedAt, refreshFailed, reload };
 }

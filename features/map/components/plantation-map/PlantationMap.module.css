@@ -1,4 +1,12 @@
 .map { position: absolute; inset: 0; background: #dfe8da; }
+.sensorMarker { width: 32px; height: 32px; border: 3px solid #fff; border-radius: 50%; color: #fff; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px #0005; }
+.sensorMarker:focus-visible { outline: 3px solid #173b26; outline-offset: 3px; }
+.normal { background: #387a35; }
+.attention { background: #936200; }
+.offline { background: #596970; }
+.sensorPopup { color: #26372a; font: 12px var(--font-body), sans-serif; overflow-wrap: anywhere; }
+.sensorPopup strong { display: block; padding-right: 15px; font-size: 14px; }
+.sensorPopup p { margin: 6px 0; line-height: 1.5; }
 .map :global(.maplibregl-ctrl-group) { overflow: hidden; border: 1px solid rgba(31,62,38,.12); border-radius: 10px; box-shadow: 0 8px 20px rgba(17,40,22,.12); }
 .map :global(.maplibregl-ctrl-group button) { width: 34px; height: 34px; }
 .map :global(.maplibregl-ctrl-scale) { color: #26372a; border-color: #506952; border-top: 0; background: rgba(250,251,247,.86); font-family: var(--font-body), sans-serif; backdrop-filter: blur(7px); }

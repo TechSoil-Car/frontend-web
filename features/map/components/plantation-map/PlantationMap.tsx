@@ -6,6 +6,8 @@ import {
   GeoJSONSource,
   LngLatBounds,
   Map,
+  Marker,
+  Popup,
   NavigationControl,
   ScaleControl,
   setWorkerUrl,
@@ -15,6 +17,8 @@ import type { BoundaryPolygon } from "@/features/plantations";
 import type { PlantationPlot } from "../../types/plantation-plot.types";
 import type { MapPoint, PlantationRow } from "../../types/plantation-row.types";
 import { hasCoordinates } from "../../types/plantation-row.types";
+import type { SensorAlert, SensorLatest } from "@/features/sensors/types/sensor.types";
+import { sensorCoordinates, sensorMapDetails, sensorMapStatus } from "../../utils/sensor-map";
 import styles from "./PlantationMap.module.css";
 
 const ROWS_SOURCE = "techsoil-rows";
@@ -32,6 +36,9 @@ const DEFAULT_CENTER: [number, number] = [-47.0608, -22.9056];
 const STYLE_URL = process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "https://tiles.openfreemap.org/styles/liberty";
 
 type PlantationMapProps = {
+  sensors: SensorLatest[];
+  alerts: SensorAlert[];
+  sensorFocus: { coordinates: [number, number]; request: number } | null;
   rows: PlantationRow[];
   plots: PlantationPlot[];
   selectedPlotId: string | null;
@@ -146,7 +153,7 @@ function locationGeoJson(center: MapPoint | null): FeatureCollection<Point> {
   };
 }
 
-export function PlantationMap({ rows, plots, selectedRowId, selectedPlotId, draftStart, draftEnd, center, zoom, boundary, boundaryDraft, plotDraft, interactionMode, onMapClick, onSelectRow, onSelectPlot }: PlantationMapProps) {
+export function PlantationMap({ sensors, alerts, sensorFocus, rows, plots, selectedRowId, selectedPlotId, draftStart, draftEnd, center, zoom, boundary, boundaryDraft, plotDraft, interactionMode, onMapClick, onSelectRow, onSelectPlot }: PlantationMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
   const onMapClickRef = useRef(onMapClick);
@@ -280,7 +287,65 @@ export function PlantationMap({ rows, plots, selectedRowId, selectedPlotId, draf
     };
     if (map.getSource(ROWS_SOURCE)) updateSources();
     else map.once("load", updateSources);
+    return () => { map.off("load", updateSources); };
   }, [boundary, boundaryDraft, center, draftEnd, draftStart, plotDraft, plots, rows, selectedPlotId, selectedRowId]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const markers: Marker[] = [];
+    const popups: Popup[] = [];
+    const renderSensors = () => {
+      for (const sensor of sensors) {
+        const coordinates = sensorCoordinates(sensor);
+        if (!coordinates) continue;
+        const state = sensorMapStatus(sensor, alerts);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `${styles.sensorMarker} ${styles[state.key]}`;
+        button.textContent = "S";
+        button.setAttribute("aria-label", `${sensor.device.name}: ${state.label}. Abrir detalhes`);
+        button.title = `${sensor.device.name} · ${state.label}`;
+        button.style.pointerEvents = interactionMode ? "none" : "auto";
+        button.disabled = Boolean(interactionMode);
+        const content = document.createElement("div");
+        content.className = styles.sensorPopup;
+        const name = document.createElement("strong");
+        name.textContent = sensor.device.name;
+        content.append(name);
+        for (const detail of [sensor.device.deviceId, state.label, ...sensorMapDetails(sensor), `GPS: ${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}`]) {
+          const line = document.createElement("p");
+          line.textContent = detail;
+          content.append(line);
+        }
+        const popup = new Popup({ offset: 20, maxWidth: "280px" }).setDOMContent(content);
+        const marker = new Marker({ element: button }).setLngLat(coordinates).addTo(map);
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          if (popup.isOpen()) popup.remove();
+          else {
+            popups.forEach((other) => other.remove());
+            popup.setLngLat(coordinates).addTo(map);
+          }
+        });
+        markers.push(marker);
+        popups.push(popup);
+      }
+    };
+    if (map.getSource(ROWS_SOURCE)) renderSensors();
+    else map.once("load", renderSensors);
+    return () => {
+      map.off("load", renderSensors);
+      popups.forEach((popup) => popup.remove());
+      markers.forEach((marker) => marker.remove());
+    };
+  }, [sensors, alerts, interactionMode]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !sensorFocus || interactionMode) return;
+    map.flyTo({ center: sensorFocus.coordinates, zoom: 18, duration: 650 });
+  }, [sensorFocus, interactionMode]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -334,5 +399,5 @@ export function PlantationMap({ rows, plots, selectedRowId, selectedPlotId, draf
     map.fitBounds(bounds, { padding: 100, maxZoom: 18, duration: 650 });
   }, [plots, selectedPlotId]);
 
-  return <div className={styles.map} ref={containerRef} aria-label="Mapa interativo das linhas da plantação" />;
+  return <div className={styles.map} ref={containerRef} aria-label="Mapa interativo dos sensores, talhões e linhas da plantação" />;
 }
