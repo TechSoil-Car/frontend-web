@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { ApiError, apiRequest } from "@/shared/api/api-client";
 import { useAuth } from "../../context/AuthContext";
 import { EyeIcon } from "../icons/EyeIcon";
@@ -74,7 +75,7 @@ export function LoginForm() {
 
         <div className={styles.labelRow}>
           <label className={styles.label} htmlFor="password">Senha</label>
-          <a href="#recuperar">Esqueci minha senha</a>
+          <Link href="/forgot-password">Esqueci minha senha</Link>
         </div>
 
         <div className={styles.passwordField}>
