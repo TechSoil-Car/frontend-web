@@ -149,6 +149,14 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
 
         <nav className={styles.navigation} aria-label="Configurações">
           <p>GESTÃO</p>
+          <Link
+            href="/dashboard/perfil"
+            onClick={onClose}
+            className={pathname === "/dashboard/perfil" ? styles.active : ""}
+          >
+            <DashboardIcon name="team" />
+            <span>Meu perfil</span>
+          </Link>
           {user?.systemRole === "SUPERADMIN" && (
             <Link
               className={

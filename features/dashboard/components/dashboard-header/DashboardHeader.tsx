@@ -1,4 +1,5 @@
 import { DashboardIcon } from "../dashboard-icons/DashboardIcon";
+import Link from "next/link";
 import { useAuth } from "@/features/auth";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import styles from "./DashboardHeader.module.css";
@@ -62,9 +63,14 @@ export function DashboardHeader({ onMenuOpen }: DashboardHeaderProps) {
           </button>
         </>
       )}
-      <span className={styles.avatar} title={user?.name}>
+      <Link
+        href="/dashboard/perfil"
+        className={styles.avatar}
+        title="Meu perfil"
+        aria-label="Abrir meu perfil"
+      >
         {initials}
-      </span>
+      </Link>
     </header>
   );
 }

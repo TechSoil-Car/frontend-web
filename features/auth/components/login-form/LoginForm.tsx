@@ -15,12 +15,14 @@ export function LoginForm() {
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const loginStarted = useRef(false);
-  const { status, user, login } = useAuth();
+  const { status, user, login, passwordChanged } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (status === "authenticated" && !loginStarted.current) {
-      router.replace(user?.systemRole === "SUPERADMIN" ? "/dashboard/admin" : "/dashboard");
+      router.replace(
+        user?.systemRole === "SUPERADMIN" ? "/dashboard/admin" : "/dashboard",
+      );
     }
   }, [router, status, user?.systemRole]);
 
@@ -31,7 +33,9 @@ export function LoginForm() {
     setSubmitting(true);
 
     const form = new FormData(event.currentTarget);
-    const email = String(form.get("email") ?? "").trim().toLowerCase();
+    const email = String(form.get("email") ?? "")
+      .trim()
+      .toLowerCase();
     const password = String(form.get("password") ?? "");
 
     try {
@@ -46,7 +50,9 @@ export function LoginForm() {
       } else if (error instanceof ApiError && error.status === 429) {
         setFeedback("Muitas tentativas. Aguarde um minuto e tente novamente.");
       } else {
-        setFeedback("Não foi possível acessar o painel. Verifique sua conexão e tente novamente.");
+        setFeedback(
+          "Não foi possível acessar o painel. Verifique sua conexão e tente novamente.",
+        );
       }
       setSubmitting(false);
       loginStarted.current = false;
@@ -55,7 +61,9 @@ export function LoginForm() {
 
     try {
       const plantations = await apiRequest<Plantation[]>("/plantations");
-      router.replace(plantations.length === 1 ? "/dashboard" : "/dashboard/plantacoes");
+      router.replace(
+        plantations.length === 1 ? "/dashboard" : "/dashboard/plantacoes",
+      );
     } catch {
       router.replace("/dashboard");
     }
@@ -69,31 +77,78 @@ export function LoginForm() {
         <p>Entre para acompanhar sua operação.</p>
       </div>
 
+      {passwordChanged && (
+        <p role="status">
+          Senha alterada com sucesso. Todas as sessões foram encerradas. Entre
+          com a nova senha.
+        </p>
+      )}
       <form className={styles.form} onSubmit={handleSubmit}>
-        <label className={styles.label} htmlFor="email">E-mail</label>
-        <input className={styles.input} id="email" name="email" type="email" placeholder="seu@email.com" autoComplete="email" maxLength={254} disabled={submitting} required />
+        <label className={styles.label} htmlFor="email">
+          E-mail
+        </label>
+        <input
+          className={styles.input}
+          id="email"
+          name="email"
+          type="email"
+          placeholder="seu@email.com"
+          autoComplete="email"
+          maxLength={254}
+          disabled={submitting}
+          required
+        />
 
         <div className={styles.labelRow}>
-          <label className={styles.label} htmlFor="password">Senha</label>
+          <label className={styles.label} htmlFor="password">
+            Senha
+          </label>
           <Link href="/forgot-password">Esqueci minha senha</Link>
         </div>
 
         <div className={styles.passwordField}>
-          <input className={styles.input} id="password" name="password" type={showPassword ? "text" : "password"} placeholder="Digite sua senha" autoComplete="current-password" minLength={8} maxLength={128} disabled={submitting} required />
-          <button type="button" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"} disabled={submitting}>
+          <input
+            className={styles.input}
+            id="password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Digite sua senha"
+            autoComplete="current-password"
+            minLength={8}
+            maxLength={128}
+            disabled={submitting}
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((value) => !value)}
+            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+            disabled={submitting}
+          >
             <EyeIcon open={showPassword} />
           </button>
         </div>
 
-        <button className={styles.submitButton} type="submit" disabled={submitting || status === "loading"}>
-          {submitting ? "Entrando..." : "Entrar no painel"} {!submitting && <span>→</span>}
+        <button
+          className={styles.submitButton}
+          type="submit"
+          disabled={submitting || status === "loading"}
+        >
+          {submitting ? "Entrando..." : "Entrar no painel"}{" "}
+          {!submitting && <span>→</span>}
         </button>
-        {feedback && <p className={styles.feedback} role="alert">{feedback}</p>}
+        {feedback && (
+          <p className={styles.feedback} role="alert">
+            {feedback}
+          </p>
+        )}
       </form>
 
       {/* <div className={styles.divider}><span>ou continue com</span></div>
       <button className={styles.googleButton} type="button"><b>G</b> Continuar com Google</button> */}
-      <p className={styles.signup}>Ainda não tem acesso? <a href="#contato">Fale com nosso time</a></p>
+      <p className={styles.signup}>
+        Ainda não tem acesso? <a href="#contato">Fale com nosso time</a>
+      </p>
     </div>
   );
 }

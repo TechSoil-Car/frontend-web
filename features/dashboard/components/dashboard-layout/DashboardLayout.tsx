@@ -18,6 +18,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
   const isAdmin = user?.systemRole === "SUPERADMIN";
   const isAdminPage =
     pathname === "/dashboard/admin" || pathname.startsWith("/dashboard/admin/");
+  const isProfilePage = pathname === "/dashboard/perfil";
 
   useEffect(() => {
     if (authStatus === "unauthenticated") {
@@ -25,13 +26,14 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
       return;
     }
     if (authStatus === "authenticated" && isAdmin) {
-      if (!isAdminPage) router.replace("/dashboard/admin");
+      if (!isAdminPage && !isProfilePage) router.replace("/dashboard/admin");
       return;
     }
     if (
       authStatus === "authenticated" &&
       plantationsStatus === "ready" &&
       !selectedPlantation &&
+      !isProfilePage &&
       pathname !== "/dashboard/plantacoes" &&
       !pathname.startsWith("/dashboard/admin")
     ) {
@@ -45,15 +47,17 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
     selectedPlantation,
     isAdmin,
     isAdminPage,
+    isProfilePage,
   ]);
 
   if (
     authStatus !== "authenticated" ||
-    (isAdmin && !isAdminPage) ||
+    (isAdmin && !isAdminPage && !isProfilePage) ||
     (!isAdmin &&
       plantationsStatus === "loading" &&
       pathname !== "/dashboard/plantacoes" &&
-      !isAdminPage)
+      !isAdminPage &&
+      !isProfilePage)
   ) {
     return (
       <div className={styles.sessionLoading} role="status">
