@@ -37,7 +37,7 @@ const navigation = [
   {
     label: "Alertas",
     icon: "alert",
-    href: "/dashboard#alertas",
+    href: "/dashboard/alertas",
     badge: undefined,
   },
 ] as const;

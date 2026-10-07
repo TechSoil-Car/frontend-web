@@ -164,7 +164,7 @@ function History({
         Ler uma notificação não resolve o problema do sensor. “Encerrado” indica
         que a condição deixou de ser detectada, a regra foi desativada ou o
         sensor foi removido.{" "}
-        <Link href="/dashboard#alertas">Consultar alertas atuais</Link>
+        <Link href="/dashboard/alertas">Consultar alertas atuais</Link>
       </p>
     </main>
   );

@@ -14,7 +14,8 @@
     "test:monitoring": "node --test scripts/test-sensor-monitoring.mjs",
     "test:management": "node --test scripts/test-plantation-management.mjs scripts/test-resource-maintenance.mjs",
     "test:admin": "node --test scripts/test-account-administration.mjs",
-    "test:notifications": "node --test scripts/test-notifications.mjs"
+    "test:notifications": "node --test scripts/test-notifications.mjs",
+    "test:alerts": "node --test scripts/test-alerts.mjs"
   },
   "dependencies": {
     "maplibre-gl": "^6.7.0",
