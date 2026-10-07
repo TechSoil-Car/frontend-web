@@ -1,7 +1,7 @@
 import { AcceptInviteScreen } from "@/features/auth/components/accept-invite-screen/AcceptInviteScreen";
 
 export const metadata = {
-  title: "Ativar conta | TechSoil",
+  title: "Aceitar convite | TechSoil",
   robots: { index: false, follow: false },
   referrer: "no-referrer" as const,
 };

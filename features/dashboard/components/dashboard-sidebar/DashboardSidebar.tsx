@@ -163,10 +163,16 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
           )}
           {!isAdmin && (
             <>
-              <a href="/dashboard#equipe" onClick={onClose}>
+              <Link
+                href="/dashboard/equipe"
+                className={
+                  pathname.startsWith("/dashboard/equipe") ? styles.active : ""
+                }
+                onClick={onClose}
+              >
                 <DashboardIcon name="team" />
                 <span>Equipe</span>
-              </a>
+              </Link>
               <Link
                 className={
                   pathname.startsWith("/dashboard/configuracoes")
