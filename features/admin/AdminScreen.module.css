@@ -152,6 +152,37 @@
   margin-top: 16px;
   font-size: 11px;
 }
+.accountActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 180px;
+}
+.card td .accountActions button {
+  margin: 0;
+}
+.active,
+.pending,
+.blocked {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+}
+.active {
+  color: #315b32;
+  background: #edf4e5;
+}
+.pending {
+  color: #815b20;
+  background: #fff4db;
+}
+.blocked {
+  color: #9f3f2f;
+  background: #fbeae5;
+}
 .form {
   display: grid;
   grid-template-columns: 1fr 1fr;

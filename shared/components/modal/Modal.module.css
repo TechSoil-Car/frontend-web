@@ -1,0 +1,140 @@
+.dialog {
+  width: min(520px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
+  margin: auto;
+  padding: 26px;
+  overflow-y: auto;
+  color: #294531;
+  background: #fbfcf8;
+  border: 1px solid #e1e8d8;
+  border-radius: 18px;
+  box-shadow: 0 24px 80px #05190c45;
+}
+.dialog::backdrop {
+  background: #08190e8f;
+  backdrop-filter: blur(5px);
+}
+.heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+.heading p {
+  margin: 0 0 7px;
+  color: #71885b;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+.heading h2 {
+  font-size: 21px;
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+.heading > button {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 8px;
+  background: #edf2e7;
+  color: #627858;
+  font-size: 24px;
+  cursor: pointer;
+}
+.intro,
+.note {
+  color: #75816e;
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 20px 0;
+  overflow-wrap: anywhere;
+}
+.form {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+.form label {
+  color: #53684a;
+  font-size: 12px;
+  font-weight: 600;
+}
+.form input {
+  width: 100%;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid #dbe4d1;
+  border-radius: 9px;
+  background: #fff;
+  color: #294531;
+  font: inherit;
+  font-size: 13px;
+}
+.form input[readonly] {
+  background: #f0f4e9;
+  color: #728069;
+}
+.form input:focus-visible {
+  outline: 2px solid #88b662;
+  outline-offset: 2px;
+}
+.form small {
+  color: #7a8673;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+.actions button {
+  padding: 12px 17px;
+  border: 1px solid #d7e1cc;
+  border-radius: 9px;
+  background: #f3f6ed;
+  color: #59714d;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.actions button[type="submit"] {
+  border-color: #365f33;
+  background: #365f33;
+  color: #fff;
+}
+.actions .danger[type="submit"] {
+  border-color: #a34435;
+  background: #a34435;
+}
+.dialog button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.dialog button:focus-visible {
+  outline: 2px solid #88b662;
+  outline-offset: 3px;
+}
+.error {
+  margin: 8px 0;
+  padding: 12px;
+  border-radius: 9px;
+  background: #fff0eb;
+  color: #973f32;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.warning {
+  padding: 14px;
+  border-radius: 10px;
+  background: #fff3e5;
+  color: #8d6337;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}

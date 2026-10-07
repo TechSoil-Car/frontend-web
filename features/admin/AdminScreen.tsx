@@ -12,6 +12,7 @@ import type {
   PageResult,
 } from "./types";
 import styles from "./AdminScreen.module.css";
+import { AccountActionDialog, type AccountAction } from "./AccountActionDialog";
 
 type Tab = "users" | "plantations" | "invites";
 type Data = {
@@ -39,6 +40,10 @@ export function AdminScreen() {
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [accountAction, setAccountAction] = useState<{
+    account: AdminUser;
+    action: AccountAction;
+  } | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const version = useRef(0);
   const isAdmin = user?.systemRole === "SUPERADMIN";
@@ -167,6 +172,7 @@ export function AdminScreen() {
           Atualizar
         </button>
       </header>
+      {feedback && <p role="status">{feedback}</p>}
       <section className={styles.profile} aria-label="Seu perfil">
         <span>SA</span>
         <div>
@@ -224,7 +230,7 @@ export function AdminScreen() {
                 <thead>
                   <tr>
                     {(tab === "users"
-                      ? ["Conta", "Perfil", "Estado", "Plantações"]
+                      ? ["Conta", "Perfil", "Estado", "Plantações", "Ações"]
                       : tab === "plantations"
                         ? [
                             "Propriedade",
@@ -258,7 +264,31 @@ export function AdminScreen() {
                             ? "Superadmin"
                             : "Usuário"}
                         </td>
-                        <td>{account.activatedAt ? "Ativo" : "Pendente"}</td>
+                        <td>
+                          <span
+                            className={
+                              account.blockedAt
+                                ? styles.blocked
+                                : account.activatedAt
+                                  ? styles.active
+                                  : styles.pending
+                            }
+                          >
+                            {account.blockedAt
+                              ? "Bloqueado"
+                              : account.activatedAt
+                                ? "Ativo"
+                                : "Pendente"}
+                          </span>
+                          {account.blockedAt && (
+                            <small>
+                              Desde{" "}
+                              {new Date(account.blockedAt).toLocaleString(
+                                "pt-BR",
+                              )}
+                            </small>
+                          )}
+                        </td>
                         <td>
                           {account.plantations.length
                             ? account.plantations
@@ -268,6 +298,48 @@ export function AdminScreen() {
                                 )
                                 .join(", ")
                             : "Sem vínculo"}
+                        </td>
+                        <td>
+                          {account.id === user.id ? (
+                            <small>
+                              Sua conta · gerencie a sessão em Meu perfil.
+                            </small>
+                          ) : (
+                            <div className={styles.accountActions}>
+                              {account.systemRole === "SUPERADMIN" ? (
+                                <small>Bloqueio protegido</small>
+                              ) : (
+                                <button
+                                  type="button"
+                                  disabled={saving}
+                                  onClick={() =>
+                                    setAccountAction({
+                                      account,
+                                      action: account.blockedAt
+                                        ? "unblock"
+                                        : "block",
+                                    })
+                                  }
+                                >
+                                  {account.blockedAt
+                                    ? "Desbloquear"
+                                    : "Bloquear"}
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                disabled={saving}
+                                onClick={() =>
+                                  setAccountAction({
+                                    account,
+                                    action: "revoke-sessions",
+                                  })
+                                }
+                              >
+                                Revogar sessões
+                              </button>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -331,7 +403,9 @@ export function AdminScreen() {
                     })}
                   {result?.data.length === 0 && (
                     <tr>
-                      <td colSpan={4}>Nenhum registro encontrado.</td>
+                      <td colSpan={tab === "users" ? 5 : 4}>
+                        Nenhum registro encontrado.
+                      </td>
                     </tr>
                   )}
                 </tbody>
@@ -427,8 +501,19 @@ export function AdminScreen() {
             {saving ? "Enviando..." : "Enviar convite"}
           </button>
         </form>
-        {feedback && <p role="status">{feedback}</p>}
       </section>
+      {accountAction && (
+        <AccountActionDialog
+          account={accountAction.account}
+          action={accountAction.action}
+          onClose={() => setAccountAction(null)}
+          onSuccess={(message) => {
+            setAccountAction(null);
+            setFeedback(message);
+            void reload();
+          }}
+        />
+      )}
     </main>
   );
 }

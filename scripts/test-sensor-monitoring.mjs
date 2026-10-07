@@ -27,7 +27,7 @@ function mount(plantationId) {
     useCallback: (callback) => callback,
     useState: (initial) => {
       const index = states.push(initial) - 1;
-      return [initial, (next) => { states[index] = next; }];
+      return [initial, (next) => { states[index] = typeof next === "function" ? next(states[index]) : next; }];
     },
     useEffect: (effect) => { cleanups.push(effect()); },
   };
@@ -47,6 +47,43 @@ function mount(plantationId) {
   const hook = exports.useSensorMonitoring(plantationId);
   return { hook, states, calls, latest, alerts, unmount: () => cleanups.forEach((cleanup) => cleanup?.()) };
 }
+
+test("edição atualiza sensor e alertas sem aceitar uma resposta anterior à alteração", async () => {
+  const harness = mount("plantation-a");
+  const oldDevice = { id: "one", name: "Antigo" };
+  const original = { device: oldDevice, reading: { id: "reading-one" } };
+  const initial = harness.hook.reload();
+  harness.latest[0].resolve([original]);
+  harness.alerts[0].resolve([{ device: oldDevice }]);
+  await initial;
+  const older = harness.hook.reload(true);
+  const renamed = { ...oldDevice, name: "Novo nome" };
+  harness.hook.updateDevice(renamed);
+  harness.latest[1].resolve([original]);
+  harness.alerts[1].resolve([{ device: oldDevice }]);
+  await older;
+  assert.equal(harness.states[0][0].device.name, "Novo nome");
+  assert.equal(harness.states[1][0].device.name, "Novo nome");
+  assert.equal(harness.states[0][0].reading, original.reading);
+});
+
+test("remoção limpa sensor e alertas sem ressuscitar dados de um polling anterior", async () => {
+  const harness = mount("plantation-a");
+  const sensors = [{ device: { id: "one" } }, { device: { id: "two" } }];
+  const initial = harness.hook.reload();
+  harness.latest[0].resolve(sensors);
+  harness.alerts[0].resolve(sensors);
+  await initial;
+  const older = harness.hook.reload(true);
+  harness.hook.removeDevice("one");
+  harness.latest[1].resolve(sensors);
+  harness.alerts[1].resolve(sensors);
+  await older;
+  assert.equal(harness.states[0].length, 1);
+  assert.equal(harness.states[0][0].device.id, "two");
+  assert.equal(harness.states[1].length, 1);
+  assert.equal(harness.states[1][0].device.id, "two");
+});
 
 test("uma resposta antiga não substitui a atualização mais recente", async () => {
   const harness = mount("plantation-a");

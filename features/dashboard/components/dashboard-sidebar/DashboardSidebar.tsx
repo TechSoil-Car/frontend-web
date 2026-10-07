@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useEffect, useId, useRef, useState } from "react";
 import { useAuth } from "@/features/auth";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { DashboardIcon } from "../dashboard-icons/DashboardIcon";
@@ -34,12 +35,6 @@ const navigation = [
     badge: undefined,
   },
   {
-    label: "Missões",
-    icon: "mission",
-    href: "/dashboard#atividade",
-    badge: undefined,
-  },
-  {
     label: "Alertas",
     icon: "alert",
     href: "/dashboard#alertas",
@@ -54,10 +49,8 @@ type DashboardSidebarProps = {
 
 export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const isAdmin = user?.systemRole === "SUPERADMIN";
-  const { selectedPlantation } = usePlantations();
   const initials =
     user?.name
       .split(/\s+/)
@@ -65,11 +58,6 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
       .map((part) => part[0])
       .join("")
       .toUpperCase() ?? "TS";
-
-  async function handleLogout() {
-    await logout();
-    router.replace("/login");
-  }
 
   return (
     <>
@@ -97,29 +85,10 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
         </div>
 
         {!isAdmin && (
-          <Link
-            className={styles.plantation}
-            href="/dashboard/plantacoes"
-            onClick={onClose}
-          >
-            <span className={styles.plantationMark}>
-              {selectedPlantation
-                ? selectedPlantation.name
-                    .split(/\s+/)
-                    .slice(0, 2)
-                    .map((part) => part[0])
-                    .join("")
-                    .toUpperCase()
-                : "TS"}
-            </span>
-            <span>
-              <small>PROPRIEDADE ATIVA</small>
-              <strong>
-                {selectedPlantation?.name ?? "Selecionar plantação"}
-              </strong>
-            </span>
-            <DashboardIcon name="chevron" size={16} />
-          </Link>
+          <PlantationSwitcher
+            key={`${pathname}:${open}`}
+            onNavigate={onClose}
+          />
         )}
 
         {!isAdmin && (
@@ -149,14 +118,6 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
 
         <nav className={styles.navigation} aria-label="Configurações">
           <p>GESTÃO</p>
-          <Link
-            href="/dashboard/perfil"
-            onClick={onClose}
-            className={pathname === "/dashboard/perfil" ? styles.active : ""}
-          >
-            <DashboardIcon name="team" />
-            <span>Meu perfil</span>
-          </Link>
           {user?.systemRole === "SUPERADMIN" && (
             <Link
               className={
@@ -204,22 +165,158 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
           <a href="mailto:contato@techsoil.com.br">Falar com suporte</a>
         </div>
 
-        <div className={styles.profile}>
+        <Link
+          className={`${styles.profile} ${pathname === "/dashboard/perfil" ? styles.profileActive : ""}`}
+          href="/dashboard/perfil"
+          onClick={onClose}
+          aria-label="Abrir meu perfil"
+          aria-current={pathname === "/dashboard/perfil" ? "page" : undefined}
+          title="Meu perfil"
+        >
           <span>{initials}</span>
           <div>
             <strong>{user?.name}</strong>
             <small>{user?.email}</small>
           </div>
-          <button
-            type="button"
-            aria-label="Sair do painel"
-            title="Sair"
-            onClick={handleLogout}
-          >
-            ↪
-          </button>
-        </div>
+          <DashboardIcon name="chevron" size={16} />
+        </Link>
       </aside>
     </>
+  );
+}
+
+function PlantationSwitcher({ onNavigate }: { onNavigate: () => void }) {
+  const { plantations, selectedPlantation, selectPlantation, status } =
+    usePlantations();
+  const [expanded, setExpanded] = useState(false);
+  const container = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const panelId = useId();
+
+  useEffect(() => {
+    if (!expanded) return;
+    function outside(event: PointerEvent) {
+      if (
+        event.target instanceof Node &&
+        !container.current?.contains(event.target)
+      )
+        setExpanded(false);
+    }
+    function escape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setExpanded(false);
+        trigger.current?.focus();
+      }
+    }
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("pointerdown", outside);
+      document.removeEventListener("keydown", escape);
+    };
+  }, [expanded]);
+
+  return (
+    <div
+      className={styles.plantationSwitcher}
+      ref={container}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget))
+          setExpanded(false);
+      }}
+    >
+      <button
+        ref={trigger}
+        type="button"
+        className={styles.plantation}
+        aria-expanded={expanded}
+        aria-controls={panelId}
+        aria-label={`Selecionar plantação. Atual: ${selectedPlantation?.name ?? "nenhuma"}`}
+        onClick={() => setExpanded((value) => !value)}
+      >
+        <span className={styles.plantationMark}>
+          {selectedPlantation?.name
+            .split(/\s+/)
+            .slice(0, 2)
+            .map((part) => part[0])
+            .join("")
+            .toUpperCase() ?? "TS"}
+        </span>
+        <span className={styles.plantationLabel}>
+          <small>PROPRIEDADE ATIVA</small>
+          <strong>{selectedPlantation?.name ?? "Selecionar plantação"}</strong>
+        </span>
+        <DashboardIcon name="chevron" size={16} />
+      </button>
+      <div
+        id={panelId}
+        className={styles.plantationDropdown}
+        hidden={!expanded}
+      >
+        <p className={styles.switcherTitle}>SUAS PLANTAÇÕES</p>
+        {status === "loading" || status === "idle" ? (
+          <p className={styles.switcherMessage} role="status">
+            Carregando plantações...
+          </p>
+        ) : status === "error" ? (
+          <p className={styles.switcherMessage} role="alert">
+            Não foi possível carregar suas plantações. Acesse o gerenciamento
+            para tentar novamente.
+          </p>
+        ) : plantations.length === 0 ? (
+          <p className={styles.switcherMessage}>
+            Você ainda não possui uma plantação.
+          </p>
+        ) : (
+          <>
+            <ul className={styles.plantationOptions}>
+              {plantations.map((plantation) => (
+                <li key={plantation.id}>
+                  <button
+                    type="button"
+                    aria-pressed={selectedPlantation?.id === plantation.id}
+                    onClick={() => {
+                      selectPlantation(plantation.id);
+                      setExpanded(false);
+                      trigger.current?.focus();
+                    }}
+                  >
+                    <span>
+                      <strong>{plantation.name}</strong>
+                      <small>
+                        {plantation.role === "OWNER"
+                          ? "Proprietário"
+                          : "Membro"}
+                      </small>
+                    </span>
+                    {selectedPlantation?.id === plantation.id && (
+                      <span className={styles.selectedMark} aria-hidden="true">
+                        ✓
+                      </span>
+                    )}
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {plantations.length === 1 && (
+              <p className={styles.switcherMessage}>
+                Você possui apenas esta plantação.
+              </p>
+            )}
+          </>
+        )}
+        <Link
+          href="/dashboard/plantacoes"
+          className={styles.managePlantations}
+          onClick={() => {
+            setExpanded(false);
+            onNavigate();
+          }}
+        >
+          Gerenciar plantações <DashboardIcon name="chevron" size={14} />
+        </Link>
+      </div>
+    </div>
   );
 }

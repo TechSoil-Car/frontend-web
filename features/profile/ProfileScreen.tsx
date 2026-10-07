@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth";
 import {
   changePassword,
@@ -45,8 +46,8 @@ export function ProfileScreen() {
     <main className={styles.page}>
       <header className={styles.heading}>
         <p>MINHA CONTA</p>
-        <h1>Perfil e segurança</h1>
-        <span>Cuide dos seus dados e mantenha seu acesso protegido.</span>
+        <h1>Meu perfil</h1>
+        <span>Suas informações e a segurança da sua conta TechSoil.</span>
       </header>
       {!profile ? (
         loadError ? (
@@ -64,6 +65,31 @@ export function ProfileScreen() {
         )
       ) : (
         <div className={styles.grid}>
+          <section
+            className={`${styles.card} ${styles.summary}`}
+            aria-label="Resumo da conta"
+          >
+            <span className={styles.avatar} aria-hidden="true">
+              {(user?.name ?? profile.name)
+                .split(/\s+/)
+                .slice(0, 2)
+                .map((part) => part[0])
+                .join("")
+                .toUpperCase()}
+            </span>
+            <div className={styles.identity}>
+              <h2>{user?.name ?? profile.name}</h2>
+              <p>
+                {profile.systemRole === "SUPERADMIN"
+                  ? "Superadmin da plataforma"
+                  : "Usuário TechSoil"}
+              </p>
+              <span>{profile.email}</span>
+            </div>
+            <span className={styles.accountStatus}>
+              <i aria-hidden="true" /> Conta ativa
+            </span>
+          </section>
           <ProfileForm
             key={profile.id}
             profile={profile}
@@ -73,6 +99,7 @@ export function ProfileScreen() {
             onSuccess={completePasswordChange}
             email={user?.email ?? profile.email}
           />
+          <SessionCard />
         </div>
       )}
     </main>
@@ -91,6 +118,7 @@ function ProfileForm({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -106,6 +134,7 @@ function ProfileForm({
       setName(updated.name);
       setSavedName(updated.name);
       setSuccess(true);
+      setEditing(false);
     } catch (error) {
       setError(errorMessage(error));
     } finally {
@@ -116,63 +145,99 @@ function ProfileForm({
   return (
     <section className={styles.card}>
       <div className={styles.cardHeading}>
-        <span className={styles.badge}>SEUS DADOS</span>
-        <h2>Informações pessoais</h2>
-        <p>Seu nome será atualizado em todo o painel.</p>
+        <div>
+          <h2>Informações pessoais</h2>
+          <p>Dados do seu acesso à TechSoil Systems.</p>
+        </div>
+        {!editing && (
+          <button
+            className={styles.editButton}
+            type="button"
+            onClick={() => {
+              setEditing(true);
+              setSuccess(false);
+              setError(null);
+            }}
+            aria-expanded={editing}
+            aria-controls="profile-edit-form"
+          >
+            Editar <EditIcon />
+          </button>
+        )}
       </div>
-      <form onSubmit={submit} className={styles.form}>
-        <label htmlFor="profile-name">Nome completo</label>
-        <input
-          id="profile-name"
-          name="name"
-          autoComplete="name"
-          value={name}
-          onChange={(event) => {
-            setName(event.target.value);
-            setSuccess(false);
-          }}
-          minLength={2}
-          maxLength={120}
-          required
-          disabled={saving}
-        />
-        <label htmlFor="profile-email">E-mail de acesso</label>
-        <input
-          id="profile-email"
-          type="email"
-          value={profile.email}
-          readOnly
-          aria-describedby="email-help"
-        />
-        <small id="email-help">
-          O e-mail de acesso não pode ser alterado por esta tela.
-        </small>
-        <dl className={styles.details}>
-          <div>
-            <dt>Tipo de conta</dt>
-            <dd>
-              {profile.systemRole === "SUPERADMIN" ? "Superadmin" : "Usuário"}
-            </dd>
+      <dl className={styles.details}>
+        <div>
+          <dt>Nome completo</dt>
+          <dd>{savedName}</dd>
+        </div>
+        <div>
+          <dt>E-mail de acesso</dt>
+          <dd>{profile.email}</dd>
+        </div>
+        <div>
+          <dt>Tipo de conta</dt>
+          <dd>
+            {profile.systemRole === "SUPERADMIN" ? "Superadmin" : "Usuário"}
+          </dd>
+        </div>
+        <div>
+          <dt>Conta criada em</dt>
+          <dd>{new Date(profile.createdAt).toLocaleDateString("pt-BR")}</dd>
+        </div>
+      </dl>
+      {editing && (
+        <form id="profile-edit-form" onSubmit={submit} className={styles.form}>
+          <label htmlFor="profile-name">Nome completo</label>
+          <input
+            id="profile-name"
+            name="name"
+            autoComplete="name"
+            value={name}
+            onChange={(event) => {
+              setName(event.target.value);
+              setSuccess(false);
+            }}
+            minLength={2}
+            maxLength={120}
+            required
+            disabled={saving}
+          />
+          <small>
+            Seu nome será atualizado em todo o painel. O e-mail e o tipo de
+            conta não podem ser alterados por esta tela.
+          </small>
+          {error && (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          )}
+          <div className={styles.formActions}>
+            <button
+              className={styles.secondaryButton}
+              type="button"
+              disabled={saving}
+              onClick={() => {
+                setEditing(false);
+                setName(savedName);
+                setError(null);
+              }}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={saving || name.trim() === savedName}
+            >
+              {saving ? "Salvando..." : "Salvar alterações"}
+            </button>
           </div>
-          <div>
-            <dt>Conta criada em</dt>
-            <dd>{new Date(profile.createdAt).toLocaleDateString("pt-BR")}</dd>
-          </div>
-        </dl>
-        {error && (
-          <p className={styles.error} role="alert">
-            {error}
-          </p>
-        )}
-        {success && (
-          <p className={styles.success} role="status">
-            Nome atualizado com sucesso.
-          </p>
-        )}
-        <button type="submit" disabled={saving || name.trim() === savedName}>
-          {saving ? "Salvando..." : "Salvar alterações"}
-        </button>
-      </form>
+        </form>
+      )}
+      {success && (
+        <p className={styles.success} role="status">
+          Nome atualizado com sucesso.
+        </p>
+      )}
     </section>
   );
 }
@@ -186,6 +251,7 @@ function PasswordForm({
 }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -223,69 +289,197 @@ function PasswordForm({
   return (
     <section className={styles.card}>
       <div className={styles.cardHeading}>
-        <span className={styles.badge}>SEGURANÇA</span>
-        <h2>Alterar senha</h2>
-        <p>Confirme sua senha atual para definir uma nova.</p>
+        <div>
+          <h2>Segurança da conta</h2>
+          <p>Proteja seu acesso com uma senha exclusiva.</p>
+        </div>
+        {!editing && (
+          <button
+            className={styles.editButton}
+            type="button"
+            onClick={() => {
+              setEditing(true);
+              setError(null);
+            }}
+            aria-expanded={editing}
+            aria-controls="password-edit-form"
+          >
+            Alterar senha <EditIcon />
+          </button>
+        )}
       </div>
-      <form onSubmit={submit} className={styles.form}>
-        <input
-          type="text"
-          name="username"
-          autoComplete="username"
-          value={email}
-          readOnly
-          hidden
-        />
-        <label htmlFor="current-password">Senha atual</label>
-        <input
-          id="current-password"
-          name="currentPassword"
-          type="password"
-          autoComplete="current-password"
-          maxLength={128}
-          required
-          disabled={saving}
-        />
-        <label htmlFor="new-password">Nova senha</label>
-        <input
-          id="new-password"
-          name="newPassword"
-          type="password"
-          autoComplete="new-password"
-          minLength={8}
-          maxLength={72}
-          aria-describedby="password-help"
-          required
-          disabled={saving}
-        />
-        <small id="password-help">
-          Use pelo menos 8 caracteres e no máximo 72 bytes. Prefira uma senha
-          longa e exclusiva.
-        </small>
-        <label htmlFor="confirm-password">Confirmar nova senha</label>
-        <input
-          id="confirm-password"
-          name="confirmation"
-          type="password"
-          autoComplete="new-password"
-          minLength={8}
-          maxLength={72}
-          required
-          disabled={saving}
-        />
-        <p className={styles.notice}>
-          Ao alterar a senha, todas as sessões e os links de recuperação
-          anteriores serão invalidados. Você precisará entrar novamente.
-        </p>
+      {!editing && (
+        <div className={styles.securityOverview}>
+          <span className={styles.securityIcon} aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="22"
+              height="22"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+            >
+              <rect x="5" y="10" width="14" height="11" rx="3" />
+              <path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" />
+            </svg>
+          </span>
+          <div>
+            <strong>Senha de acesso</strong>
+            <p>Para alterá-la, você precisará confirmar sua senha atual.</p>
+          </div>
+        </div>
+      )}
+      {editing && (
+        <form id="password-edit-form" onSubmit={submit} className={styles.form}>
+          <input
+            type="text"
+            name="username"
+            autoComplete="username"
+            value={email}
+            readOnly
+            hidden
+          />
+          <label htmlFor="current-password">Senha atual</label>
+          <input
+            id="current-password"
+            name="currentPassword"
+            type="password"
+            autoComplete="current-password"
+            maxLength={128}
+            required
+            disabled={saving}
+          />
+          <label htmlFor="new-password">Nova senha</label>
+          <input
+            id="new-password"
+            name="newPassword"
+            type="password"
+            autoComplete="new-password"
+            minLength={8}
+            maxLength={72}
+            aria-describedby="password-help"
+            required
+            disabled={saving}
+          />
+          <small id="password-help">
+            Use pelo menos 8 caracteres e no máximo 72 bytes. Prefira uma senha
+            longa e exclusiva.
+          </small>
+          <label htmlFor="confirm-password">Confirmar nova senha</label>
+          <input
+            id="confirm-password"
+            name="confirmation"
+            type="password"
+            autoComplete="new-password"
+            minLength={8}
+            maxLength={72}
+            required
+            disabled={saving}
+          />
+          <p className={styles.notice}>
+            Ao alterar a senha, todas as sessões e os links de recuperação
+            anteriores serão invalidados. Você precisará entrar novamente.
+          </p>
+          {error && (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          )}
+          <div className={styles.formActions}>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              disabled={saving}
+              onClick={() => {
+                setEditing(false);
+                setError(null);
+              }}
+            >
+              Cancelar
+            </button>
+            <button type="submit" disabled={saving}>
+              {saving ? "Alterando senha..." : "Alterar senha e sair"}
+            </button>
+          </div>
+        </form>
+      )}
+    </section>
+  );
+}
+
+function EditIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="15"
+      height="15"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m15 5 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15l-1 5Z" />
+    </svg>
+  );
+}
+
+function SessionCard() {
+  const { logout } = useAuth();
+  const router = useRouter();
+  const [leaving, setLeaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleLogout() {
+    setLeaving(true);
+    setError(null);
+    try {
+      await logout();
+      router.replace("/login");
+    } catch {
+      setError(
+        "Não foi possível encerrar a sessão. Verifique sua conexão e tente novamente.",
+      );
+      setLeaving(false);
+    }
+  }
+
+  return (
+    <section
+      className={`${styles.card} ${styles.session}`}
+      aria-label="Sessão atual"
+    >
+      <div>
+        <h2>Sessão atual</h2>
+        <p>Encerre seu acesso à TechSoil neste navegador.</p>
         {error && (
           <p className={styles.error} role="alert">
             {error}
           </p>
         )}
-        <button type="submit" disabled={saving}>
-          {saving ? "Alterando senha..." : "Alterar senha e sair"}
-        </button>
-      </form>
+      </div>
+      <button
+        className={styles.logoutButton}
+        type="button"
+        onClick={handleLogout}
+        disabled={leaving}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M14 8l4 4-4 4M8 12h13" />
+        </svg>
+        {leaving ? "Saindo..." : "Sair da conta"}
+      </button>
     </section>
   );
 }

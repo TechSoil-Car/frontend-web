@@ -14,6 +14,7 @@ import type {
   CreatePlantationInput,
   Plantation,
   PlantationsStatus,
+  UpdatePlantationInput,
   UpdatePlantationMapInput,
 } from "../types/plantation.types";
 
@@ -25,6 +26,11 @@ type PlantationContextValue = {
   status: PlantationsStatus;
   selectPlantation: (plantationId: string) => void;
   createPlantation: (input: CreatePlantationInput) => Promise<Plantation>;
+  updatePlantation: (
+    id: string,
+    input: UpdatePlantationInput,
+  ) => Promise<Plantation>;
+  removePlantation: (id: string) => Promise<void>;
   updatePlantationMap: (input: UpdatePlantationMapInput) => Promise<Plantation>;
   reloadPlantations: () => Promise<void>;
 };
@@ -41,6 +47,10 @@ const adminPlantationContext: PlantationContextValue = {
       new Error("Superadmin não pode criar uma plantação própria."),
     ),
   updatePlantationMap: () =>
+    Promise.reject(new Error("Superadmin não possui acesso operacional.")),
+  updatePlantation: () =>
+    Promise.reject(new Error("Superadmin não possui acesso operacional.")),
+  removePlantation: () =>
     Promise.reject(new Error("Superadmin não possui acesso operacional.")),
   reloadPlantations: () => Promise.resolve(),
 };
@@ -146,6 +156,32 @@ function OperationalPlantationProvider({
     [selectedId],
   );
 
+  const updatePlantation = useCallback(
+    async (id: string, input: UpdatePlantationInput) => {
+      const updated = await plantationsApi.updatePlantation(id, input);
+      setPlantations((current) =>
+        current.map((item) => (item.id === id ? updated : item)),
+      );
+      return updated;
+    },
+    [],
+  );
+
+  const removePlantation = useCallback(
+    async (id: string) => {
+      await plantationsApi.removePlantation(id);
+      setPlantations((current) => current.filter((item) => item.id !== id));
+      setSelectedId((current) => {
+        if (current !== id) return current;
+        const next = plantations.find((item) => item.id !== id)?.id ?? null;
+        if (next) window.localStorage.setItem(ACTIVE_PLANTATION_KEY, next);
+        else window.localStorage.removeItem(ACTIVE_PLANTATION_KEY);
+        return next;
+      });
+    },
+    [plantations],
+  );
+
   const selectedPlantation =
     plantations.find((plantation) => plantation.id === selectedId) ?? null;
   const value = useMemo(
@@ -155,11 +191,15 @@ function OperationalPlantationProvider({
       status,
       selectPlantation,
       createPlantation,
+      updatePlantation,
+      removePlantation,
       updatePlantationMap,
       reloadPlantations,
     }),
     [
       createPlantation,
+      updatePlantation,
+      removePlantation,
       plantations,
       reloadPlantations,
       selectPlantation,

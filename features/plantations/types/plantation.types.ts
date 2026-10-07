@@ -23,6 +23,8 @@ export type CreatePlantationInput = {
   location?: string;
 };
 
+export type UpdatePlantationInput = { name: string; location: string | null };
+
 export type UpdatePlantationMapInput = {
   location: string;
   centerLatitude: number;

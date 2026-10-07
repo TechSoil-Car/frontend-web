@@ -108,6 +108,10 @@
 .secondaryButton { width: 100%; margin-top: 8px; color: #586a5b; border: 1px solid #dce0d8; background: #f7f8f4; }
 .secondaryButton:hover { background: #edf2ea; }
 .secondaryButton:disabled { color: #9aa39c; cursor: not-allowed; opacity: .72; }
+.removeButton { width: 100%; min-height: 42px; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #ecd9d1; border-radius: 10px; background: #fff7f3; color: #9a4b3e; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.removeButton:hover { background: #ffede5; }
+.notice { padding: 13px 16px; color: #365f33; background: #edf5e5; border: 1px solid #d7e5c9; border-radius: 10px; font-size: 13px; }
+.removeButton:focus-visible, .secondaryButton:focus-visible { outline: 2px solid #88b662; outline-offset: 3px; }
 .firstPlantation { min-height: 390px; margin-top: 18px; padding: 45px 24px; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; border: 1px dashed #cad5c4; border-radius: 19px; background: linear-gradient(145deg, #fff, #f3f6ef); }
 .firstPlantation > span { width: 58px; height: 58px; display: grid; place-items: center; color: #5d8843; border-radius: 17px; background: #e8f1e2; }
 .firstPlantation p { margin: 19px 0 0; color: #6c934f; font-size: 9px; font-weight: 800; letter-spacing: .16em; }

@@ -1,21 +1,14 @@
 import { DashboardIcon } from "../dashboard-icons/DashboardIcon";
-import Link from "next/link";
 import { useAuth } from "@/features/auth";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import styles from "./DashboardHeader.module.css";
+import { NotificationBell } from "@/features/notifications/NotificationBell";
 
 type DashboardHeaderProps = { onMenuOpen: () => void };
 
 export function DashboardHeader({ onMenuOpen }: DashboardHeaderProps) {
   const { user } = useAuth();
   const { selectedPlantation } = usePlantations();
-  const initials =
-    user?.name
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase() ?? "TS";
 
   return (
     <header className={styles.header}>
@@ -53,24 +46,12 @@ export function DashboardHeader({ onMenuOpen }: DashboardHeaderProps) {
               <small>Localização da propriedade</small>
             </span>
           </div>
-          <button
-            className={styles.notification}
-            type="button"
-            aria-label="Notificações"
-          >
-            <DashboardIcon name="bell" size={19} />
-            <i />
-          </button>
+          <NotificationBell
+            key={selectedPlantation?.id ?? "none"}
+            plantationId={selectedPlantation?.id}
+          />
         </>
       )}
-      <Link
-        href="/dashboard/perfil"
-        className={styles.avatar}
-        title="Meu perfil"
-        aria-label="Abrir meu perfil"
-      >
-        {initials}
-      </Link>
     </header>
   );
 }

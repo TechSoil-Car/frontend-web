@@ -10,6 +10,7 @@ export type AdminUser = {
   email: string;
   systemRole: "USER" | "SUPERADMIN";
   activatedAt: string | null;
+  blockedAt: string | null;
   plantations: {
     role: "OWNER" | "MEMBER";
     plantation: { id: string; name: string };
