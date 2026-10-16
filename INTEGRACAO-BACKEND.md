@@ -1,5 +1,10 @@
 # Guia de telas, formulários e integração com o backend
 
+> **Guia histórico de agosto; não descreve o estado atual.** Organizações,
+> convites protegidos, sensores, mapas e notificações já foram implementados.
+> Consulte `docs/organizations.md`, `../backend-web/docs/organizations.md` e
+> `../pendencias.md` para o contrato e as pendências atuais (16/10/2026).
+
 > Última atualização: 16/08/2026  
 > Frontend: Next.js em `http://localhost:3000`  
 > Backend Web: NestJS em `http://localhost:3001`
