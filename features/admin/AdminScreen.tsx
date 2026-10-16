@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/features/auth";
+import { roleLabel } from "@/features/organizations/types";
 import { ApiError, apiRequest } from "@/shared/api/api-client";
 import type {
   AdminInvite,
@@ -294,7 +295,7 @@ export function AdminScreen() {
                             ? account.plantations
                                 .map(
                                   (membership) =>
-                                    `${membership.plantation.name} (${membership.role === "OWNER" ? "proprietário" : "membro"})`,
+                                    `${membership.plantation.name} (${roleLabel(membership.role)})`,
                                 )
                                 .join(", ")
                             : "Sem vínculo"}
@@ -366,9 +367,7 @@ export function AdminScreen() {
                             <small>{invitation.email}</small>
                           </td>
                           <td>
-                            {invitation.role === "OWNER"
-                              ? "Proprietário"
-                              : "Membro"}
+                            {roleLabel(invitation.role)}
                           </td>
                           <td>
                             {invitation.plantation?.name ??
@@ -476,8 +475,9 @@ export function AdminScreen() {
           </label>
           <label>
             Permissão na plantação
-            <select name="role" defaultValue="MEMBER" disabled={saving}>
-              <option value="MEMBER">Membro</option>
+            <select name="role" defaultValue="VIEWER" disabled={saving}>
+              <option value="VIEWER">Visualizador</option>
+              <option value="OPERATOR">Operador</option>
               <option value="OWNER">Proprietário</option>
             </select>
           </label>

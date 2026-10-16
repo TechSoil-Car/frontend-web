@@ -43,7 +43,7 @@ export function AlertSettingsScreen() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!selectedPlantation || !settings || selectedPlantation.role !== "OWNER") return;
+    if (!selectedPlantation || !settings || !["OWNER", "OPERATOR"].includes(selectedPlantation.role)) return;
     setSaving(true);
     setMessage(null);
     const input: UpdateAlertSettingsInput = {
@@ -77,7 +77,7 @@ export function AlertSettingsScreen() {
   if (status === "loading") return <main className={styles.state}><span className={styles.spinner} /><strong>Carregando configurações</strong></main>;
   if (status === "error" || !settings) return <main className={styles.state}><DashboardIcon name="alert" /><strong>Configurações indisponíveis</strong><p>Não foi possível consultar as regras desta plantação.</p></main>;
 
-  const readOnly = selectedPlantation.role !== "OWNER";
+  const readOnly = !["OWNER", "OPERATOR"].includes(selectedPlantation.role);
   return (
     <main className={styles.page}>
       <header className={styles.heading}>
@@ -86,7 +86,7 @@ export function AlertSettingsScreen() {
       </header>
 
       <div className={styles.notice}><DashboardIcon name="alert" size={20} /><div><strong>Nenhum limite agronômico é aplicado automaticamente.</strong><p>Ative uma regra somente depois de validar os valores para a cultura e as condições desta plantação.</p></div></div>
-      {readOnly && <div className={styles.readOnly}>Seu perfil pode consultar estas regras, mas somente o proprietário pode alterá-las.</div>}
+      {readOnly && <div className={styles.readOnly}>Seu perfil pode consultar estas regras. Proprietários e operadores podem alterá-las.</div>}
 
       <form onSubmit={handleSubmit}>
         <section className={styles.section}>

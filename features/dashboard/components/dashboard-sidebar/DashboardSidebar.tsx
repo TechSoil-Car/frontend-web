@@ -5,11 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { useAuth } from "@/features/auth";
+import { OrganizationSelector } from "@/features/organizations/OrganizationsScreen";
+import { roleLabel } from "@/features/organizations/types";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { DashboardIcon } from "../dashboard-icons/DashboardIcon";
 import styles from "./DashboardSidebar.module.css";
 
 const navigation = [
+  { label: "Organizações", icon: "team", href: "/dashboard/organizacoes", badge: undefined },
   {
     label: "Visão geral",
     icon: "overview",
@@ -84,6 +87,7 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
           </span>
         </div>
 
+        {!isAdmin && <OrganizationSelector />}
         {!isAdmin && (
           <PlantationSwitcher
             key={`${pathname}:${open}`}
@@ -285,9 +289,7 @@ function PlantationSwitcher({ onNavigate }: { onNavigate: () => void }) {
                     <span>
                       <strong>{plantation.name}</strong>
                       <small>
-                        {plantation.role === "OWNER"
-                          ? "Proprietário"
-                          : "Membro"}
+                        {roleLabel(plantation.role)}
                       </small>
                     </span>
                     {selectedPlantation?.id === plantation.id && (

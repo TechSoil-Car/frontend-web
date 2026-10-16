@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { useAuth } from "@/features/auth";
+import { useOrganizations } from "@/features/organizations/OrganizationContext";
 import * as plantationsApi from "../services/plantations-api";
 import type {
   CreatePlantationInput,
@@ -61,6 +62,7 @@ export function PlantationProvider({
   children: React.ReactNode;
 }) {
   const { user } = useAuth();
+  const { selected, status: organizationStatus } = useOrganizations();
   const isAdmin = user?.systemRole === "SUPERADMIN";
   useEffect(() => {
     if (isAdmin) window.localStorage.removeItem(ACTIVE_PLANTATION_KEY);
@@ -71,15 +73,23 @@ export function PlantationProvider({
         {children}
       </PlantationContext.Provider>
     );
+  if (organizationStatus !== "ready")
+    return (
+      <PlantationContext.Provider value={{ ...adminPlantationContext, status: organizationStatus === "error" ? "error" : "loading" }}>
+        {children}
+      </PlantationContext.Provider>
+    );
   return (
-    <OperationalPlantationProvider>{children}</OperationalPlantationProvider>
+    <OperationalPlantationProvider key={`${selected?.organization.id ?? "none"}:${organizationStatus}`} organizationId={selected?.organization.id ?? null}>{children}</OperationalPlantationProvider>
   );
 }
 
 function OperationalPlantationProvider({
   children,
+  organizationId,
 }: {
   children: React.ReactNode;
+  organizationId: string | null;
 }) {
   const { status: authStatus } = useAuth();
   const [plantations, setPlantations] = useState<Plantation[]>([]);
@@ -106,12 +116,13 @@ function OperationalPlantationProvider({
   const reloadPlantations = useCallback(async () => {
     setStatus("loading");
     try {
-      applyPlantations(await plantationsApi.listPlantations());
+      const items = await plantationsApi.listPlantations();
+      applyPlantations(items.filter(item => item.organizationId === organizationId));
       setStatus("ready");
     } catch {
       setStatus("error");
     }
-  }, [applyPlantations]);
+  }, [applyPlantations, organizationId]);
 
   useEffect(() => {
     if (authStatus !== "authenticated") return;

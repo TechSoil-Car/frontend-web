@@ -12,7 +12,7 @@ export type AdminUser = {
   activatedAt: string | null;
   blockedAt: string | null;
   plantations: {
-    role: "OWNER" | "MEMBER";
+    role: "OWNER" | "OPERATOR" | "VIEWER" | "MEMBER";
     plantation: { id: string; name: string };
   }[];
 };
@@ -26,7 +26,7 @@ export type AdminInvite = {
   id: string;
   name: string;
   email: string;
-  role: "OWNER" | "MEMBER";
+  role: "OWNER" | "OPERATOR" | "VIEWER" | "MEMBER";
   expiresAt: string;
   acceptedAt: string | null;
   plantation: { id: string; name: string } | null;

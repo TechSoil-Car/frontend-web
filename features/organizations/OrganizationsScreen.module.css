@@ -1,0 +1,92 @@
+.page {
+  display: grid;
+  gap: 20px;
+  padding: 28px;
+  color: #263d2d;
+  max-width: 1100px;
+}
+.page h1 {
+  margin: 0 0 12px;
+  font-size: 28px;
+}
+.page h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+.page p {
+  line-height: 1.6;
+}
+.card {
+  background: white;
+  border: 1px solid #d8e4ce;
+  border-radius: 14px;
+  padding: 22px;
+}
+.page form,
+.page label,
+.selector {
+  display: grid;
+  gap: 8px;
+}
+.page form {
+  gap: 16px;
+}
+.page input,
+.page select,
+.selector select {
+  color: #263d2d;
+  background: white;
+  border: 1px solid #b5c7ac;
+  border-radius: 8px;
+  padding: 10px;
+  font: inherit;
+  max-width: 100%;
+  min-width: 0;
+}
+.selector {
+  padding: 12px 16px;
+  color: #4e8240;
+  font-size: 13px;
+}
+.page button {
+  border: 1px solid #cbdac2;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font: inherit;
+  color: #315b32;
+  background: #edf4e5;
+  cursor: pointer;
+}
+.page button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.page [role="alert"] {
+  color: #a72a21;
+}
+.page [role="status"] {
+  color: #315b32;
+}
+.member {
+  border-top: 1px solid #d8e4ce;
+  padding: 20px 0;
+}
+.page .check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+@media (max-width: 600px) {
+  .page {
+    padding: 18px;
+  }
+  .card {
+    padding: 16px;
+  }
+}

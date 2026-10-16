@@ -1,4 +1,4 @@
-export type PlantationRole = "OWNER" | "MEMBER";
+export type PlantationRole = "OWNER" | "OPERATOR" | "VIEWER" | "MEMBER";
 
 export type BoundaryPolygon = {
   type: "Polygon";
@@ -7,6 +7,7 @@ export type BoundaryPolygon = {
 
 export type Plantation = {
   id: string;
+  organizationId: string;
   name: string;
   location: string | null;
   centerLatitude: number | null;
@@ -20,6 +21,7 @@ export type Plantation = {
 
 export type CreatePlantationInput = {
   name: string;
+  organizationId?: string;
   location?: string;
 };
 

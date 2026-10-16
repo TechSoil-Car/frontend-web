@@ -2,6 +2,9 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useOrganizations } from "@/features/organizations/OrganizationContext";
+import { roleLabel } from "@/features/organizations/types";
 import { FormEvent, useMemo, useState } from "react";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
 import { ApiError } from "@/shared/api/api-client";
@@ -10,12 +13,12 @@ import type { Plantation, PlantationRole } from "../../types/plantation.types";
 import { PlantationMaintenanceDialog } from "./PlantationMaintenanceDialog";
 import styles from "./PlantationsScreen.module.css";
 
-type PlantationFilter = "all" | PlantationRole;
+type PlantationFilter = "all" | PlantationRole | "shared";
 
 const filters: Array<{ label: string; value: PlantationFilter }> = [
   { label: "Todas", value: "all" },
   { label: "Administradas por mim", value: "OWNER" },
-  { label: "Compartilhadas", value: "MEMBER" },
+  { label: "Compartilhadas", value: "shared" },
 ];
 
 function initials(name: string) {
@@ -38,6 +41,8 @@ function formatDate(value: string) {
 
 export function PlantationsScreen() {
   const router = useRouter();
+  const { selected: organization, status: organizationsStatus } = useOrganizations();
+  const canCreate = organizationsStatus === "ready" && organization?.role === "OWNER";
   const {
     plantations,
     selectedPlantation,
@@ -66,7 +71,7 @@ export function PlantationsScreen() {
             "pt-BR",
           );
         return (
-          (filter === "all" || plantation.role === filter) &&
+          (filter === "all" || (filter === "shared" ? plantation.role !== "OWNER" : plantation.role === filter)) &&
           (!normalizedQuery || searchable.includes(normalizedQuery))
         );
       }),
@@ -83,6 +88,7 @@ export function PlantationsScreen() {
 
   async function handleCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!canCreate || !organization) return;
     const formElement = event.currentTarget;
     setCreating(true);
     setCreateError(null);
@@ -91,7 +97,7 @@ export function PlantationsScreen() {
     const location = String(form.get("location") ?? "").trim();
 
     try {
-      await createPlantation({ name, ...(location ? { location } : {}) });
+      await createPlantation({ name, organizationId: organization.organization.id, ...(location ? { location } : {}) });
       setCreateOpen(false);
       formElement.reset();
     } catch (error) {
@@ -142,6 +148,7 @@ export function PlantationsScreen() {
         </div>
         <button
           className={styles.addButton}
+          disabled={!canCreate}
           type="button"
           onClick={() => {
             setCreateError(null);
@@ -151,6 +158,9 @@ export function PlantationsScreen() {
           <b>+</b> Nova plantação
         </button>
       </section>
+
+      <p>Organização: {organization?.organization.name ?? "nenhuma selecionada"}. <Link href="/dashboard/organizacoes">Gerenciar organizações e equipe</Link></p>
+      {!canCreate && <p>Para criar plantações, selecione uma organização da qual você seja proprietário ou crie uma organização.</p>}
 
       {notice && (
         <p className={styles.notice} role="status">
@@ -214,6 +224,7 @@ export function PlantationsScreen() {
           </small>
           <button
             className={styles.addButton}
+            disabled={!canCreate}
             type="button"
             onClick={() => setCreateOpen(true)}
           >
@@ -287,9 +298,7 @@ export function PlantationsScreen() {
                         }
                       >
                         <b />
-                        {plantation.role === "OWNER"
-                          ? "Proprietário"
-                          : "Membro"}
+                        {roleLabel(plantation.role)}
                       </i>
                     </span>
                     <span className={styles.cardContent}>
@@ -375,9 +384,7 @@ export function PlantationsScreen() {
                     <article>
                       <small>Nível de acesso</small>
                       <strong>
-                        {selectedPlantation.role === "OWNER"
-                          ? "Proprietário"
-                          : "Membro"}
+                        {roleLabel(selectedPlantation.role)}
                       </strong>
                       <span>
                         {selectedPlantation.role === "OWNER"
@@ -461,7 +468,7 @@ export function PlantationsScreen() {
             }}
           />
         )}
-      {createOpen && (
+      {createOpen && canCreate && (
         <div className={styles.modalLayer} role="presentation">
           <button
             className={styles.modalBackdrop}
