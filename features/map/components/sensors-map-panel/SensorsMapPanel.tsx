@@ -30,6 +30,6 @@ export function SensorsMapPanel({ sensors, alerts, status, refreshFailed, lastUp
         <button type="button" disabled={!coordinates || disabled} onClick={() => onFocus(sensor)}>{coordinates ? "Localizar no mapa" : "Sem GPS válido na última leitura"}</button>
       </article>;
     })}</div>
-    <footer>Atualização automática a cada 30 segundos.{lastUpdatedAt && <small>Consulta: {lastUpdatedAt.toLocaleTimeString("pt-BR")}</small>}<small>Verde: sem alertas · Amarelo: alerta · Cinza: sem comunicação</small></footer>
+    <footer>Atualização automática a cada 1 minuto.{lastUpdatedAt && <small>Consulta: {lastUpdatedAt.toLocaleTimeString("pt-BR")}</small>}<small>Verde: sem alertas · Amarelo: alerta · Cinza: sem comunicação</small></footer>
   </section>;
 }

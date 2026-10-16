@@ -146,7 +146,7 @@ function ActiveAlerts({
       <div className={styles.live}>
         <span>
           <i aria-hidden="true" />
-          Atualização automática a cada 30 segundos
+          Atualização automática a cada 1 minuto
           {lastUpdatedAt && (
             <> · Última consulta: {lastUpdatedAt.toLocaleTimeString("pt-BR")}</>
           )}

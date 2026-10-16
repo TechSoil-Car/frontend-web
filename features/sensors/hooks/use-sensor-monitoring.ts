@@ -9,7 +9,7 @@ import type {
   SensorLatest,
 } from "../types/sensor.types";
 
-const POLLING_INTERVAL_MS = 30_000;
+const POLLING_INTERVAL_MS = 60_000;
 
 export function useSensorMonitoring(plantationId: string | undefined) {
   const requestVersion = useRef(0);

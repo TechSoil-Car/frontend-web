@@ -54,7 +54,7 @@ function DashboardOverviewContent() {
       <section className={`${styles.statusStrip} ${status === "error" ? styles.statusError : ""}`} aria-label="Status da operação">
         <div><i /><span><small>STATUS DO MONITORAMENTO</small><strong>{status === "error" ? "Comunicação indisponível" : sensors.length === 0 ? "Nenhum sensor cadastrado" : `${onlineSensors.length} de ${sensors.length} sensores com sinal recente`}</strong></span></div>
         <div><small>ÚLTIMA SINCRONIZAÇÃO</small><strong>{lastUpdatedAt ? formatRelativeTime(lastUpdatedAt.toISOString()) : "Aguardando"}</strong></div>
-        <div><small>ATUALIZAÇÃO AUTOMÁTICA</small><strong>A cada 30 segundos</strong></div>
+        <div><small>ATUALIZAÇÃO AUTOMÁTICA</small><strong>A cada 1 minuto</strong></div>
         <Link href="/dashboard/sensores">Detalhes <DashboardIcon name="arrow" size={15} /></Link>
       </section>
 
