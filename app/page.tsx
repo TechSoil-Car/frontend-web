@@ -1,4 +1,5 @@
-import { ArrowIcon, Brand } from "./landing-art";
+import { ArrowIcon, SiteFooter } from "./landing-art";
+import Link from "next/link";
 import {
   AlertFeed,
   CountUp,
@@ -18,6 +19,7 @@ const devices = [
     tone: styles.cardForest,
     place: "Subsolo",
     title: "Sensor de solo",
+    anchor: "sensor-de-solo",
     text: "Lê umidade, temperatura, pH, condutividade e NPK onde a raiz realmente vive.",
     art: <SensorLive />,
   },
@@ -25,6 +27,7 @@ const devices = [
     tone: styles.cardCream,
     place: "Entre as fileiras",
     title: "Carrinho autônomo",
+    anchor: null,
     text: "Percorre a plantação registrando imagens georreferenciadas dos pontos que pedem atenção.",
     art: <RoverMission />,
   },
@@ -32,6 +35,7 @@ const devices = [
     tone: styles.cardLime,
     place: "Na sua mão",
     title: "Painel web",
+    anchor: null,
     text: "Tudo organizado por propriedade e por dispositivo, no computador ou no celular.",
     art: <AlertFeed />,
   },
@@ -150,6 +154,9 @@ export default function Home() {
               <div className={styles.deviceCopy}>
                 <h3>{device.title}</h3>
                 <p>{device.text}</p>
+                {device.anchor && (
+                  <Link className={styles.deviceLink} href={`/hardware#${device.anchor}`}>Ver especificações →</Link>
+                )}
               </div>
             </Reveal>
           ))}
@@ -232,25 +239,7 @@ export default function Home() {
         </Reveal>
       </section>
 
-      <footer className={styles.footer}>
-        <div className={styles.footerTop}>
-          <div>
-            <Brand inverted />
-            <p>Inteligência para o solo. Clareza para quem produz.</p>
-          </div>
-          <nav aria-label="Rodapé">
-            <a href="#plataforma">Plataforma</a>
-            <a href="#tecnologia">Tecnologia</a>
-            <a href="#como-funciona">Como funciona</a>
-            <a href="#perguntas">Perguntas</a>
-            <a href="/login">Entrar</a>
-          </nav>
-        </div>
-        <div className={styles.footerBottom}>
-          <small>© 2026 TechSoil Systems</small>
-          <a href="#inicio">Voltar ao topo ↑</a>
-        </div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }

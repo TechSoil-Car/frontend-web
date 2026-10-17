@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   useEffect,
   useRef,
@@ -13,12 +15,8 @@ import {
 import { ArrowIcon, Brand } from "./landing-art";
 import styles from "./page.module.css";
 
-const navItems = [
-  { label: "Plataforma", href: "#plataforma", id: "plataforma" },
-  { label: "Tecnologia", href: "#tecnologia", id: "tecnologia" },
-  { label: "Como funciona", href: "#como-funciona", id: "como-funciona" },
-  { label: "Perguntas", href: "#perguntas", id: "perguntas" },
-];
+// Como no site da Owlloc, o menu leva só a outras páginas; as seções da landing ficam no rodapé.
+const navItems = [{ label: "Hardware", href: "/hardware" }];
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const easeOut = (value: number) => 1 - (1 - value) ** 3;
@@ -81,44 +79,35 @@ function useInView<T extends Element>(threshold = 0.2) {
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("");
+  const pathname = usePathname();
 
-  useScrollFrame(() => {
-    setScrolled(window.scrollY > 24);
-    const marker = window.innerHeight * 0.4;
-    let current = "";
-    for (const item of navItems) {
-      const section = document.getElementById(item.id);
-      if (section && section.getBoundingClientRect().top <= marker) current = item.id;
-    }
-    setActiveSection(current);
-  });
+  useScrollFrame(() => setScrolled(window.scrollY > 24));
 
   return (
     <header className={`${styles.navWrap} ${scrolled ? styles.navScrolled : ""}`}>
       <nav className={styles.nav} aria-label="Navegação principal">
-        <a href="#inicio" aria-label="TechSoil Systems — início">
+        <Link href="/#inicio" aria-label="TechSoil Systems — início">
           <Brand />
-        </a>
+        </Link>
         <div className={styles.navLinks}>
           {navItems.map((item) => (
-            <a
-              key={item.id}
+            <Link
+              key={item.href}
               href={item.href}
-              className={activeSection === item.id ? styles.navLinkActive : undefined}
-              aria-current={activeSection === item.id ? "location" : undefined}
+              className={pathname.startsWith(item.href) ? styles.navLinkActive : undefined}
+              aria-current={pathname.startsWith(item.href) ? "page" : undefined}
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </div>
         <div className={styles.navActions}>
-          <a className={styles.navLogin} href="/login">Entrar</a>
-          <a className={styles.navCta} href="#orcamento">
+          <Link className={styles.navLogin} href="/login">Entrar</Link>
+          <Link className={styles.navCta} href="/#orcamento">
             <span className={styles.navCtaLong}>Solicitar proposta</span>
             <span className={styles.navCtaShort}>Proposta</span>
             <ArrowIcon />
-          </a>
+          </Link>
         </div>
       </nav>
     </header>

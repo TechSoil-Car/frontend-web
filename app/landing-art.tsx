@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./page.module.css";
 
 export function ArrowIcon() {
@@ -20,5 +21,36 @@ export function Brand({ inverted = false }: { inverted?: boolean }) {
         <small>SYSTEMS</small>
       </span>
     </span>
+  );
+}
+
+const footerLinks = [
+  { label: "Plataforma", href: "/#plataforma" },
+  { label: "Tecnologia", href: "/#tecnologia" },
+  { label: "Hardware", href: "/hardware" },
+  { label: "Como funciona", href: "/#como-funciona" },
+  { label: "Perguntas", href: "/#perguntas" },
+  { label: "Entrar", href: "/login" },
+];
+
+export function SiteFooter() {
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.footerTop}>
+        <div>
+          <Brand inverted />
+          <p>Inteligência para o solo. Clareza para quem produz.</p>
+        </div>
+        <nav aria-label="Rodapé">
+          {footerLinks.map((link) => (
+            <Link key={link.href} href={link.href}>{link.label}</Link>
+          ))}
+        </nav>
+      </div>
+      <div className={styles.footerBottom}>
+        <small>© 2026 TechSoil Systems</small>
+        <a href="#top">Voltar ao topo ↑</a>
+      </div>
+    </footer>
   );
 }
