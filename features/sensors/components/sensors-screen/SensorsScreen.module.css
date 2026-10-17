@@ -89,8 +89,12 @@
 .tabs button { min-height: 34px; padding: 0 17px; display: flex; align-items: center; gap: 7px; color: #717c74; border: 0; border-radius: 7px; background: transparent; font: 700 10px var(--font-body),sans-serif; cursor: pointer; }
 .tabs button span { min-width: 17px; padding: 3px 5px; color: #855521; border-radius: 99px; background: #ebd9bf; font-size: 9px; }
 .tabs .tabActive { color: #35503b; background: #fff; box-shadow: 0 2px 8px rgba(45,59,47,.08); }
-.readingGrid { margin-top: 15px; display: grid; grid-template-columns: 1.45fr repeat(4,1fr); gap: 9px; }
-.readingGrid > article { min-height: 125px; padding: 14px; border: 1px solid #e1e3dc; border-radius: 12px; background: #fafaf7; }
+.readingGrid { margin-top: 15px; display: grid; grid-template-columns: 1.85fr repeat(4,1fr); gap: 9px; }
+.readingGrid > article { position: relative; isolation: isolate; overflow: hidden; min-height: 125px; padding: 14px; border: 1px solid #e1e3dc; border-radius: 12px; background: #fafaf7; transition: transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .3s; }
+/* Light sweep crossing the card on hover. */
+.readingGrid > article::after { content: ""; position: absolute; z-index: -1; top: -20%; bottom: -20%; left: -60%; width: 45%; background: linear-gradient(105deg, transparent, rgba(255,255,255,.85) 45%, rgba(214,240,186,.55) 55%, transparent); transform: translateX(0) skewX(-12deg); opacity: 0; pointer-events: none; }
+.readingGrid > article > strong, .readingGrid .gauge { transition: transform .3s cubic-bezier(.2,.8,.2,1); transform-origin: left bottom; }
+.readingGrid .gauge { transform-origin: center; }
 .readingGrid > article > small { color: #6f7b72; font-size: 9px; font-weight: 700; letter-spacing: .08em; }
 .readingGrid > article > strong { display: block; margin-top: 23px; font: 650 22px/1 var(--font-display),sans-serif; letter-spacing: -.04em; }
 .readingGrid > article > strong span { color: #77837a; font-size: 9px; font-weight: 500; letter-spacing: 0; }
@@ -100,7 +104,7 @@
 .locationTelemetry small,.locationTelemetry strong { display: block; }
 .locationTelemetry small { color: #737e76; font-size: 8px; font-weight: 800; letter-spacing: .09em; }
 .locationTelemetry strong { margin-top: 3px; color: #445047; font-size: 10px; }
-.gauge { position: relative; width: 92px; height: 92px; flex: 0 0 auto; display: grid; place-items: center; }
+.gauge { position: relative; width: 82px; height: 82px; flex: 0 0 auto; display: grid; place-items: center; }
 .gauge svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
 .gauge circle { fill: none; stroke: #dfe8d8; stroke-width: 8; }
 .gauge circle:last-child { stroke: #78ae50; stroke-linecap: round; stroke-dasharray: 283; transition: stroke-dashoffset .4s; }
@@ -109,6 +113,7 @@
 .gauge strong,.gauge small { display: block; }
 .gauge strong { font: 650 19px/1 var(--font-display),sans-serif; }
 .gauge small { margin-top: 4px; color: #738078; font-size: 9px; }
+.moistureCard > div:last-child { min-width: 0; overflow-wrap: anywhere; }
 .moistureCard > div:last-child small,.moistureCard > div:last-child strong { display: block; }
 .moistureCard > div:last-child small { color: #667566; font-size: 9px; letter-spacing: .07em; }
 .moistureCard > div:last-child strong { margin-top: 7px; color: #425045; font-size: 11px; }
@@ -180,6 +185,18 @@
 .formActions button:last-child { color: #18331f; border: 1px solid #a1d467; background: #a9dc70; }
 .formActions button:disabled, .modalHead > button:disabled { cursor: wait; opacity: .65; }
 
+@media (hover:hover) and (pointer:fine) {
+  .readingGrid > article:hover { border-color: #b9d6a2; box-shadow: 0 14px 30px rgba(42,68,45,.12), 0 0 0 3px rgba(178,227,120,.18); transform: translateY(-5px); }
+  .readingGrid > article:hover::after { animation: readingShine .9s ease-out; }
+  .readingGrid > article:hover > strong { transform: scale(1.06); }
+  .readingGrid .moistureCard:hover .gauge { transform: scale(1.07); }
+}
+@keyframes readingShine { 0% { opacity: 0; transform: translateX(0) skewX(-12deg); } 15% { opacity: 1; } 100% { opacity: 0; transform: translateX(420%) skewX(-12deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .readingGrid > article, .readingGrid > article > strong, .readingGrid .gauge { transition: border-color .3s, box-shadow .3s; }
+  .readingGrid > article:hover, .readingGrid > article:hover > strong, .readingGrid .moistureCard:hover .gauge { transform: none; }
+  .readingGrid > article:hover::after { animation: none; }
+}
 @media (hover:hover) and (pointer:fine) { .summary article:hover { border-color: #c9d7c1; box-shadow: 0 15px 32px rgba(42,68,45,.09); transform: translateY(-4px) scale(1.01); } }
 @media (max-width:1200px) { .summary { grid-template-columns: repeat(2,1fr); } .workspace { grid-template-columns: 1fr; } .cards { grid-template-columns: repeat(2,1fr); } }
 @media (max-width:760px) {
