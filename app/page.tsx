@@ -1,182 +1,249 @@
-import Image from "next/image";
+import { ArrowIcon, SiteFooter } from "./landing-art";
+import Link from "next/link";
 import {
-  ArrowIcon,
-  Brand,
-  FieldIntelligence,
-  InteractiveDashboard,
+  AlertFeed,
+  CountUp,
+  HeroShowcase,
   Navbar,
+  ProductShowcase,
+  QuoteForm,
+  Reveal,
+  RoverMission,
+  SensorLive,
+  Steps,
 } from "./landing-interactions";
 import styles from "./page.module.css";
+import { PageTransition } from "./page-transition";
 
-const capabilities = [
+const devices = [
   {
-    number: "01",
-    title: "Solo sob controle",
-    text: "Umidade, temperatura, pH, condutividade e nutrientes acompanhados em uma única leitura.",
+    tone: styles.cardForest,
+    place: "Subsolo",
+    title: "Sensor de solo",
+    anchor: "sensor-de-solo",
+    text: "Lê umidade, temperatura, pH, condutividade e NPK onde a raiz realmente vive.",
+    art: <SensorLive />,
   },
   {
-    number: "02",
-    title: "Visão que percorre",
-    text: "Um carrinho autônomo registra a plantação e ajuda a identificar pontos que pedem atenção.",
+    tone: styles.cardCream,
+    place: "Entre as fileiras",
+    title: "Carrinho autônomo",
+    anchor: null,
+    text: "Percorre a plantação registrando imagens georreferenciadas dos pontos que pedem atenção.",
+    art: <RoverMission />,
   },
   {
-    number: "03",
-    title: "Decisão com contexto",
-    text: "Dados organizados em um painel simples para você agir com mais precisão e menos desperdício.",
+    tone: styles.cardLime,
+    place: "Na sua mão",
+    title: "Painel web",
+    anchor: null,
+    text: "Tudo organizado por propriedade e por dispositivo, no computador ou no celular.",
+    art: <AlertFeed />,
   },
 ];
 
-const steps = [
-  ["01", "Instalamos", "Os dispositivos são associados à sua área e preparados para a rotina da plantação."],
-  ["02", "Monitoramos", "Sensores e imagens transformam o campo em informações claras e contínuas."],
-  ["03", "Você decide", "O painel destaca o que mudou para apoiar decisões rápidas e responsáveis."],
+const stats = [
+  { value: 7, suffix: "", text: "parâmetros do solo em cada leitura" },
+  { value: 1, suffix: " min", text: "entre cada atualização automática do painel" },
+  { value: 24, suffix: "h", text: "de visão contínua, faça chuva ou faça sol" },
+  { value: 3, suffix: "", text: "perfis de acesso para dividir o trabalho com a equipe" },
 ];
+
+const questions = [
+  {
+    question: "O que os sensores medem?",
+    answer: "Umidade, temperatura, pH, condutividade elétrica, nitrogênio, fósforo e potássio — sete parâmetros em cada leitura.",
+  },
+  {
+    question: "Quem instala os dispositivos?",
+    answer: "A equipe TechSoil. Os sensores e o carrinho são associados à sua área e preparados para a rotina da plantação.",
+  },
+  {
+    question: "Consigo acompanhar pelo celular?",
+    answer: "Sim. O painel funciona no navegador do computador e do celular, com as mesmas leituras, mapa e alertas.",
+  },
+  {
+    question: "Minha equipe pode acessar também?",
+    answer: "Pode. Você convida pessoas e escolhe o perfil de cada uma — proprietário, operador ou visualizador — e quais propriedades ela enxerga.",
+  },
+  {
+    question: "Quando recebo o meu acesso?",
+    answer: "A criação da conta acontece somente após a contratação. Comece pelo formulário abaixo e retornamos com uma proposta.",
+  },
+];
+
+const marquee = "NITROGÊNIO ✦ FÓSFORO ✦ POTÁSSIO ✦ pH ✦ CONDUTIVIDADE ✦ UMIDADE ✦ TEMPERATURA ✦ ";
 
 export default function Home() {
   return (
-    <main>
-      <Navbar />
+    <PageTransition>
+      <main className={styles.page}>
+        <Navbar />
 
-      <section className={styles.hero} id="inicio">
-        <Image
-          className={styles.heroImage}
-          src="/hero-vineyard.png"
-          alt="Vinhedo monitorado por sensor de solo e carrinho autônomo"
-          fill
-          sizes="100vw"
-          priority
-        />
-        <div className={styles.heroShade} />
-
-        <div className={styles.heroContent}>
-          <p className={styles.eyebrow}>
-            <span /> Tecnologia que nasce no campo
-          </p>
+        <HeroShowcase>
+          <p className={styles.eyebrow}><span /> Monitoramento de solo em tempo real</p>
           <h1>
-            Cultive decisões.
+            Saiba o que o seu
             <br />
-            <em>Colha resultados.</em>
+            solo precisa
+            <br />
+            <mark>antes da safra.</mark>
           </h1>
           <p className={styles.heroLead}>
-            Inteligência de solo e monitoramento autônomo para transformar cada
-            leitura do campo em uma escolha mais precisa.
+            Sensores leem o solo direto no talhão. A TechSoil transforma cada leitura
+            em alertas simples no seu celular — sem planilha, sem achismo.
           </p>
           <div className={styles.heroActions}>
             <a className={styles.primaryButton} href="#orcamento">
-              Solicitar orçamento <ArrowIcon />
+              Solicitar proposta <ArrowIcon />
             </a>
-            <a className={styles.ghostButton} href="#solucao">
-              Conhecer a solução
-            </a>
+            <a className={styles.outlineButton} href="#como-funciona">Ver como funciona</a>
           </div>
-        </div>
+          <div className={styles.worksOn}>
+            <span>Acompanhe de onde estiver</span>
+            <ul>
+              <li>Celular</li>
+              <li>Computador</li>
+              <li>Alertas automáticos</li>
+            </ul>
+          </div>
+        </HeroShowcase>
 
-        <div className={styles.heroFoot} aria-label="Destaques da solução">
-          <span><strong>7</strong> parâmetros do solo</span>
-          <span><strong>24h</strong> de visão contínua</span>
-          <a href="#solucao">Explore a TechSoil <span aria-hidden="true">↓</span></a>
-        </div>
-      </section>
+        <section className={styles.platform} id="plataforma">
+          <div className={styles.sectionHead}>
+            <Reveal>
+              <p className={styles.sectionLabel}>01 — A plataforma</p>
+              <h2>
+                Você não gerencia
+                <br />
+                <em>o que não mede.</em>
+              </h2>
+            </Reveal>
+            <Reveal delay={120}>
+              <p className={styles.sectionLead}>
+                Todos os talhões num só painel: leituras ao vivo, mapa de satélite e
+                alertas que mostram o que precisa de atenção — não só o que aconteceu.
+              </p>
+              <Link className={styles.deviceLink} href="/plataforma">Conhecer a plataforma →</Link>
+            </Reveal>
+          </div>
+          <ProductShowcase />
+        </section>
 
-      <section className={styles.intro} id="solucao">
-        <div className={styles.sectionLabel}>01 — A solução</div>
-        <div className={styles.introCopy}>
-          <p className={styles.kicker}>Tecnologia útil, do jeito que o campo precisa.</p>
-          <h2>Menos incerteza entre você e a próxima decisão.</h2>
-          <p>
-            A TechSoil reúne sensores, automação e uma leitura visual da plantação
-            em uma experiência acessível. Você acompanha o que importa sem precisar
-            transformar sua rotina em uma planilha.
-          </p>
-        </div>
+        <section className={styles.technology} id="tecnologia">
+          <div className={styles.sectionHead}>
+            <Reveal>
+              <p className={styles.sectionLabel}>02 — Tecnologia</p>
+              <h2>
+                O campo fala.
+                <br />
+                <mark>A TechSoil traduz.</mark>
+              </h2>
+            </Reveal>
+            <Reveal delay={120}>
+              <p className={styles.sectionLead}>
+                Da química do solo às imagens entre as fileiras, cada dado chega
+                organizado por propriedade e por dispositivo.
+              </p>
+            </Reveal>
+          </div>
+          <div className={styles.devices}>
+            {devices.map((device, index) => (
+              <Reveal as="article" key={device.title} className={`${styles.deviceCard} ${device.tone}`} delay={index * 120}>
+                <div className={styles.deviceArt}>
+                  <span>{device.place}</span>
+                  {device.art}
+                </div>
+                <div className={styles.deviceCopy}>
+                  <h3>{device.title}</h3>
+                  <p>{device.text}</p>
+                  {device.anchor && (
+                    <Link className={styles.deviceLink} href={`/hardware#${device.anchor}`}>Ver especificações →</Link>
+                  )}
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
 
-        <div className={styles.capabilityGrid}>
-          {capabilities.map((capability) => (
-            <article className={styles.capabilityCard} key={capability.number}>
-              <span>{capability.number}</span>
-              <div className={styles.cardGlyph} aria-hidden="true" />
-              <h3>{capability.title}</h3>
-              <p>{capability.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+        <section className={styles.process} id="como-funciona">
+          <div className={styles.marquee} aria-hidden="true">
+            <div>
+              <span>{marquee.repeat(2)}</span>
+              <span>{marquee.repeat(2)}</span>
+            </div>
+          </div>
+          <div className={styles.sectionHead}>
+            <Reveal>
+              <p className={styles.sectionLabel}>03 — Como funciona</p>
+              <h2 className={styles.giant}>Da terra<br />à tela.</h2>
+            </Reveal>
+            <Reveal delay={120}>
+              <p className={styles.sectionLead}>
+                Três passos — e você não precisa ser especialista em tecnologia para
+                nenhum deles.
+              </p>
+            </Reveal>
+          </div>
+          <Steps />
+        </section>
 
-      <section className={styles.technology} id="tecnologia">
-        <div className={styles.techCopy}>
-          <div className={styles.sectionLabel}>02 — Tecnologia</div>
-          <p className={styles.kicker}>O campo fala. A TechSoil traduz.</p>
-          <h2>Uma visão completa, sem complicar a leitura.</h2>
-          <p>
-            Da saúde química do solo às imagens capturadas entre as fileiras, cada
-            dado chega organizado por plantação e por dispositivo.
-          </p>
-          <ul>
-            <li><span /> Leituras de NPK, pH e condutividade elétrica</li>
-            <li><span /> Temperatura e umidade em acompanhamento contínuo</li>
-            <li><span /> Inspeção visual georreferenciada da plantação</li>
-          </ul>
-        </div>
+        <section className={styles.why}>
+          <Reveal>
+            <p className={styles.sectionLabel}>04 — Por que TechSoil</p>
+            <h2>
+              Menos incerteza entre você
+              <br />
+              <strong>e a próxima decisão.</strong>
+            </h2>
+          </Reveal>
+          <dl className={styles.stats}>
+            {stats.map((stat, index) => (
+              <Reveal key={stat.text} delay={index * 100}>
+                <dt><CountUp value={stat.value} suffix={stat.suffix} /></dt>
+                <dd>{stat.text}</dd>
+              </Reveal>
+            ))}
+          </dl>
 
-        <InteractiveDashboard />
-        <FieldIntelligence />
-      </section>
+          <div className={styles.faq} id="perguntas">
+            <div>
+              <p className={styles.sectionLabel}>Perguntas frequentes</p>
+              <h2 className={styles.faqTitle}>Dúvidas antes de começar?</h2>
+              <p className={styles.faqLead}>Se a sua não estiver aqui, fale com a gente pelo formulário abaixo.</p>
+            </div>
+            <div className={styles.faqList}>
+              {questions.map((item, index) => (
+                <details key={item.question} open={index === 0}>
+                  <summary>
+                    {item.question}
+                    <i aria-hidden="true" />
+                  </summary>
+                  <p>{item.answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
 
-      <section className={styles.process} id="como-funciona">
-        <div className={styles.sectionLabel}>03 — Como funciona</div>
-        <div className={styles.processHead}>
-          <p className={styles.kicker}>Da terra à tela.</p>
-          <h2>Três passos para enxergar melhor sua produção.</h2>
-        </div>
-        <div className={styles.steps}>
-          {steps.map(([number, title, text]) => (
-            <article key={number}>
-              <span>{number}</span>
-              <div className={styles.stepLine}><i /></div>
-              <h3>{title}</h3>
-              <p>{text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+        <section className={styles.quote} id="orcamento">
+          <svg className={styles.quoteRings} viewBox="0 0 620 620" aria-hidden="true">
+            {[300, 240, 180, 120].map((radius, index) => (
+              <circle key={radius} cx="310" cy="310" r={radius} fill="none" stroke="#172018" strokeOpacity={0.1 + index * 0.02} strokeDasharray={index % 2 ? "4 10" : undefined} />
+            ))}
+          </svg>
+          <Reveal className={styles.quoteCopy}>
+            <p className={styles.sectionLabel}>Comece uma conversa</p>
+            <h2>Seu campo já gera sinais. Vamos transformá-los em decisões?</h2>
+            <p>Conte um pouco sobre a sua produção e receba uma proposta pensada para a sua realidade.</p>
+          </Reveal>
+          <Reveal delay={150}>
+            <QuoteForm />
+          </Reveal>
+        </section>
 
-      <section className={styles.about} id="sobre">
-        <div className={styles.aboutVisual}>
-          <div className={styles.orbit}><span>SOLO</span><span>DADOS</span><span>DECISÃO</span></div>
-          <Image src="/techsoil-mark.png" alt="Símbolo TechSoil" width={420} height={420} />
-        </div>
-        <div className={styles.aboutCopy}>
-          <div className={styles.sectionLabel}>04 — Sobre nós</div>
-          <p className={styles.kicker}>Inovação próxima de quem produz.</p>
-          <h2>Tecnologia agrícola que cabe na realidade do produtor.</h2>
-          <p>
-            A TechSoil Systems nasceu para aproximar ferramentas modernas de quem
-            cuida da terra todos os dias. Desenvolvemos uma solução profissional,
-            acessível e construída a partir de necessidades reais do campo.
-          </p>
-        </div>
-      </section>
-
-      <section className={styles.quote} id="orcamento">
-        <div>
-          <p className={styles.eyebrow}><span /> Comece uma conversa</p>
-          <h2>Seu campo já gera sinais.<br /><em>Vamos transformá-los em decisões?</em></h2>
-        </div>
-        <div className={styles.quoteAction}>
-          <p>Conte um pouco sobre a sua produção e receba uma proposta pensada para a sua realidade.</p>
-          <a className={styles.primaryButton} href="mailto:contato@techsoil.com.br?subject=Solicitação%20de%20orçamento%20TechSoil">
-            Solicitar orçamento <ArrowIcon />
-          </a>
-          <small>A criação da conta acontece somente após a contratação.</small>
-        </div>
-      </section>
-
-      <footer className={styles.footer}>
-        <Brand />
-        <p>Inteligência para o solo. Clareza para quem produz.</p>
-        <a href="#inicio">Voltar ao topo ↑</a>
-        <small>© 2026 TechSoil Systems</small>
-      </footer>
-    </main>
+        <SiteFooter />
+      </main>
+    </PageTransition>
   );
 }

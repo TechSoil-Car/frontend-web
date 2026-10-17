@@ -40,3 +40,70 @@ a {
   background: #8dcc5c;
   color: #102417;
 }
+
+/* Troca de página do site (React ViewTransition, ver app/page-transition.tsx).
+   O conteúdo antigo sai rápido; o novo entra esmaecendo e subindo de leve. */
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-old(.page-exit) {
+  animation: 160ms ease-in both page-out;
+}
+
+::view-transition-new(.page-enter) {
+  animation: 320ms cubic-bezier(0.2, 0.7, 0.2, 1) 100ms both page-in;
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+/* O menu fica parado, por cima do conteúdo que troca */
+::view-transition-group(site-header) {
+  z-index: 100;
+  animation: none;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/* A linha da aba desliza da aba antiga até a nova */
+::view-transition-group(nav-indicator) {
+  z-index: 101;
+}
+
+::view-transition-group(.nav-slide) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

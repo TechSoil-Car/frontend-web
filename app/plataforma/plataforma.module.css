@@ -1,0 +1,446 @@
+/* Complementa hardware.module.css: só o que é próprio das telas do painel */
+
+/* O mesmo aparelho da home */
+
+.phoneStage {
+  position: relative;
+  display: grid;
+  min-height: 600px;
+  place-items: center;
+}
+
+.phoneStage::before {
+  position: absolute;
+  width: min(420px, 92%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--lime);
+  content: "";
+}
+
+.device {
+  position: relative;
+  width: 270px;
+  height: 560px;
+  padding: 10px;
+  border-radius: 46px;
+  background: var(--night);
+  box-shadow: 0 40px 80px rgba(23, 32, 24, 0.28), inset 0 0 0 2px #2c372d;
+  transform: rotate(-3deg);
+}
+
+.device::before {
+  position: absolute;
+  z-index: 2;
+  top: 20px;
+  left: 50%;
+  width: 78px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--night);
+  content: "";
+  transform: translateX(-50%);
+}
+
+.deviceScreen {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 36px;
+  background: var(--paper);
+}
+
+.deviceStatus {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 26px 0;
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.deviceStatus i {
+  position: relative;
+  width: 20px;
+  height: 10px;
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+}
+
+.deviceStatus i::before {
+  position: absolute;
+  inset: 1.5px 5px 1.5px 1.5px;
+  border-radius: 1px;
+  background: var(--ink);
+  content: "";
+}
+
+/* Tela parada no topo do app: os cards saem dos lugares que ocupam no print */
+.deviceShot {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding-top: 40px;
+}
+
+/* Lugar vazio que fica na tela quando o card sai */
+.slot {
+  position: absolute;
+  left: 9.6px;
+  border: 1.5px dashed rgba(23, 32, 24, 0.28);
+  background: var(--paper);
+  opacity: var(--out, 0);
+}
+
+.slotStatus {
+  top: 213px;
+  width: 231px;
+  height: 44px;
+  border-radius: 7px;
+}
+
+.slotMoisture {
+  top: 266.6px;
+  width: 112px;
+  height: 93px;
+  border-radius: 10px;
+}
+
+/* Cada card tem o tamanho de "fora"; --s0 o encolhe até caber no lugar do print.
+   --out vai de 0 (dentro) a 1 (fora) e é atualizado pelo scroll. */
+.chip {
+  position: absolute;
+  z-index: 3;
+  left: 19.6px;
+  transform-origin: 0 0;
+  transform:
+    translate(calc(var(--dx) * var(--out, 0)), calc(var(--dy) * var(--out, 0)))
+    rotate(calc(3deg * var(--out, 0)))
+    scale(calc(var(--s0) + (1 - var(--s0)) * var(--out, 0)));
+  box-shadow: 0 calc(26px * var(--out, 0)) calc(50px * var(--out, 0)) rgba(23, 32, 24, calc(0.28 * var(--out, 0)));
+}
+
+.chipStatus {
+  --s0: 0.825;
+  --dx: -170px;
+  --dy: -80px;
+  top: 223px;
+  display: flex;
+  width: 280px;
+  height: 53px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border-radius: 9px;
+  background: var(--forest);
+  color: var(--paper);
+}
+
+.chipStatus i {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 0 4px rgba(166, 221, 98, 0.22);
+}
+
+.chipStatus div {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chipStatus small {
+  color: #b9c7b4;
+  font-size: 7.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.chipStatus strong {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.chipStatus span {
+  color: var(--lime);
+  font-size: 14px;
+}
+
+.chipMoisture {
+  --s0: 0.622;
+  --dx: 170px;
+  --dy: 150px;
+  top: 266.6px;
+  display: flex;
+  width: 180px;
+  height: 150px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  border: 1px solid #e6e0d2;
+  border-radius: 16px;
+  background: #fbfaf6;
+}
+
+.chipMoisture div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chipMoisture small {
+  color: var(--body);
+  font-size: 12px;
+}
+
+.chipMoisture span {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #e6efd9;
+  color: #3d6a24;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.chipMoisture strong {
+  font-family: var(--font-display), Arial, sans-serif;
+  font-size: 38px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+
+.chipMoisture em {
+  margin-left: 4px;
+  color: var(--body);
+  font-size: 14px;
+  font-style: normal;
+}
+
+.screen {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Moldura de navegador em volta dos prints */
+
+.shot {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid rgba(23, 32, 24, 0.14);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: 0 28px 60px rgba(23, 32, 24, 0.16), 0 4px 12px rgba(23, 32, 24, 0.06);
+  transform: perspective(1400px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+  transition: transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 600ms ease;
+}
+
+/* Reflexo de luz que segue o ponteiro */
+.shot::after {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(520px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, 0.24), transparent 45%);
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms ease;
+}
+
+.shot[data-hover] {
+  --lift: -8px;
+  box-shadow: 0 44px 80px rgba(23, 32, 24, 0.22), 0 6px 16px rgba(23, 32, 24, 0.08);
+  transition: transform 120ms ease-out, box-shadow 400ms ease;
+}
+
+.shot[data-hover]::after {
+  opacity: 1;
+}
+
+.shotBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(23, 32, 24, 0.1);
+  background: #ebe7da;
+}
+
+.shotBar i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #cfc8b6;
+}
+
+.shotBar span {
+  overflow: hidden;
+  flex: 0 1 340px;
+  margin: 0 auto;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.points {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.points li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1.5px solid var(--ink);
+}
+
+.points strong {
+  font-size: 14px;
+}
+
+.points span {
+  color: var(--body);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* Alertas, na seção escura */
+
+.darkText {
+  color: #c9d1c0;
+}
+
+.rules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.rules h3 {
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid var(--lime);
+  color: var(--lime);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.rules ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rules li {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(245, 243, 235, 0.18);
+}
+
+.rules strong {
+  font-family: var(--font-display), Arial, sans-serif;
+  font-size: 15px;
+}
+
+.rules span,
+.channels {
+  color: #c9d1c0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.channels {
+  max-width: 560px;
+  font-size: 14px;
+}
+
+.roleText {
+  padding: 12px 0;
+  border-bottom: 1px solid #ece6d8;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+  .phoneStage {
+    min-height: 560px;
+  }
+
+  .chipStatus {
+    --dx: -50px;
+    --dy: -70px;
+  }
+
+  .chipMoisture {
+    --dx: 96px;
+    --dy: 150px;
+  }
+
+  .points,
+  .rules {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Abertura fixa enquanto os cards saem: o ::after é o espaço de scroll (PIN_DISTANCE no tsx).
+   Fica no fim para vencer o position: relative de .phoneStage. */
+
+@media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+  .heroTrack::after {
+    display: block;
+    height: 420px;
+    content: "";
+  }
+
+  .heroPinned {
+    position: sticky;
+    top: 0;
+    min-height: 100svh;
+  }
+}
+
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference) {
+  .phoneTrack::after {
+    display: block;
+    height: 420px;
+    content: "";
+  }
+
+  .phoneStage {
+    position: sticky;
+    top: calc(var(--nav-h) + 8px);
+  }
+}
