@@ -6,7 +6,11 @@ import { useRouter } from "next/navigation";
 import { ApiError, apiRequest } from "@/shared/api/api-client";
 import { useAuth } from "../../context/AuthContext";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
-import styles from "./AcceptInviteScreen.module.css";
+import { ArrowIcon } from "@/app/landing-art";
+import { PasswordChecklist, PasswordInput } from "../auth-form/PasswordInput";
+import styles from "../auth-form/AuthForm.module.css";
+import { AuthShell } from "../auth-shell/AuthShell";
+import { InviteBadge, type InviteBadgeState } from "./InviteBadge";
 
 type Preview = {
   name: string;
@@ -25,6 +29,9 @@ export function AcceptInviteScreen({ token }: { token: string }) {
   const [preview, setPreview] = useState<Preview | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
+  // Só para a lista de requisitos; o envio continua lendo o FormData.
+  const [typedPassword, setTypedPassword] = useState("");
+  const [typedConfirmation, setTypedConfirmation] = useState("");
 
   useEffect(() => {
     if (!token) return;
@@ -109,152 +116,174 @@ export function AcceptInviteScreen({ token }: { token: string }) {
     }
   }
 
+  const badgeState: InviteBadgeState = accepted
+    ? "accepted"
+    : !token || previewError
+      ? "invalid"
+      : !preview
+        ? "loading"
+        : "ready";
+
+  const heading = accepted
+    ? { label: "Cadastro concluído", title: "Convite", mark: "aceito." }
+    : badgeState === "invalid"
+      ? { label: "Convite", title: "Convite", mark: "indisponível." }
+      : badgeState === "loading"
+        ? { label: "Convite", title: "Conferindo seu", mark: "convite..." }
+        : preview?.requiresActivation
+          ? { label: "Cadastro", title: "Crie sua", mark: "senha." }
+          : { label: "Convite", title: "Entre na", mark: "equipe." };
+
   return (
-    <main className={styles.page}>
-      <section className={styles.card}>
-        <Link className={styles.brand} href="/">
-          TECHSOIL SYSTEMS
-        </Link>
-        <small>SEU ACESSO À PLATAFORMA</small>
-        <h1>
-          {accepted
-            ? "Convite aceito"
-            : preview?.requiresActivation
-              ? "Defina sua senha"
-              : "Seu convite para a TechSoil"}
-        </h1>
-        {accepted ? (
-          <>
-            <p>
-              {preview?.plantationName
-                ? `Você já pode acessar ${preview.plantationName}. `
-                : "Sua conta está pronta. "}
-              {user?.email === preview?.email
-                ? "A plantação está disponível na sua lista de propriedades."
-                : `Entre com ${preview?.email} e ${preview?.requiresActivation ? "a senha que você escolheu." : "sua senha atual."}`}
+    <AuthShell
+      label={heading.label}
+      title={
+        <>
+          {heading.title}{" "}
+          <br />
+          <mark>{heading.mark}</mark>
+        </>
+      }
+      aside={
+        <InviteBadge
+          state={badgeState}
+          name={preview?.name}
+          email={preview?.email}
+          plantation={preview?.plantationName}
+        />
+      }
+      asideLabel="Crachá do convite"
+      mobileAside="top"
+    >
+      {accepted ? (
+        <div className={styles.form}>
+          <p className={styles.success} role="status">
+            {preview?.plantationName
+              ? `Você já pode acessar ${preview.plantationName}. `
+              : "Sua conta está pronta. "}
+            {user?.email === preview?.email
+              ? "A plantação está disponível na sua lista de propriedades."
+              : `Entre com ${preview?.email} e ${preview?.requiresActivation ? "a senha que você escolheu." : "sua senha atual."}`}
+          </p>
+          {user && user.email !== preview?.email ? (
+            <>
+              <p className={styles.text}>
+                Você está conectado com outro e-mail. Troque de conta para
+                acessar este convite.
+              </p>
+              <button
+                className={styles.submit}
+                type="button"
+                disabled={saving}
+                onClick={() => void switchAccount()}
+              >
+                {saving ? "Saindo..." : "Entrar com a conta convidada"}
+              </button>
+            </>
+          ) : (
+            <Link
+              className={styles.submit}
+              href={user ? "/dashboard/plantacoes" : "/login"}
+            >
+              {user ? "Ver minhas plantações" : "Ir para o login"} <ArrowIcon />
+            </Link>
+          )}
+          {error && (
+            <p className={styles.error} role="alert">
+              {error}
             </p>
-            {user && user.email !== preview?.email ? (
+          )}
+        </div>
+      ) : !token ? (
+        <div className={styles.form}>
+          <p className={styles.error} role="alert">
+            O link de ativação está incompleto. Abra o convite recebido por
+            e-mail ou solicite um novo ao administrador.
+          </p>
+          <Link className={styles.secondary} href="/login">
+            Voltar ao login
+          </Link>
+        </div>
+      ) : previewError ? (
+        <div className={styles.form}>
+          <p className={styles.error} role="alert">
+            {previewError}
+          </p>
+          <p className={styles.text}>
+            Se o convite expirou ou foi cancelado, solicite um novo ao
+            proprietário ou administrador.
+          </p>
+          <button
+            className={styles.secondary}
+            type="button"
+            onClick={() => {
+              setPreviewError(null);
+              setAttempt((value) => value + 1);
+            }}
+          >
+            Tentar novamente
+          </button>
+        </div>
+      ) : !preview ? (
+        <p className={styles.text} role="status">
+          <span className={styles.spinner} aria-hidden="true" /> Conferindo seu convite...
+        </p>
+      ) : (
+        <form className={styles.form} onSubmit={submit}>
+          <p className={styles.text}>
+            Convite para <strong>{preview.email}</strong>
+            {preview.plantationName
+              ? ` participar de ${preview.plantationName}.`
+              : " acessar a plataforma."}{" "}
+            {preview.requiresActivation
+              ? "Crie uma senha pessoal para ativar sua conta."
+              : "Você já possui uma conta. Confirme com sua senha atual para entrar nesta equipe."}
+          </p>
+          <PasswordInput
+            id="password"
+            name="password"
+            label={preview.requiresActivation ? "Nova senha" : "Sua senha atual"}
+            autoComplete={
+              preview.requiresActivation ? "new-password" : "current-password"
+            }
+            disabled={saving}
+            onChange={setTypedPassword}
+          />
+          {preview.requiresActivation ? (
+            <>
+              <PasswordInput
+                id="confirmation"
+                name="confirmation"
+                label="Confirme a senha"
+                autoComplete="new-password"
+                disabled={saving}
+                onChange={setTypedConfirmation}
+              />
+              <PasswordChecklist password={typedPassword} confirmation={typedConfirmation} />
+            </>
+          ) : (
+            <Link className={styles.inlineLink} href="/forgot-password">
+              Esqueci minha senha
+            </Link>
+          )}
+          {error && (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          )}
+          <button className={styles.submit} type="submit" disabled={saving}>
+            {saving ? (
               <>
-                <p>
-                  Você está conectado com outro e-mail. Troque de conta para
-                  acessar este convite.
-                </p>
-                <button
-                  type="button"
-                  disabled={saving}
-                  onClick={() => void switchAccount()}
-                >
-                  {saving ? "Saindo..." : "Entrar com a conta convidada"}
-                </button>
+                <span className={styles.spinner} aria-hidden="true" /> Confirmando...
               </>
             ) : (
-              <Link
-                className={styles.login}
-                href={user ? "/dashboard/plantacoes" : "/login"}
-              >
-                {user ? "Ver minhas plantações →" : "Ir para o login →"}
-              </Link>
+              <>
+                {preview.requiresActivation ? "Ativar conta e aceitar" : "Aceitar convite"} <ArrowIcon />
+              </>
             )}
-            {error && (
-              <p className={styles.error} role="alert">
-                {error}
-              </p>
-            )}
-          </>
-        ) : !token ? (
-          <>
-            <p role="alert">
-              O link de ativação está incompleto. Abra o convite recebido por
-              e-mail ou solicite um novo ao administrador.
-            </p>
-            <Link href="/login">Voltar ao login</Link>
-          </>
-        ) : previewError ? (
-          <>
-            <p className={styles.error} role="alert">
-              {previewError}
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setPreviewError(null);
-                setAttempt((value) => value + 1);
-              }}
-            >
-              Tentar novamente
-            </button>
-            <p>
-              Se o convite expirou ou foi cancelado, solicite um novo ao
-              proprietário ou administrador.
-            </p>
-          </>
-        ) : !preview ? (
-          <p role="status">Conferindo seu convite...</p>
-        ) : (
-          <>
-            <p>
-              Convite para <strong>{preview.email}</strong>
-              {preview.plantationName
-                ? ` participar de ${preview.plantationName}.`
-                : " acessar a plataforma."}
-            </p>
-            <p>
-              {preview.requiresActivation
-                ? "Crie uma senha pessoal para ativar sua conta."
-                : "Você já possui uma conta. Confirme com sua senha atual para entrar nesta equipe."}
-            </p>
-            <form onSubmit={submit}>
-              <label>
-                {preview.requiresActivation ? "Nova senha" : "Sua senha atual"}
-                <input
-                  name="password"
-                  type="password"
-                  minLength={8}
-                  maxLength={72}
-                  required
-                  autoComplete={
-                    preview.requiresActivation
-                      ? "new-password"
-                      : "current-password"
-                  }
-                  disabled={saving}
-                />
-              </label>
-              {preview.requiresActivation && (
-                <label>
-                  Confirme a senha
-                  <input
-                    name="confirmation"
-                    type="password"
-                    minLength={8}
-                    maxLength={72}
-                    required
-                    autoComplete="new-password"
-                    disabled={saving}
-                  />
-                </label>
-              )}
-              {preview.requiresActivation ? (
-                <small>Use entre 8 e 72 caracteres (até 72 bytes).</small>
-              ) : (
-                <Link href="/forgot-password">Esqueci minha senha</Link>
-              )}
-              <button type="submit" disabled={saving}>
-                {saving
-                  ? "Confirmando..."
-                  : preview.requiresActivation
-                    ? "Ativar conta e aceitar"
-                    : "Aceitar convite"}
-              </button>
-              {error && (
-                <p className={styles.error} role="alert">
-                  {error}
-                </p>
-              )}
-            </form>
-          </>
-        )}
-      </section>
-    </main>
+          </button>
+        </form>
+      )}
+    </AuthShell>
   );
 }

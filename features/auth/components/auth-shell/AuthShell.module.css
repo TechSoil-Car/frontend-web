@@ -1,0 +1,164 @@
+/* Telas de acesso: formulário no papel à esquerda, painel verde quadriculado à direita */
+
+.page {
+  display: grid;
+  min-height: 100svh;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+}
+
+.main {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 28px var(--gutter) 24px;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.back {
+  color: var(--body);
+  font-size: 13px;
+  font-weight: 600;
+  transition: color 180ms ease;
+}
+
+.back:hover {
+  color: var(--ink);
+}
+
+.content {
+  display: flex;
+  width: 100%;
+  max-width: 460px;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 48px 0;
+}
+
+.title {
+  margin-top: 14px;
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.lead {
+  margin-top: 16px !important;
+  color: var(--body);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Mesmo cartão "descolado" da página Sobre */
+.card {
+  margin-top: 28px;
+  padding: 28px;
+  border: 1.5px solid var(--ink);
+  background: #fbfaf6;
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+.footer {
+  margin-top: 28px;
+  color: var(--body);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.footer a {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--lime);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 3px;
+}
+
+.legal {
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+.aside {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100svh;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: 48px clamp(28px, 4vw, 64px);
+  background:
+    repeating-linear-gradient(0deg, rgba(166, 221, 98, 0.1) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(90deg, rgba(166, 221, 98, 0.1) 0 1px, transparent 1px 28px),
+    var(--forest);
+  color: var(--paper);
+}
+
+@media (max-width: 900px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .main {
+    padding-top: 20px;
+  }
+
+  .content {
+    padding: 36px 0;
+  }
+
+  .card {
+    padding: 22px 20px;
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+
+  .page[data-mobile-aside="hide"] .aside {
+    display: none;
+  }
+
+  /* O painel vira uma faixa entre a logo e o formulário: a coluna se desfaz e os
+     blocos são reordenados direto na grade da página */
+  .page[data-mobile-aside="top"] .main {
+    display: contents;
+  }
+
+  .page[data-mobile-aside="top"] .top {
+    order: 1;
+    padding: 20px var(--gutter);
+  }
+
+  .page[data-mobile-aside="top"] .aside {
+    position: static;
+    order: 2;
+    height: auto;
+    padding: 28px var(--gutter);
+  }
+
+  .page[data-mobile-aside="top"] .content {
+    order: 3;
+    max-width: calc(460px + 2 * var(--gutter));
+    padding: 32px var(--gutter);
+  }
+
+  .page[data-mobile-aside="top"] .legal {
+    order: 4;
+    padding: 0 var(--gutter) 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .back {
+    font-size: 12px;
+  }
+}

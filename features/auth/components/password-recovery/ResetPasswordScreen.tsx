@@ -3,18 +3,29 @@
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { ApiError, apiRequest, setAccessToken } from "@/shared/api/api-client";
-import styles from "../accept-invite-screen/AcceptInviteScreen.module.css";
+import { ArrowIcon } from "@/app/landing-art";
+import { PasswordChecklist, PasswordInput } from "../auth-form/PasswordInput";
+import styles from "../auth-form/AuthForm.module.css";
+import { AuthShell } from "../auth-shell/AuthShell";
+import { RecoverySteps } from "./RecoverySteps";
+
+// Token lido do link, guardado só em memória. Se a tela for montada de novo (o React faz isso
+// em desenvolvimento), a URL já está sem o "#token" e o valor vem daqui.
+let capturedToken: string | null = null;
 
 export function ResetPasswordScreen() {
   const [token, setToken] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [complete, setComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Só para a lista de requisitos; o envio continua lendo o FormData.
+  const [typedPassword, setTypedPassword] = useState("");
+  const [typedConfirmation, setTypedConfirmation] = useState("");
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      const value =
-        new URLSearchParams(window.location.hash.slice(1)).get("token") ?? "";
-      setToken(/^[A-Za-z0-9_-]{43}$/.test(value) ? value : "");
+      const value = new URLSearchParams(window.location.hash.slice(1)).get("token");
+      if (value !== null) capturedToken = /^[A-Za-z0-9_-]{43}$/.test(value) ? value : "";
+      setToken(capturedToken ?? "");
       // Hold the secret only in memory; no query string or local storage.
       window.history.replaceState(null, "", "/reset-password");
     }, 0);
@@ -46,6 +57,7 @@ export function ResetPasswordScreen() {
       });
       setComplete(true);
       setToken("");
+      capturedToken = null;
       setAccessToken(null);
       window.dispatchEvent(new Event("techsoil:session-expired"));
     } catch (failure) {
@@ -59,79 +71,94 @@ export function ResetPasswordScreen() {
     }
   }
   return (
-    <main className={styles.page}>
-      <section className={styles.card}>
-        <Link className={styles.brand} href="/">
-          TECHSOIL SYSTEMS
-        </Link>
-        <small>SEGURANÇA DA SUA CONTA</small>
-        <h1>{complete ? "Senha redefinida" : "Defina sua nova senha"}</h1>
-        {complete ? (
+    <AuthShell
+      label="Segurança da sua conta"
+      title={
+        complete ? (
           <>
-            <p role="status">
-              Sua senha foi alterada e as sessões anteriores foram encerradas.
-              Entre novamente com a nova senha.
-            </p>
-            <Link className={styles.login} href="/login">
-              Ir para o login
-            </Link>
-          </>
-        ) : token === null ? (
-          <p role="status">Verificando link...</p>
-        ) : !token ? (
-          <>
-            <p role="alert">
-              Link incompleto ou inválido. Abra o link recebido por e-mail ou
-              solicite uma nova recuperação.
-            </p>
-            <Link className={styles.login} href="/forgot-password">
-              Solicitar novo link
-            </Link>
+            Senha{" "}
+            <br />
+            <mark>redefinida.</mark>
           </>
         ) : (
           <>
-            <p>
-              Use uma senha pessoal de 8 a 72 caracteres (até 72 bytes). Você
-              precisará entrar novamente após a troca.
-            </p>
-            <form onSubmit={submit}>
-              <label>
-                Nova senha
-                <input
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  minLength={8}
-                  maxLength={72}
-                  required
-                  disabled={saving}
-                />
-              </label>
-              <label>
-                Confirme a nova senha
-                <input
-                  name="confirmation"
-                  type="password"
-                  autoComplete="new-password"
-                  minLength={8}
-                  maxLength={72}
-                  required
-                  disabled={saving}
-                />
-              </label>
-              <button type="submit" disabled={saving}>
-                {saving ? "Redefinindo..." : "Redefinir senha"}
-              </button>
-              {error && (
-                <p className={styles.error} role="alert">
-                  {error}
-                </p>
-              )}
-            </form>
-            <Link href="/forgot-password">Solicitar outro link</Link>
+            Defina sua{" "}
+            <br />
+            <mark>nova senha.</mark>
           </>
-        )}
-      </section>
-    </main>
+        )
+      }
+      aside={<RecoverySteps current={complete ? 4 : token ? 2 : 1} />}
+      asideLabel="Passos da recuperação de senha"
+      mobileAside="top"
+    >
+      {complete ? (
+        <div className={styles.form}>
+          <p className={styles.success} role="status">
+            Sua senha foi alterada e as sessões anteriores foram encerradas.
+            Entre novamente com a nova senha.
+          </p>
+          <Link className={styles.submit} href="/login">
+            Ir para o login <ArrowIcon />
+          </Link>
+        </div>
+      ) : token === null ? (
+        <p className={styles.text} role="status">
+          <span className={styles.spinner} aria-hidden="true" /> Verificando link...
+        </p>
+      ) : !token ? (
+        <div className={styles.form}>
+          <p className={styles.error} role="alert">
+            Link incompleto ou inválido. Abra o link recebido por e-mail ou
+            solicite uma nova recuperação.
+          </p>
+          <Link className={styles.submit} href="/forgot-password">
+            Solicitar novo link <ArrowIcon />
+          </Link>
+        </div>
+      ) : (
+        <form className={styles.form} onSubmit={submit}>
+          <p className={styles.text}>
+            Use uma senha pessoal. Você precisará entrar novamente após a troca.
+          </p>
+          <PasswordInput
+            id="password"
+            name="password"
+            label="Nova senha"
+            autoComplete="new-password"
+            disabled={saving}
+            onChange={setTypedPassword}
+          />
+          <PasswordInput
+            id="confirmation"
+            name="confirmation"
+            label="Confirme a nova senha"
+            autoComplete="new-password"
+            disabled={saving}
+            onChange={setTypedConfirmation}
+          />
+          <PasswordChecklist password={typedPassword} confirmation={typedConfirmation} />
+          {error && (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          )}
+          <button className={styles.submit} type="submit" disabled={saving}>
+            {saving ? (
+              <>
+                <span className={styles.spinner} aria-hidden="true" /> Redefinindo...
+              </>
+            ) : (
+              <>
+                Redefinir senha <ArrowIcon />
+              </>
+            )}
+          </button>
+          <Link className={styles.inlineLink} href="/forgot-password">
+            Solicitar outro link
+          </Link>
+        </form>
+      )}
+    </AuthShell>
   );
 }

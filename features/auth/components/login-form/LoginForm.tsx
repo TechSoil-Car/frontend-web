@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ApiError, apiRequest } from "@/shared/api/api-client";
 import { useAuth } from "../../context/AuthContext";
-import { EyeIcon } from "../icons/EyeIcon";
-import styles from "./LoginForm.module.css";
+import { ArrowIcon } from "@/app/landing-art";
+import { PasswordInput } from "../auth-form/PasswordInput";
+import styles from "../auth-form/AuthForm.module.css";
 
 type Plantation = { id: string };
 
 export function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const loginStarted = useRef(false);
@@ -70,20 +70,15 @@ export function LoginForm() {
   }
 
   return (
-    <div className={styles.panel}>
-      <div className={styles.header}>
-        <p className={styles.kicker}>Área do cliente</p>
-        <h2>Bem-vindo</h2>
-        <p>Entre para acompanhar sua operação.</p>
-      </div>
-
+    <form className={styles.form} onSubmit={handleSubmit}>
       {passwordChanged && (
-        <p role="status">
+        <p className={styles.success} role="status">
           Senha alterada com sucesso. Todas as sessões foram encerradas. Entre
           com a nova senha.
         </p>
       )}
-      <form className={styles.form} onSubmit={handleSubmit}>
+
+      <div className={styles.field}>
         <label className={styles.label} htmlFor="email">
           E-mail
         </label>
@@ -98,57 +93,42 @@ export function LoginForm() {
           disabled={submitting}
           required
         />
+      </div>
 
-        <div className={styles.labelRow}>
-          <label className={styles.label} htmlFor="password">
-            Senha
-          </label>
-          <Link href="/forgot-password">Esqueci minha senha</Link>
-        </div>
+      <PasswordInput
+        id="password"
+        name="password"
+        label="Senha"
+        placeholder="Digite sua senha"
+        autoComplete="current-password"
+        maxLength={128}
+        disabled={submitting}
+      />
+      <Link className={styles.inlineLink} href="/forgot-password">
+        Esqueci minha senha
+      </Link>
 
-        <div className={styles.passwordField}>
-          <input
-            className={styles.input}
-            id="password"
-            name="password"
-            type={showPassword ? "text" : "password"}
-            placeholder="Digite sua senha"
-            autoComplete="current-password"
-            minLength={8}
-            maxLength={128}
-            disabled={submitting}
-            required
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword((value) => !value)}
-            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-            disabled={submitting}
-          >
-            <EyeIcon open={showPassword} />
-          </button>
-        </div>
+      {feedback && (
+        <p className={styles.error} role="alert">
+          {feedback}
+        </p>
+      )}
 
-        <button
-          className={styles.submitButton}
-          type="submit"
-          disabled={submitting || status === "loading"}
-        >
-          {submitting ? "Entrando..." : "Entrar no painel"}{" "}
-          {!submitting && <span>→</span>}
-        </button>
-        {feedback && (
-          <p className={styles.feedback} role="alert">
-            {feedback}
-          </p>
+      <button
+        className={styles.submit}
+        type="submit"
+        disabled={submitting || status === "loading"}
+      >
+        {submitting ? (
+          <>
+            <span className={styles.spinner} aria-hidden="true" /> Entrando...
+          </>
+        ) : (
+          <>
+            Entrar no painel <ArrowIcon />
+          </>
         )}
-      </form>
-
-      {/* <div className={styles.divider}><span>ou continue com</span></div>
-      <button className={styles.googleButton} type="button"><b>G</b> Continuar com Google</button> */}
-      <p className={styles.signup}>
-        Ainda não tem acesso? <a href="#contato">Fale com nosso time</a>
-      </p>
-    </div>
+      </button>
+    </form>
   );
 }

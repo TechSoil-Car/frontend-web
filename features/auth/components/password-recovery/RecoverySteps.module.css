@@ -1,0 +1,148 @@
+.wrap {
+  display: flex;
+  max-width: 460px;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.kicker {
+  color: var(--lime);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.wrap h2 {
+  color: var(--paper);
+  font-size: clamp(26px, 2.6vw, 38px);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Mesma linha do tempo da página Sobre: linha vertical com um ponto por passo */
+.steps li {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding: 0 0 24px;
+  opacity: 0.55;
+  transition: opacity 300ms ease;
+}
+
+.steps li:not(:last-child)::before {
+  position: absolute;
+  top: 34px;
+  bottom: 4px;
+  left: 16px;
+  width: 1.5px;
+  background: rgba(245, 243, 235, 0.25);
+  content: "";
+}
+
+.steps li[data-state="done"]::before {
+  background: var(--lime);
+}
+
+.steps i {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  place-items: center;
+  border: 1.5px solid rgba(245, 243, 235, 0.4);
+  border-radius: 50%;
+  font-family: var(--font-display), Arial, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 800;
+  transition: background-color 300ms ease, border-color 300ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.steps div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 6px;
+}
+
+.steps strong {
+  font-family: var(--font-display), Arial, sans-serif;
+  font-size: 17px;
+}
+
+.steps span {
+  color: #c9d1c0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.steps li[data-state="done"],
+.steps li[data-state="current"] {
+  opacity: 1;
+}
+
+.steps li[data-state="done"] i {
+  border-color: var(--lime);
+  background: var(--lime);
+  color: var(--ink);
+}
+
+.steps li[data-state="current"] i {
+  border-color: var(--lime);
+  box-shadow: 0 0 0 6px rgba(166, 221, 98, 0.2);
+  color: var(--lime);
+  transform: scale(1.08);
+}
+
+/* No celular: os quatro passos lado a lado, só com número e título */
+@media (max-width: 900px) {
+  .wrap {
+    gap: 16px;
+  }
+
+  .wrap h2,
+  .steps span,
+  .steps li::before {
+    display: none;
+  }
+
+  .steps {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .steps li {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    text-align: center;
+  }
+
+  .steps div {
+    padding: 0;
+  }
+
+  .steps strong {
+    font-size: 12px;
+    line-height: 1.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steps li,
+  .steps i {
+    transition: none;
+  }
+}
