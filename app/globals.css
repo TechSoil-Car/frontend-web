@@ -1,13 +1,20 @@
 @import "tailwindcss";
 
 :root {
+  /* Cores da marca: uma fonte só para o site, as telas de acesso e o painel */
   --ink: #172018;
   --paper: #f5f3eb;
-  --cream: #f4efe2;
-  --cream-soft: #e8e1d2;
-  --cream-surface: #faf7ee;
+  --lime: #a6dd62;
+  --lime-hover: #b7e580;
+  --lime-deep: #8dcc5c;
   --green: #73b640;
-  --deep-green: #183b2a;
+  --green-strong: #315d32;
+  --forest: #183b2a;
+  --forest-deep: #10271c;
+  --night: #172018;
+  --body: #3b463c;
+  --muted: #6b7363;
+  --line: #d9d2c1;
 }
 
 * {

@@ -5,10 +5,10 @@
 .heading > div > span { display: block; margin-top: 10px; color: #68746b; font-size: 14px; }
 .headingActions { display: flex; flex-wrap: wrap; gap: 10px; }
 .addButton, .secondaryButton { min-height: 44px; padding: 0 17px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; border-radius: 10px; font: 700 12px var(--font-body), sans-serif; cursor: pointer; transition: transform .2s, background .2s, box-shadow .2s; }
-.addButton { color: #17321f; border: 1px solid #a9da71; background: #a9dc70; box-shadow: 0 8px 20px rgba(93,139,57,.15); }
+.addButton { color: var(--ink); border: 1px solid var(--lime); background: var(--lime); box-shadow: 0 8px 20px rgba(93,139,57,.15); }
 .secondaryButton { color: #3f6a35; border: 1px solid #d6e2cd; background: #fff; }
 .addButton b, .secondaryButton b { font-size: 20px; font-weight: 400; line-height: 0; }
-.addButton:hover { background: #b7e580; box-shadow: 0 12px 25px rgba(93,139,57,.2); transform: translateY(-2px); }
+.addButton:hover { background: var(--lime-hover); box-shadow: 0 12px 25px rgba(93,139,57,.2); transform: translateY(-2px); }
 .secondaryButton:hover { border-color: #b9d6a2; background: #f3f8ee; transform: translateY(-2px); }
 
 .notice, .alert { margin: 20px 0 0; padding: 12px 15px; border-radius: 11px; font-size: 12px; line-height: 1.5; }
@@ -18,7 +18,7 @@
 .spinner { width: 18px; height: 18px; border: 2px solid #d2dbc9; border-top-color: #6d9849; border-radius: 50%; animation: teamSpin .8s linear infinite; }
 @keyframes teamSpin { to { transform: rotate(360deg); } }
 .emptyState { margin-top: 27px; padding: 50px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; border: 1px dashed #c9d6c0; border-radius: 17px; background: #f8faf4; }
-.emptyState > span { width: 52px; height: 52px; display: grid; place-items: center; color: #315d32; border-radius: 14px; background: #e1ecd6; }
+.emptyState > span { width: 52px; height: 52px; display: grid; place-items: center; color: var(--green-strong); border-radius: 14px; background: #e1ecd6; }
 .emptyState strong { font: 650 19px var(--font-display), sans-serif; }
 .emptyState p { max-width: 420px; margin: 0 0 8px; color: #68746b; font-size: 12px; line-height: 1.6; }
 
@@ -90,7 +90,7 @@
 .farmPicker:disabled .farmOption { opacity: .55; cursor: not-allowed; }
 .editorActions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px; }
 .primaryButton, .removeButton, .ghostButton, .deleteButton { min-height: 38px; padding: 0 15px; border-radius: 9px; font: 700 11px var(--font-body), sans-serif; cursor: pointer; }
-.primaryButton { color: #fff; border: 1px solid #365f33; background: #365f33; }
+.primaryButton { color: #fff; border: 1px solid var(--green-strong); background: var(--green-strong); }
 .primaryButton:hover:not(:disabled) { background: #2d522b; }
 .removeButton { margin-right: auto; color: #a34435; border: 1px solid #efd2ca; background: #fff; }
 .removeButton:hover:not(:disabled) { background: #fff3ef; }

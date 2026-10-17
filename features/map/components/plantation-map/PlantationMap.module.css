@@ -8,20 +8,20 @@
 .popupShell :global(.maplibregl-popup-content) { padding: 0; border: 1px solid #dce5d6; border-radius: 16px; background: #fff; box-shadow: 0 14px 42px rgba(23,59,38,.22); }
 .popupShell :global(.maplibregl-popup-close-button) { top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 8px; color: #49634c; background: #e7eedf; font-size: 20px; line-height: 1; }
 .popupShell :global(.maplibregl-popup-close-button:hover) { background: #d7e4ca; color: #173b26; }
-.popupShell :global(.maplibregl-popup-close-button:focus-visible) { outline: 2px solid #315d32; outline-offset: 2px; }
+.popupShell :global(.maplibregl-popup-close-button:focus-visible) { outline: 2px solid var(--green-strong); outline-offset: 2px; }
 .sensorPopup { width: 298px; max-width: calc(100vw - 50px); max-height: min(430px, calc(100dvh - 100px)); overflow-y: auto; overscroll-behavior: contain; border-radius: 15px; scrollbar-width: thin; color: #26372a; font: 12px var(--font-body), sans-serif; line-height: 1.5; overflow-wrap: anywhere; }
 .popupHeader { padding: 18px 45px 16px 18px; border-radius: 15px 15px 0 0; background: #f0f5e9; border-bottom: 1px solid #e1e9da; }
 .popupEyebrow, .popupLabel { display: block; color: #61765e; font-size: 9px; font-weight: 700; letter-spacing: 1px; }
 .popupName { display: block; margin-top: 5px; font-size: 17px; line-height: 1.3; font-weight: 700; color: #24452b; }
 .popupDevice { display: block; margin-top: 4px; font-size: 11px; color: #687a66; }
 .popupStatus { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; }
-.status_normal { color: #315d32; background: #deecd4; }
+.status_normal { color: var(--green-strong); background: #deecd4; }
 .status_attention { color: #815500; background: #fff0c4; }
 .status_offline { color: #4e5d65; background: #e4e9ec; }
 .statusDot { flex-shrink: 0; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .popupBody { padding: 16px 18px; }
 .batteryHeading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.batteryValue { color: #315d32; font-size: 24px; font-weight: 700; letter-spacing: -1px; }
+.batteryValue { color: var(--green-strong); font-size: 24px; font-weight: 700; letter-spacing: -1px; }
 .batteryTrack { height: 7px; margin-top: 8px; overflow: hidden; border-radius: 8px; background: #e9efdf; }
 .batteryFill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #4e8240, #94be63); }
 .popupMuted { color: #687a66; }

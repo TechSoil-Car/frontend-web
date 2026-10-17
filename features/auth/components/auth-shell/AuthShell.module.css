@@ -57,13 +57,14 @@
   line-height: 1.6;
 }
 
-/* Mesmo cartão "descolado" da página Sobre */
+/* Cartão no estilo do painel (cantos arredondados, sombra suave): o login já parece o sistema */
 .card {
   margin-top: 28px;
   padding: 28px;
-  border: 1.5px solid var(--ink);
-  background: #fbfaf6;
-  box-shadow: 8px 8px 0 var(--ink);
+  border: 1px solid #e7ecdf;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(41, 69, 49, 0.08);
 }
 
 .footer {
@@ -120,7 +121,6 @@
 
   .card {
     padding: 22px 20px;
-    box-shadow: 6px 6px 0 var(--ink);
   }
 
   .page[data-mobile-aside="hide"] .aside {

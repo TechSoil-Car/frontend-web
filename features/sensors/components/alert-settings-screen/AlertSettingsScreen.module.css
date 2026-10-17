@@ -36,10 +36,10 @@
 .numberField b { min-width: 38px; display: grid; place-items: center; color: #738078; background: #f0f2ed; font-size: 9px; }
 .numberField input:disabled { color: #909991; background: #f2f3ef; }
 .success,.error { margin-top: 20px; padding: 13px 15px; border-radius: 10px; font-size: 10px; }
-.success { color: #315d32; background: #e4f0de; }
+.success { color: var(--green-strong); background: #e4f0de; }
 .error { color: #8a342d; background: #fff0eb; }
 .actions { margin-top: 20px; display: flex; justify-content: flex-end; }
-.actions button { min-height: 46px; padding: 0 22px; color: #17331f; border: 1px solid #9ccd68; border-radius: 10px; background: #a9dc70; font-weight: 750; cursor: pointer; }
+.actions button { min-height: 46px; padding: 0 22px; color: var(--ink); border: 1px solid #9ccd68; border-radius: 10px; background: var(--lime); font-weight: 750; cursor: pointer; }
 .actions button:disabled { cursor: wait; opacity: .65; }
 .state > a { margin: 18px 0 0; }
 .state { min-height: calc(100svh - 76px); display: flex; align-items: center; justify-content: center; flex-direction: column; color: #748078; text-align: center; }

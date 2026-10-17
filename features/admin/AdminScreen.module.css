@@ -65,7 +65,7 @@
   width: 46px;
   height: 46px;
   border-radius: 12px;
-  background: #315d32;
+  background: var(--green-strong);
   color: #fff;
   font-weight: 700;
 }
@@ -106,7 +106,7 @@
   margin-bottom: 18px;
 }
 .tabs button[aria-selected="true"] {
-  background: #315d32;
+  background: var(--green-strong);
   color: #fff;
 }
 .tableScroll {
@@ -212,7 +212,7 @@
 }
 .form > button {
   justify-self: start;
-  background: #315d32;
+  background: var(--green-strong);
   color: #fff;
 }
 .page .error {

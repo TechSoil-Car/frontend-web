@@ -39,7 +39,7 @@
 .error button {
   border: 1px solid #d7e2cc;
   background: #f0f5e9;
-  color: #315d32;
+  color: var(--green-strong);
   border-radius: 9px;
   padding: 9px 12px;
   font: inherit;
@@ -99,7 +99,7 @@
   gap: 8px;
 }
 .filters button[aria-pressed="true"] {
-  background: #315d32;
+  background: var(--green-strong);
   color: white;
 }
 .item {

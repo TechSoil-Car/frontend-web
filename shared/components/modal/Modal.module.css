@@ -104,8 +104,8 @@
   cursor: pointer;
 }
 .actions button[type="submit"] {
-  border-color: #365f33;
-  background: #365f33;
+  border-color: var(--green-strong);
+  background: var(--green-strong);
   color: #fff;
 }
 .actions .danger[type="submit"] {

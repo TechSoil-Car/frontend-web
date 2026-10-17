@@ -6,9 +6,9 @@
 .welcomeActions { display: flex; gap: 9px; }
 .dateButton, .primaryButton, .secondaryButton { min-height: 44px; padding: 0 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 10px; font: 700 12px var(--font-body), sans-serif; cursor: pointer; transition: transform .2s, background .2s; }
 .dateButton { color: #5e6b61; border: 1px solid #dcddd4; background: #fff; }
-.primaryButton { color: #17321f; border: 1px solid #a9da71; background: #a9dc70; box-shadow: 0 8px 20px rgba(93,139,57,.15); }
+.primaryButton { color: var(--ink); border: 1px solid var(--lime); background: var(--lime); box-shadow: 0 8px 20px rgba(93,139,57,.15); }
 .dateButton:hover, .primaryButton:hover { transform: translateY(-1px); }
-.primaryButton:hover { background: #b7e580; }
+.primaryButton:hover { background: var(--lime-hover); }
 .dateButton:disabled { cursor: wait; opacity: .65; transform: none; }
 .statusStrip { min-height: 68px; margin: 27px 0 15px; padding: 12px 18px; display: grid; grid-template-columns: 1.45fr .75fr .75fr auto; align-items: center; gap: 20px; color: #dfe8df; border-radius: 14px; background: #183426; box-shadow: 0 13px 30px rgba(29,52,37,.1); }
 .statusStrip > div { min-height: 35px; padding-right: 18px; display: flex; align-items: center; gap: 11px; border-right: 1px solid rgba(255,255,255,.1); }
@@ -47,7 +47,7 @@
 .mapTop span { display: flex; align-items: center; gap: 7px; }
 .mapTop i { width: 6px; height: 6px; border-radius: 50%; background: #abdf72; box-shadow: 0 0 0 4px rgba(171,223,114,.15); }
 .sector { position: absolute; width: 33px; height: 33px; padding: 0; display: grid; place-items: center; color: #eff6eb; border: 1px solid rgba(255,255,255,.55); border-radius: 50%; background: rgba(19,53,31,.72); box-shadow: 0 5px 15px rgba(0,0,0,.2); backdrop-filter: blur(6px); cursor: pointer; transition: transform .2s, background .2s, box-shadow .2s; }
-.sector:hover, .sectorActive { color: #193220; border-color: #c6ed9e; background: #b2e378; box-shadow: 0 0 0 6px rgba(178,227,120,.2); transform: scale(1.08); }
+.sector:hover, .sectorActive { color: var(--ink); border-color: #c6ed9e; background: var(--lime); box-shadow: 0 0 0 6px rgba(178,227,120,.2); transform: scale(1.08); }
 .sectorWarning { color: #382817; border-color: #e8c173; background: #e8b75e; }
 .sectorA { top: 43%; left: 31%; }
 .sectorB { top: 29%; left: 67%; }
@@ -67,10 +67,10 @@
 .liveReading strong { font: 650 19px var(--font-display),sans-serif; }
 .liveReading span { color: #69756d; font-size: 9px; }
 .locateCard { height: 350px; margin-top: 17px; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; color: #3f5244; border: 1px dashed #c9d6c0; border-radius: 13px; background: #f4f6ef; }
-.locateCard > span { width: 48px; height: 48px; display: grid; place-items: center; color: #315d32; border-radius: 14px; background: #e1ecd6; }
+.locateCard > span { width: 48px; height: 48px; display: grid; place-items: center; color: var(--green-strong); border-radius: 14px; background: #e1ecd6; }
 .locateCard strong { font: 650 18px var(--font-display), sans-serif; color: #24452b; }
 .locateCard p { max-width: 380px; margin: 0; font-size: 12px; line-height: 1.6; }
-.locateCard a { margin-top: 6px; padding: 11px 16px; display: flex; align-items: center; gap: 7px; color: #193220; border-radius: 10px; background: #b2e378; font-size: 12px; font-weight: 700; }
+.locateCard a { margin-top: 6px; padding: 11px 16px; display: flex; align-items: center; gap: 7px; color: var(--ink); border-radius: 10px; background: var(--lime); font-size: 12px; font-weight: 700; }
 .noSensorOverlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; color: rgba(255,255,255,.9); text-align: center; }
 .noSensorOverlay strong { margin-top: 8px; font-size: 12px; }.noSensorOverlay small { margin-top: 5px; font-size: 9px; }
 .mapLegend { position: absolute; right: 15px; top: 40px; padding: 9px 11px; display: flex; gap: 12px; color: rgba(255,255,255,.92); border-radius: 8px; background: rgba(11,32,18,.66); font-size: 9px; backdrop-filter: blur(8px); }

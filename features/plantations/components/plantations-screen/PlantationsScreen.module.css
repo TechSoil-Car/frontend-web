@@ -4,9 +4,9 @@
 .heading h1 { margin: 0; font: 600 clamp(2rem, 3.3vw, 3rem)/1 var(--font-display), sans-serif; letter-spacing: -.055em; }
 .heading > div > span { display: block; margin-top: 10px; color: #68746b; font-size: 14px; }
 .addButton, .openButton, .secondaryButton { min-height: 44px; padding: 0 17px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; border-radius: 10px; font: 700 12px var(--font-body), sans-serif; cursor: pointer; transition: transform .2s, background .2s, box-shadow .2s; }
-.addButton, .openButton { color: #17321f; border: 1px solid #a9da71; background: #a9dc70; box-shadow: 0 8px 20px rgba(93,139,57,.15); }
+.addButton, .openButton { color: var(--ink); border: 1px solid var(--lime); background: var(--lime); box-shadow: 0 8px 20px rgba(93,139,57,.15); }
 .addButton b { font-size: 20px; font-weight: 400; }
-.addButton:hover, .openButton:hover { background: #b7e580; box-shadow: 0 12px 25px rgba(93,139,57,.2); transform: translateY(-2px); }
+.addButton:hover, .openButton:hover { background: var(--lime-hover); box-shadow: 0 12px 25px rgba(93,139,57,.2); transform: translateY(-2px); }
 .summary { margin-top: 27px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; }
 .summary article { min-height: 112px; padding: 18px; display: flex; align-items: center; gap: 13px; border: 1px solid #dfe0d7; border-radius: 15px; background: #fff; box-shadow: 0 8px 28px rgba(43,60,45,.04); transition: transform .25s, border-color .25s, box-shadow .25s; }
 .summaryIcon { width: 42px; height: 42px; flex: 0 0 auto; display: grid; place-items: center; color: #5c8743; border-radius: 11px; background: #eaf2e4; }
@@ -111,7 +111,7 @@
 .secondaryButton:disabled { color: #9aa39c; cursor: not-allowed; opacity: .72; }
 .removeButton { width: 100%; min-height: 42px; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #ecd9d1; border-radius: 10px; background: #fff7f3; color: #9a4b3e; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
 .removeButton:hover { background: #ffede5; }
-.notice { padding: 13px 16px; color: #365f33; background: #edf5e5; border: 1px solid #d7e5c9; border-radius: 10px; font-size: 13px; }
+.notice { padding: 13px 16px; color: var(--green-strong); background: #edf5e5; border: 1px solid #d7e5c9; border-radius: 10px; font-size: 13px; }
 .removeButton:focus-visible, .secondaryButton:focus-visible { outline: 2px solid #88b662; outline-offset: 3px; }
 .firstPlantation { min-height: 390px; margin-top: 18px; padding: 45px 24px; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; border: 1px dashed #cad5c4; border-radius: 19px; background: linear-gradient(145deg, #fff, #f3f6ef); }
 .firstPlantation > span { width: 58px; height: 58px; display: grid; place-items: center; color: #5d8843; border-radius: 17px; background: #e8f1e2; }
@@ -122,7 +122,7 @@
 .statePage { min-height: calc(100svh - 76px); padding: 30px; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #68766c; text-align: center; }
 .statePage strong { margin-top: 15px; color: #34443a; font: 650 17px var(--font-display), sans-serif; }
 .statePage p { max-width: 390px; margin: 8px 0 0; font-size: 11px; line-height: 1.5; }
-.statePage button { min-height: 40px; margin-top: 18px; padding: 0 16px; color: #18331f; border: 0; border-radius: 9px; background: #a9dc70; font-weight: 700; cursor: pointer; }
+.statePage button { min-height: 40px; margin-top: 18px; padding: 0 16px; color: var(--ink); border: 0; border-radius: 9px; background: var(--lime); font-weight: 700; cursor: pointer; }
 .stateIcon { width: 48px; height: 48px; display: grid; place-items: center; color: #a06a35; border-radius: 14px; background: #f2e7d8; }
 .spinner { width: 28px; height: 28px; border: 3px solid #d9e1d4; border-top-color: #6e9c4a; border-radius: 50%; animation: plantation-spin .8s linear infinite; }
 @keyframes plantation-spin { to { transform: rotate(360deg); } }
@@ -144,7 +144,7 @@
 .formActions { margin-top: 17px; display: grid; grid-template-columns: 1fr 1.35fr; gap: 9px; }
 .formActions button { min-height: 45px; border-radius: 9px; font: 700 11px var(--font-body), sans-serif; cursor: pointer; }
 .formActions button:first-child { color: #647068; border: 1px solid #d8ddd4; background: #f3f5f0; }
-.formActions button:last-child { color: #18331f; border: 1px solid #a1d467; background: #a9dc70; }
+.formActions button:last-child { color: var(--ink); border: 1px solid #a1d467; background: var(--lime); }
 .formActions button:disabled, .modalHead > button:disabled { cursor: wait; opacity: .65; }
 
 @media (hover: hover) and (pointer: fine) {

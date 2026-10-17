@@ -1,11 +1,4 @@
 .page {
-  --lime: #a6dd62;
-  --lime-deep: #8dcc5c;
-  --forest: #183b2a;
-  --night: #172018;
-  --body: #3b463c;
-  --muted: #6b7363;
-  --line: #d9d2c1;
   --gutter: clamp(20px, 3.4vw, 48px);
   --inline: max(var(--gutter), calc((100% - 1240px) / 2));
   --nav-h: 76px;

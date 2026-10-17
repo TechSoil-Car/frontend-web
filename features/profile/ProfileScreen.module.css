@@ -50,7 +50,7 @@
   place-items: center;
   border-radius: 50%;
   background: #eaf1df;
-  color: #365f33;
+  color: var(--green-strong);
   border: 5px solid #f6f9f0;
   font-size: 25px;
   font-weight: 700;
@@ -125,7 +125,7 @@
   padding: 10px 15px;
   border: 1px solid transparent;
   border-radius: 8px;
-  background: #365f33;
+  background: var(--green-strong);
   color: white;
   font: inherit;
   font-size: 12px;
@@ -270,7 +270,7 @@
 }
 .success {
   background: #edf6e7;
-  color: #365f33;
+  color: var(--green-strong);
   margin-top: 20px;
 }
 .session {

@@ -1,4 +1,4 @@
-/* Campos, botões e mensagens comuns às telas de acesso */
+/* Campos, botões e mensagens comuns às telas de acesso, no mesmo estilo dos formulários do painel */
 
 .form {
   display: flex;
@@ -21,19 +21,17 @@
 
 .label {
   color: var(--ink);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .input {
   width: 100%;
   min-height: 50px;
   padding: 0 14px;
-  border: 1.5px solid var(--line);
-  border-radius: 0;
-  background: var(--paper);
+  border: 1px solid #dce5d4;
+  border-radius: 10px;
+  background: #fdfefa;
   color: var(--ink);
   font: 15px var(--font-body), Arial, sans-serif;
   outline: none;
@@ -45,12 +43,12 @@
 }
 
 .input:hover {
-  border-color: #b9b29f;
+  border-color: #c3d2b8;
 }
 
 .input:focus {
-  border-color: var(--ink);
-  box-shadow: 4px 4px 0 var(--lime);
+  border-color: var(--green);
+  box-shadow: 0 0 0 4px rgba(115, 182, 64, 0.16);
 }
 
 .input:disabled {
@@ -68,6 +66,7 @@
 
 .passwordField button {
   position: absolute;
+  border-radius: 0 10px 10px 0;
   top: 0;
   right: 0;
   display: grid;
@@ -93,6 +92,7 @@
 .capsLock {
   align-self: flex-start;
   padding: 3px 8px;
+  border-radius: 6px;
   background: #fbe9b7;
   color: #6a4b05;
   font-size: 12px;
@@ -111,27 +111,28 @@
   color: var(--ink);
 }
 
-/* Mesmo botão principal da landing */
+/* Mesmo botão principal do painel */
 .submit {
   display: inline-flex;
-  min-height: 54px;
+  min-height: 52px;
   align-items: center;
   justify-content: center;
   gap: 10px;
   margin-top: 4px;
-  border: 1.5px solid var(--ink);
+  border: 1px solid var(--lime);
+  border-radius: 10px;
   background: var(--lime);
+  box-shadow: 0 8px 20px rgba(93, 139, 57, 0.15);
   color: var(--ink);
   cursor: pointer;
-  font: 700 13px var(--font-body), Arial, sans-serif;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  font: 700 14px var(--font-body), Arial, sans-serif;
+  transition: transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
 }
 
 .submit:hover:not(:disabled) {
-  box-shadow: 4px 4px 0 var(--ink);
-  transform: translate(-2px, -2px);
+  background: var(--lime-hover);
+  box-shadow: 0 12px 25px rgba(93, 139, 57, 0.2);
+  transform: translateY(-2px);
 }
 
 .submit:disabled {
@@ -154,44 +155,44 @@
   min-height: 50px;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid var(--ink);
-  background: transparent;
-  color: var(--ink);
+  border: 1px solid #dce5d4;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--green-strong);
   cursor: pointer;
-  font: 700 12px var(--font-body), Arial, sans-serif;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  transition: background-color 180ms ease, color 180ms ease;
+  font: 700 14px var(--font-body), Arial, sans-serif;
+  transition: background-color 200ms ease, border-color 200ms ease;
 }
 
 .secondary:hover:not(:disabled) {
-  background: var(--ink);
-  color: var(--paper);
+  border-color: #c3d2b8;
+  background: #f3f8ee;
 }
 
 .error,
 .success,
 .note {
   padding: 12px 14px;
-  border-left: 4px solid;
+  border: 1px solid;
+  border-radius: 10px;
   font-size: 13px;
   line-height: 1.5;
 }
 
 .error {
-  border-color: #b4483a;
-  background: #fbe8e3;
+  border-color: rgba(180, 72, 58, 0.25);
+  background: #fff0eb;
   color: #7e2e24;
 }
 
 .success {
-  border-color: var(--lime-deep);
-  background: #eaf5dc;
+  border-color: #d6e8c4;
+  background: #f3f8ee;
   color: #24451b;
 }
 
 .note {
-  border-color: var(--line);
+  border-color: #e7ecdf;
   background: var(--paper);
   color: var(--body);
 }
@@ -230,7 +231,7 @@
   height: 16px;
   flex-shrink: 0;
   place-items: center;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid #dce5d4;
   border-radius: 50%;
   font-size: 10px;
   font-style: normal;
@@ -243,7 +244,7 @@
 }
 
 .checklist li[data-ok] i {
-  border-color: var(--ink);
+  border-color: var(--lime-deep);
   background: var(--lime);
   transform: scale(1.1);
 }
