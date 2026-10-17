@@ -1,12 +1,13 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowIcon, SiteFooter } from "../landing-art";
 import { Navbar, Reveal } from "../landing-interactions";
 import landing from "../page.module.css";
 import { CASE_OUTLINE } from "./case-outline";
+import { CaseViewer } from "./case-viewer";
 import styles from "./hardware.module.css";
+import { PageTransition } from "../page-transition";
 
 export const metadata: Metadata = {
   title: "Hardware | TechSoil Systems",
@@ -94,125 +95,119 @@ function CaseBlueprint() {
 
 export default function HardwarePage() {
   return (
-    <main className={`${landing.page} ${styles.page}`} id="top">
-      <Navbar />
+    <PageTransition>
+      <main className={`${landing.page} ${styles.page}`} id="top">
+        <Navbar />
 
-      <header className={styles.hero}>
-        <Reveal className={styles.heroCopy}>
-          <p className={landing.sectionLabel}>Hardware</p>
-          <h1>
-            O sensor por trás
-            <br />
-            <mark>de cada leitura.</mark>
-          </h1>
-          <p className={styles.lead}>
-            Uma sonda enterrada no talhão, um ESP32 com GPS e energia solar, tudo numa caixa
-            projetada e impressa em 3D pela equipe TechSoil.
-          </p>
-          <dl className={styles.highlights}>
-            {highlights.map((item) => (
-              <div key={item.label}>
-                <dt>{item.value}</dt>
-                <dd>{item.label}</dd>
-              </div>
+        <header className={styles.hero}>
+          <Reveal className={styles.heroCopy}>
+            <p className={landing.sectionLabel}>Hardware</p>
+            <h1>
+              O sensor por trás
+              <br />
+              <mark>de cada leitura.</mark>
+            </h1>
+            <p className={styles.lead}>
+              Uma sonda enterrada no talhão, um ESP32 com GPS e energia solar, tudo numa caixa
+              projetada e impressa em 3D pela equipe TechSoil.
+            </p>
+            <dl className={styles.highlights}>
+              {highlights.map((item) => (
+                <div key={item.label}>
+                  <dt>{item.value}</dt>
+                  <dd>{item.label}</dd>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
+          <Reveal delay={120} className={styles.heroMedia}>
+            <span aria-hidden="true">Gabinete · modelo 3D</span>
+            <CaseViewer />
+          </Reveal>
+        </header>
+
+        <section className={styles.section} id="sensor-de-solo">
+          <Reveal className={styles.sectionHead}>
+            <p className={landing.sectionLabel}>01 — Componentes</p>
+            <h2>Dentro e fora da caixa</h2>
+          </Reveal>
+          <div className={styles.layout}>
+            {layout.map((group, index) => (
+              <Reveal key={group.title} delay={index * 100} className={styles.group}>
+                <h3>{group.title}</h3>
+                <ul>
+                  {group.items.map((item) => (
+                    <li key={item.name}>
+                      <strong>{item.name}</strong>
+                      <span>{item.text}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
             ))}
-          </dl>
-        </Reveal>
-        <Reveal delay={120} className={styles.heroMedia}>
-          <span aria-hidden="true">Gabinete · render 3D</span>
-          <Image
-            src="/hardware/gabinete-sensor.png"
-            alt="Render 3D da caixa do sensor de solo TechSoil, com tampa articulada"
-            width={900}
-            height={670}
-            sizes="(max-width: 900px) 80vw, 420px"
-            unoptimized
-            preload
-          />
-        </Reveal>
-      </header>
+          </div>
+        </section>
 
-      <section className={styles.section} id="sensor-de-solo">
-        <Reveal className={styles.sectionHead}>
-          <p className={landing.sectionLabel}>01 — Componentes</p>
-          <h2>Dentro e fora da caixa</h2>
-        </Reveal>
-        <div className={styles.layout}>
-          {layout.map((group, index) => (
-            <Reveal key={group.title} delay={index * 100} className={styles.group}>
-              <h3>{group.title}</h3>
-              <ul>
-                {group.items.map((item) => (
-                  <li key={item.name}>
-                    <strong>{item.name}</strong>
-                    <span>{item.text}</span>
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+        <section className={styles.section} id="caixa">
+          <Reveal className={styles.sectionHead}>
+            <p className={landing.sectionLabel}>02 — Gabinete</p>
+            <h2>A caixa, em planta</h2>
+            <p className={styles.sectionText}>
+              Desenho exportado do projeto no Tinkercad. A caixa é impressa em partes e ganha
+              abas laterais para ser fixada no campo.
+            </p>
+          </Reveal>
+          <Reveal delay={100} className={styles.blueprintFrame}>
+            <CaseBlueprint />
+          </Reveal>
+        </section>
 
-      <section className={styles.section} id="caixa">
-        <Reveal className={styles.sectionHead}>
-          <p className={landing.sectionLabel}>02 — Gabinete</p>
-          <h2>A caixa, em planta</h2>
-          <p className={styles.sectionText}>
-            Desenho exportado do projeto no Tinkercad. A caixa é impressa em partes e ganha
-            abas laterais para ser fixada no campo.
-          </p>
-        </Reveal>
-        <Reveal delay={100} className={styles.blueprintFrame}>
-          <CaseBlueprint />
-        </Reveal>
-      </section>
+        <section className={`${styles.section} ${styles.powerSection}`}>
+          <Reveal className={styles.sectionHead}>
+            <p className={landing.sectionLabel}>03 — Energia</p>
+            <h2>Do sol até a leitura</h2>
+          </Reveal>
+          <Reveal delay={100}>
+            <ol className={styles.power}>
+              {power.map((step, index) => (
+                <li key={step.name} style={{ "--step": index } as CSSProperties}>
+                  <strong>{step.name}</strong>
+                  <span>{step.detail}</span>
+                </li>
+              ))}
+            </ol>
+          </Reveal>
+        </section>
 
-      <section className={`${styles.section} ${styles.powerSection}`}>
-        <Reveal className={styles.sectionHead}>
-          <p className={landing.sectionLabel}>03 — Energia</p>
-          <h2>Do sol até a leitura</h2>
-        </Reveal>
-        <Reveal delay={100}>
-          <ol className={styles.power}>
-            {power.map((step, index) => (
-              <li key={step.name} style={{ "--step": index } as CSSProperties}>
-                <strong>{step.name}</strong>
-                <span>{step.detail}</span>
-              </li>
-            ))}
-          </ol>
-        </Reveal>
-      </section>
+        <section className={styles.section}>
+          <Reveal className={styles.sectionHead}>
+            <p className={landing.sectionLabel}>04 — Ficha técnica</p>
+            <h2>Especificações</h2>
+          </Reveal>
+          <Reveal delay={100}>
+            <dl className={styles.specs}>
+              {specs.map((spec) => (
+                <div key={spec.label}>
+                  <dt>{spec.label}</dt>
+                  <dd>
+                    {spec.value}
+                    {spec.note && <small>{spec.note}</small>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
+        </section>
 
-      <section className={styles.section}>
-        <Reveal className={styles.sectionHead}>
-          <p className={landing.sectionLabel}>04 — Ficha técnica</p>
-          <h2>Especificações</h2>
-        </Reveal>
-        <Reveal delay={100}>
-          <dl className={styles.specs}>
-            {specs.map((spec) => (
-              <div key={spec.label}>
-                <dt>{spec.label}</dt>
-                <dd>
-                  {spec.value}
-                  {spec.note && <small>{spec.note}</small>}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </Reveal>
-      </section>
+        <section className={styles.cta}>
+          <h2>Quer ver o sensor funcionando na sua propriedade?</h2>
+          <Link className={landing.primaryButton} href="/#orcamento">
+            Solicitar proposta <ArrowIcon />
+          </Link>
+        </section>
 
-      <section className={styles.cta}>
-        <h2>Quer ver o sensor funcionando na sua propriedade?</h2>
-        <Link className={landing.primaryButton} href="/#orcamento">
-          Solicitar proposta <ArrowIcon />
-        </Link>
-      </section>
-
-      <SiteFooter />
-    </main>
+        <SiteFooter />
+      </main>
+    </PageTransition>
   );
 }

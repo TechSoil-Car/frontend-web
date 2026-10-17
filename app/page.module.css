@@ -194,9 +194,27 @@
   transition: transform 220ms ease;
 }
 
-.navLinks a:hover::after,
-.navLinkActive::after {
+.navLinks a:hover::after {
   transform: scaleX(1);
+}
+
+/* Aba atual: texto em negrito com uma linha verde embaixo. A linha é um elemento próprio
+   para poder deslizar de uma aba para outra na troca de página (globals.css). */
+.navLinks .navLinkActive {
+  font-weight: 700;
+}
+
+.navLinks .navLinkActive::after {
+  display: none;
+}
+
+.navIndicator {
+  position: absolute;
+  right: 0;
+  bottom: -8px;
+  left: 0;
+  height: 3px;
+  background: var(--lime);
 }
 
 .navActions {
@@ -1814,8 +1832,36 @@
   }
 }
 
-@media (max-width: 340px) {
+/* Com três links no menu, o celular mostra só o símbolo da marca */
+
+@media (max-width: 560px) {
   .nav .brand > span:last-child {
+    display: none;
+  }
+
+  .navLinks {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 430px) {
+  .navLinks {
+    gap: 12px;
+  }
+
+
+  .navCta {
+    padding: 10px 12px;
+  }
+
+  .navCta svg {
+    display: none;
+  }
+}
+
+/* Nos celulares mais estreitos o botão sai do menu; a proposta continua no fim de cada página */
+@media (max-width: 360px) {
+  .navCta {
     display: none;
   }
 }

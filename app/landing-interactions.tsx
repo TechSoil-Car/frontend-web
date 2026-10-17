@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
+  ViewTransition,
   type CSSProperties,
   type FormEvent,
   type ReactNode,
@@ -16,17 +17,21 @@ import { ArrowIcon, Brand } from "./landing-art";
 import styles from "./page.module.css";
 
 // Como no site da Owlloc, o menu leva só a outras páginas; as seções da landing ficam no rodapé.
-const navItems = [{ label: "Hardware", href: "/hardware" }];
+const navItems = [
+  { label: "Plataforma", href: "/plataforma" },
+  { label: "Hardware", href: "/hardware" },
+  { label: "Sobre", href: "/sobre" },
+];
 
-const clamp = (value: number) => Math.min(1, Math.max(0, value));
-const easeOut = (value: number) => 1 - (1 - value) ** 3;
+export const clamp = (value: number) => Math.min(1, Math.max(0, value));
+export const easeOut = (value: number) => 1 - (1 - value) ** 3;
 
-function prefersReducedMotion() {
+export function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 // Chama `update` no máximo uma vez por frame enquanto a página rola.
-function useScrollFrame(update: () => void) {
+export function useScrollFrame(update: () => void) {
   const updateRef = useRef(update);
 
   useEffect(() => {
@@ -84,22 +89,35 @@ export function Navbar() {
   useScrollFrame(() => setScrolled(window.scrollY > 24));
 
   return (
-    <header className={`${styles.navWrap} ${scrolled ? styles.navScrolled : ""}`}>
+    // O nome "site-header" deixa o menu parado enquanto o conteúdo troca (ver globals.css).
+    <header
+      className={`${styles.navWrap} ${scrolled ? styles.navScrolled : ""}`}
+      style={{ viewTransitionName: "site-header" }}
+    >
       <nav className={styles.nav} aria-label="Navegação principal">
         <Link href="/#inicio" aria-label="TechSoil Systems — início">
           <Brand />
         </Link>
         <div className={styles.navLinks}>
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={pathname.startsWith(item.href) ? styles.navLinkActive : undefined}
-              aria-current={pathname.startsWith(item.href) ? "page" : undefined}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const active = pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={active ? styles.navLinkActive : undefined}
+                aria-current={active ? "page" : undefined}
+              >
+                {item.label}
+                {/* Mesmo nome em todas as páginas: na troca de aba a linha desliza até a nova. */}
+                {active && (
+                  <ViewTransition name="nav-indicator" share="nav-slide" default="none">
+                    <span className={styles.navIndicator} aria-hidden="true" />
+                  </ViewTransition>
+                )}
+              </Link>
+            );
+          })}
         </div>
         <div className={styles.navActions}>
           <Link className={styles.navLogin} href="/login">Entrar</Link>

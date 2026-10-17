@@ -103,6 +103,59 @@
   animation: hover 6s ease-in-out infinite;
 }
 
+/* Modelo 3D: o render estático fica até o WebGL desenhar a caixa */
+
+.viewer {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.viewer img {
+  transition: opacity 500ms ease;
+}
+
+.viewer[data-ready] img {
+  opacity: 0;
+}
+
+.viewerCanvas {
+  position: absolute;
+  inset: 0;
+}
+
+.viewerCanvas canvas {
+  display: block;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.viewer[data-ready] canvas {
+  opacity: 1;
+}
+
+.viewerCanvas[data-dragging] canvas {
+  cursor: grabbing;
+}
+
+.viewerHint {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  padding: 6px 12px;
+  border: 1px solid rgba(166, 221, 98, 0.35);
+  border-radius: 999px;
+  color: var(--lime);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
 /* Seções */
 
 .section {
@@ -247,7 +300,7 @@
   color: var(--paper);
 }
 
-.powerSection .sectionHead p {
+.powerSection .sectionHead p:first-child {
   color: var(--lime);
 }
 

@@ -25,11 +25,12 @@ export function Brand({ inverted = false }: { inverted?: boolean }) {
 }
 
 const footerLinks = [
-  { label: "Plataforma", href: "/#plataforma" },
+  { label: "Plataforma", href: "/plataforma" },
   { label: "Tecnologia", href: "/#tecnologia" },
   { label: "Hardware", href: "/hardware" },
   { label: "Como funciona", href: "/#como-funciona" },
   { label: "Perguntas", href: "/#perguntas" },
+  { label: "Sobre", href: "/sobre" },
   { label: "Entrar", href: "/login" },
 ];
 
