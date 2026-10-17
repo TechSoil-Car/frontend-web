@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useOrganizations } from "@/features/organizations/OrganizationContext";
@@ -8,6 +7,7 @@ import { roleLabel } from "@/features/organizations/types";
 import { FormEvent, useMemo, useState } from "react";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
 import { ApiError } from "@/shared/api/api-client";
+import { SatelliteImage } from "@/features/map/components/satellite-image/SatelliteImage";
 import { usePlantations } from "../../context/PlantationContext";
 import type { Plantation, PlantationRole } from "../../types/plantation.types";
 import { PlantationMaintenanceDialog } from "./PlantationMaintenanceDialog";
@@ -272,7 +272,7 @@ export function PlantationsScreen() {
                 <small>Dados sincronizados com sua conta</small>
               </div>
               {visiblePlantations.length ? (
-                visiblePlantations.map((plantation, index) => (
+                visiblePlantations.map((plantation) => (
                   <button
                     className={`${styles.plantationCard} ${selectedPlantation?.id === plantation.id ? styles.cardSelected : ""}`}
                     type="button"
@@ -280,16 +280,7 @@ export function PlantationsScreen() {
                     onClick={() => selectPlantation(plantation.id)}
                   >
                     <span className={styles.cardImage}>
-                      <Image
-                        src={
-                          index % 2 === 0
-                            ? "/vineyard-sectors.png"
-                            : "/hero-vineyard.png"
-                        }
-                        alt=""
-                        fill
-                        sizes="180px"
-                      />
+                      <PlantationPicture plantation={plantation} size={190} />
                       <i
                         className={
                           plantation.role === "OWNER"
@@ -352,12 +343,7 @@ export function PlantationsScreen() {
                 aria-label={`Resumo de ${selectedPlantation.name}`}
               >
                 <div className={styles.detailHero}>
-                  <Image
-                    src="/vineyard-sectors.png"
-                    alt=""
-                    fill
-                    sizes="380px"
-                  />
+                  <PlantationPicture plantation={selectedPlantation} size={190} />
                   <div />
                   <span className={styles.detailStatus}>
                     <i /> Selecionada
@@ -540,5 +526,25 @@ export function PlantationsScreen() {
         </div>
       )}
     </main>
+  );
+}
+
+/** Real satellite picture of the plantation, or a placeholder until it is located. */
+function PlantationPicture({ plantation, size }: { plantation: Plantation; size: number }) {
+  if (plantation.centerLatitude == null || plantation.centerLongitude == null)
+    return (
+      <span className={styles.noLocation}>
+        <DashboardIcon name="location" size={20} />
+        Localização pendente
+      </span>
+    );
+  return (
+    <SatelliteImage
+      latitude={plantation.centerLatitude}
+      longitude={plantation.centerLongitude}
+      zoom={plantation.mapZoom}
+      boundary={plantation.boundaryGeoJson}
+      size={size}
+    />
   );
 }

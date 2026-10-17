@@ -1,0 +1,5 @@
+.image { position: absolute; inset: 0; overflow: hidden; background: #1b3a25; }
+.tile { position: absolute; width: 256px; height: 256px; background-size: cover; }
+.perimeter { position: absolute; top: 50%; left: 50%; overflow: visible; pointer-events: none; }
+.perimeter polygon { fill: rgba(223,255,158,.12); stroke: #dfff9e; stroke-width: 2; stroke-linejoin: round; }
+.credit { position: absolute; right: 4px; bottom: 3px; z-index: 1; padding: 1px 4px; color: rgba(255,255,255,.85); border-radius: 3px; background: rgba(11,32,18,.5); font-size: 7px; line-height: 1.4; }
