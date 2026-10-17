@@ -7,6 +7,7 @@ import { ApiError } from "@/shared/api/api-client";
 import { useSensorMonitoring } from "../../hooks/use-sensor-monitoring";
 import * as sensorsApi from "../../services/sensors-api";
 import type { Device, SensorReading } from "../../types/sensor.types";
+import { HistoryChart } from "./HistoryChart";
 import { SensorMaintenanceDialog } from "./SensorMaintenanceDialog";
 import {
   formatRelativeTime,
@@ -29,19 +30,6 @@ const tabs: Array<{ label: string; value: SensorTab }> = [
   { label: "Histórico", value: "history" },
   { label: "Alertas", value: "alerts" },
 ];
-function chartPoints(readings: SensorReading[]) {
-  const ordered = [...readings].reverse();
-  if (!ordered.length) return "";
-  return ordered
-    .map((reading, index) => {
-      const x =
-        ordered.length === 1 ? 330 : (index / (ordered.length - 1)) * 660;
-      const y = 100 - Math.max(0, Math.min(100, reading.moisture));
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(" ");
-}
-
 export function SensorsScreen() {
   const { selectedPlantation } = usePlantations();
   return (
@@ -578,40 +566,7 @@ function SensorsScreenContent() {
                     </div>
                   ) : history.length ? (
                     <>
-                      <div className={styles.chart}>
-                        <div className={styles.chartLabels}>
-                          <span>100%</span>
-                          <span>75%</span>
-                          <span>50%</span>
-                          <span>25%</span>
-                        </div>
-                        <svg viewBox="0 0 660 100" preserveAspectRatio="none">
-                          <defs>
-                            <linearGradient
-                              id="sensorHistoryFill"
-                              x1="0"
-                              y1="0"
-                              x2="0"
-                              y2="1"
-                            >
-                              <stop
-                                offset="0"
-                                stopColor="#75ad4c"
-                                stopOpacity=".28"
-                              />
-                              <stop
-                                offset="1"
-                                stopColor="#75ad4c"
-                                stopOpacity="0"
-                              />
-                            </linearGradient>
-                          </defs>
-                          <path
-                            d={`M ${chartPoints(history)} L 660 100 L 0 100 Z`}
-                          />
-                          <polyline points={chartPoints(history)} />
-                        </svg>
-                      </div>
+                      <HistoryChart readings={history} />
                       <div className={styles.historyRange}>
                         <span>
                           {new Date(
