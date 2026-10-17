@@ -41,6 +41,7 @@
 .actions { margin-top: 20px; display: flex; justify-content: flex-end; }
 .actions button { min-height: 46px; padding: 0 22px; color: #17331f; border: 1px solid #9ccd68; border-radius: 10px; background: #a9dc70; font-weight: 750; cursor: pointer; }
 .actions button:disabled { cursor: wait; opacity: .65; }
+.state > a { margin: 18px 0 0; }
 .state { min-height: calc(100svh - 76px); display: flex; align-items: center; justify-content: center; flex-direction: column; color: #748078; text-align: center; }
 .state strong { margin-top: 12px; color: #35443a; font-size: 16px; }
 .state p { margin: 7px 0 0; font-size: 11px; }

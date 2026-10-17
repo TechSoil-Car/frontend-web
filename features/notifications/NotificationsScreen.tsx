@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { ApiError } from "@/shared/api/api-client";
+import { BackLink } from "@/shared/components/back-link/BackLink";
 import { useNotifications } from "./use-notifications";
 import { NotificationCard } from "./NotificationCard";
 import {
@@ -63,6 +64,7 @@ function History({
   );
   return (
     <main className={styles.page}>
+      <BackLink href="/dashboard/alertas">Voltar para alertas</BackLink>
       <header className={styles.heading}>
         <div>
           <small>CENTRAL DE NOTIFICAÇÕES</small>

@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { ApiError } from "@/shared/api/api-client";
+import { BackLink } from "@/shared/components/back-link/BackLink";
 import * as sensorsApi from "../../services/sensors-api";
 import type { AlertSettings, UpdateAlertSettingsInput } from "../../types/sensor.types";
 import styles from "./AlertSettingsScreen.module.css";
@@ -75,11 +76,12 @@ export function AlertSettingsScreen() {
 
   if (!selectedPlantation) return <main className={styles.state}><strong>Selecione uma plantação</strong><p>Escolha uma propriedade antes de configurar alertas.</p></main>;
   if (status === "loading") return <main className={styles.state}><span className={styles.spinner} /><strong>Carregando configurações</strong></main>;
-  if (status === "error" || !settings) return <main className={styles.state}><DashboardIcon name="alert" /><strong>Configurações indisponíveis</strong><p>Não foi possível consultar as regras desta plantação.</p></main>;
+  if (status === "error" || !settings) return <main className={styles.state}><DashboardIcon name="alert" /><strong>Configurações indisponíveis</strong><p>Não foi possível consultar as regras desta plantação.</p><BackToAlerts /></main>;
 
   const readOnly = !["OWNER", "OPERATOR"].includes(selectedPlantation.role);
   return (
     <main className={styles.page}>
+      <BackToAlerts />
       <header className={styles.heading}>
         <div><p>MONITORAMENTO</p><h1>Configuração de alertas</h1><span>Defina regras específicas para {selectedPlantation.name}.</span></div>
         <div className={styles.statusBadge}><i /><span><small>REGRAS AGRONÔMICAS</small><strong>{[settings.moistureEnabled, settings.temperatureEnabled, settings.phEnabled].filter(Boolean).length} de 3 ativas</strong></span></div>
@@ -133,4 +135,8 @@ function RuleCard({ title, description, enabled, disabled, onToggle, children }:
 
 function NumberField({ label, unit, value, min, max, step, disabled, onChange }: { label: string; unit: string; value: number | null; min: number; max: number; step: number; disabled: boolean; onChange: (value: number) => void }) {
   return <label className={styles.numberField}><span>{label}</span><div><input type="number" value={value ?? ""} min={min} max={max} step={step} disabled={disabled} required={!disabled} onChange={(event) => onChange(Number(event.target.value))} /><b>{unit}</b></div></label>;
+}
+
+function BackToAlerts() {
+  return <BackLink href="/dashboard/alertas">Voltar para alertas</BackLink>;
 }
