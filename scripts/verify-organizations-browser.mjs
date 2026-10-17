@@ -162,14 +162,14 @@ const visible = async (locator) => {
   await locator.waitFor({ state: "visible" });
   assert.equal(await locator.isVisible(), true);
 };
+// The sidebar switcher lists organizations by name.
 const selectOrganization = async (id) => {
-  await page
-    .getByRole("combobox", { name: "Organização", exact: true })
-    .first()
-    .selectOption(id);
+  const name = organizations.find((item) => item.organization.id === id).organization.name;
+  await page.getByRole("button", { name: /^Selecionar organização/ }).click();
+  await page.locator("li").getByRole("button", { name: new RegExp(`^${name} `) }).click();
 };
 try {
-  await page.goto(`${origin}/dashboard/organizacoes`);
+  await page.goto(`${origin}/dashboard/equipe`);
   await visible(page.getByRole("heading", { name: "Equipe", exact: true }));
   const colleague = page
     .locator("form")
@@ -232,7 +232,7 @@ try {
     await page.getByRole("button", { name: /Fazenda A1/ }).count(),
     0,
   );
-  await page.goto(`${origin}/dashboard/organizacoes`);
+  await page.goto(`${origin}/dashboard/equipe`);
   await visible(page.getByText("Seu acesso: Visualizador.", { exact: true }));
   assert.equal(
     await page.getByRole("heading", { name: "Convidar participante" }).count(),
@@ -261,7 +261,7 @@ try {
   await page.getByRole("button", { name: "Salvar configurações" }).click();
   await visible(page.getByText("Configurações salvas. As próximas leituras usarão estes limites.", { exact: true }));
   assert.equal(calls.find(call => call.method === "PATCH" && call.path === "/plantations/farm-3/alerts/settings").body.offlineAfterMinutes, 20);
-  await page.goto(`${origin}/dashboard/organizacoes`);
+  await page.goto(`${origin}/dashboard/equipe`);
   await selectOrganization("org-3");
   await visible(
     page.getByText(
@@ -269,7 +269,7 @@ try {
       { exact: true },
     ),
   );
-  assert.equal(new URL(page.url()).pathname, "/dashboard/organizacoes");
+  assert.equal(new URL(page.url()).pathname, "/dashboard/equipe");
   await page.setViewportSize({ width: 390, height: 844 });
   assert.equal(
     await page.evaluate(

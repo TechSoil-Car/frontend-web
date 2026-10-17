@@ -1,4 +1,6 @@
-import { OrganizationsScreen } from "@/features/organizations/OrganizationsScreen";
+import { redirect } from "next/navigation";
+
+// Organizations and team are the same screen; keep old links working.
 export default function Page() {
-  return <OrganizationsScreen />;
+  redirect("/dashboard/equipe");
 }

@@ -34,7 +34,6 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
       plantationsStatus === "ready" &&
       !selectedPlantation &&
       !isProfilePage &&
-      pathname !== "/dashboard/organizacoes" &&
       pathname !== "/dashboard/equipe" &&
       pathname !== "/dashboard/plantacoes" &&
       !pathname.startsWith("/dashboard/admin")
@@ -59,7 +58,6 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
       plantationsStatus === "loading" &&
       pathname !== "/dashboard/plantacoes" &&
       !isAdminPage &&
-      pathname !== "/dashboard/organizacoes" &&
       pathname !== "/dashboard/equipe" &&
       !isProfilePage)
   ) {

@@ -159,7 +159,7 @@ export function PlantationsScreen() {
         </button>
       </section>
 
-      <p>Organização: {organization?.organization.name ?? "nenhuma selecionada"}. <Link href="/dashboard/organizacoes">Gerenciar organizações e equipe</Link></p>
+      <p>Organização: {organization?.organization.name ?? "nenhuma selecionada"}. <Link href="/dashboard/equipe">Gerenciar organizações e equipe</Link></p>
       {!canCreate && <p>Para criar plantações, selecione uma organização da qual você seja proprietário ou crie uma organização.</p>}
 
       {notice && (
