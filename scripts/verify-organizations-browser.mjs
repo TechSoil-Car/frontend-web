@@ -171,11 +171,13 @@ const selectOrganization = async (id) => {
 try {
   await page.goto(`${origin}/dashboard/equipe`);
   await visible(page.getByRole("heading", { name: "Equipe", exact: true }));
+  // Each person is a row; the access editor opens on demand.
   const colleague = page
-    .locator("form")
+    .locator("article")
     .filter({
       has: page.getByRole("heading", { name: "Colega Teste", exact: true }),
     });
+  await colleague.getByRole("button", { name: "Gerenciar acesso" }).click();
   await colleague
     .getByRole("combobox", { name: "Papel" })
     .selectOption("OPERATOR");
@@ -189,15 +191,18 @@ try {
   );
   assert.deepEqual(saved.body, { role: "OPERATOR", plantationIds: ["farm-1"] });
   const self = page
-    .locator("form")
+    .locator("article")
     .filter({
       has: page.getByRole("heading", {
         name: "Proprietário Teste (você)",
         exact: true,
       }),
     });
+  await self.getByRole("button", { name: "Gerenciar acesso" }).click();
   await self.getByRole("combobox", { name: "Papel" }).selectOption("VIEWER");
   await self.getByRole("button", { name: "Salvar acesso" }).click();
+  // Changing one's own role asks for confirmation in the panel's dialog.
+  await page.getByRole("dialog").getByRole("button", { name: "Aplicar" }).click();
   await visible(
     page.getByText(
       "A organização deve manter pelo menos um proprietário ativo",
