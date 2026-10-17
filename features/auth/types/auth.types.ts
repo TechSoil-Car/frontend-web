@@ -15,4 +15,5 @@ export type LoginCredentials = {
   password: string;
 };
 
-export type AuthStatus = "loading" | "authenticated" | "unauthenticated";
+/** "unavailable": the session could not be checked (server/network); it is kept. */
+export type AuthStatus = "loading" | "authenticated" | "unauthenticated" | "unavailable";

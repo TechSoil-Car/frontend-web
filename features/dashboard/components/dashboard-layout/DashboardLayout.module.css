@@ -2,6 +2,13 @@
 .content { min-width: 0; margin-left: 252px; }
 .sessionLoading { min-height: 100svh; display: flex; align-items: center; justify-content: center; gap: 12px; color: #4b6252; background: #f4f3ed; font: 600 13px var(--font-body), sans-serif; }
 .sessionLoading span { width: 20px; height: 20px; border: 2px solid #d2dbc9; border-top-color: #6d9849; border-radius: 50%; animation: session-spin .8s linear infinite; }
+.sessionUnavailable { min-height: 100svh; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #4b6252; text-align: center; background: #f4f3ed; font: 13px var(--font-body), sans-serif; }
+.sessionUnavailable strong { color: #24452b; font: 650 20px var(--font-display), sans-serif; }
+.sessionUnavailable p { max-width: 380px; margin: 0; line-height: 1.6; }
+.sessionUnavailable div { margin-top: 10px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.sessionUnavailable button { padding: 11px 18px; color: #193220; border: 1px solid #b2e378; border-radius: 10px; background: #b2e378; font: 700 12px var(--font-body), sans-serif; cursor: pointer; }
+.sessionUnavailable button + button { color: #3f6a35; border-color: #d6e2cd; background: #fff; }
+.sessionUnavailable button:focus-visible { outline: 2px solid #6ea443; outline-offset: 3px; }
 @keyframes session-spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 980px) { .content { margin-left: 0; } }

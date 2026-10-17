@@ -21,6 +21,8 @@ type AuthContextValue = {
   user: AuthUser | null;
   login: (credentials: LoginCredentials) => Promise<AuthUser>;
   logout: () => Promise<void>;
+  /** Tries again to restore the session after "unavailable". */
+  retry: () => void;
   updateProfile: (name: string) => Promise<authApi.UserProfile>;
   completePasswordChange: () => void;
   passwordChanged: boolean;
@@ -38,26 +40,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setStatus("unauthenticated");
   }, []);
 
+  const [attempt, setAttempt] = useState(0);
+  const retry = useCallback(() => {
+    setStatus("loading");
+    setAttempt((value) => value + 1);
+  }, []);
+
   useEffect(() => {
     let active = true;
 
-    authApi
-      .refreshSession()
-      .then((session) => {
-        if (!active) return;
-        setUser(session.user);
+    void authApi.refreshSession().then((result) => {
+      if (!active) return;
+      if (result.status === "renewed") {
+        setUser(result.user);
         setStatus("authenticated");
-      })
-      .catch(() => {
-        if (active) clearSession();
-      });
+      } else if (result.status === "expired") {
+        clearSession();
+      } else {
+        // Rate limit, server error or offline: keep the session, offer a retry.
+        setStatus("unavailable");
+      }
+    });
 
     window.addEventListener("techsoil:session-expired", clearSession);
     return () => {
       active = false;
       window.removeEventListener("techsoil:session-expired", clearSession);
     };
-  }, [clearSession]);
+  }, [attempt, clearSession]);
 
   const handleLogin = useCallback(async (credentials: LoginCredentials) => {
     const session = await authApi.login(credentials);
@@ -68,8 +78,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleLogout = useCallback(async () => {
-    await authApi.logout();
-    clearSession();
+    try {
+      await authApi.logout();
+    } finally {
+      // Offline the server keeps the token until it expires, but this browser leaves.
+      clearSession();
+    }
   }, [clearSession]);
 
   const handleUpdateProfile = useCallback(async (name: string) => {
@@ -90,6 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       login: handleLogin,
       logout: handleLogout,
+      retry,
       updateProfile: handleUpdateProfile,
       completePasswordChange,
       passwordChanged,
@@ -97,6 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [
       handleLogin,
       handleLogout,
+      retry,
       handleUpdateProfile,
       completePasswordChange,
       passwordChanged,

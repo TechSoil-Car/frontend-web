@@ -11,7 +11,7 @@ import styles from "./DashboardLayout.module.css";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { status: authStatus, user } = useAuth();
+  const { status: authStatus, user, retry, logout } = useAuth();
   const { selectedPlantation, status: plantationsStatus } = usePlantations();
   const router = useRouter();
   const pathname = usePathname();
@@ -50,6 +50,19 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
     isAdminPage,
     isProfilePage,
   ]);
+
+  if (authStatus === "unavailable") {
+    return (
+      <div className={styles.sessionUnavailable} role="alert">
+        <strong>Servidor indisponível</strong>
+        <p>Não foi possível confirmar sua sessão agora. Seus dados continuam seguros; tente novamente em instantes.</p>
+        <div>
+          <button type="button" onClick={retry}>Tentar novamente</button>
+          <button type="button" onClick={() => void logout()}>Sair da conta</button>
+        </div>
+      </div>
+    );
+  }
 
   if (
     authStatus !== "authenticated" ||

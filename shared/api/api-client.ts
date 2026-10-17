@@ -7,10 +7,30 @@ type ErrorPayload = {
 
 type AuthResponse = {
   access_token: string;
+  user: SessionUser;
 };
 
+export type SessionUser = {
+  id: string;
+  name: string;
+  email: string;
+  systemRole: "USER" | "SUPERADMIN";
+};
+
+/**
+ * "expired": the server refused the session (sign in again).
+ * "unavailable": rate limit, server error or network failure — the session
+ * may still be valid, so it is kept and the user can retry.
+ */
+export type RefreshResult =
+  | { status: "renewed"; user: SessionUser }
+  | { status: "expired" }
+  | { status: "unavailable" };
+
 let accessToken: string | null = null;
-let refreshPromise: Promise<boolean> | null = null;
+// One refresh at a time for the whole app: the refresh cookie rotates, so two
+// concurrent refreshes would make the second one present a revoked token.
+let refreshPromise: Promise<RefreshResult> | null = null;
 
 export class ApiError extends Error {
   constructor(
@@ -38,19 +58,24 @@ async function parseError(response: Response) {
   }
 }
 
-async function refreshAccessToken() {
+export function refreshSession(): Promise<RefreshResult> {
   if (!refreshPromise) {
     refreshPromise = fetch(`${API_URL}/auth/refresh`, {
       method: "POST",
       credentials: "include",
     })
-      .then(async (response) => {
-        if (!response.ok) return false;
-        const session = (await response.json()) as AuthResponse;
-        setAccessToken(session.access_token);
-        return true;
+      .then(async (response): Promise<RefreshResult> => {
+        if (response.ok) {
+          const session = (await response.json()) as AuthResponse;
+          setAccessToken(session.access_token);
+          return { status: "renewed", user: session.user };
+        }
+        if (response.status === 429 || response.status >= 500)
+          return { status: "unavailable" };
+        setAccessToken(null);
+        return { status: "expired" };
       })
-      .catch(() => false)
+      .catch((): RefreshResult => ({ status: "unavailable" }))
       .finally(() => {
         refreshPromise = null;
       });
@@ -87,12 +112,15 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
   });
 
   if (response.status === 401 && authenticated && retryOnUnauthorized) {
-    const refreshed = await refreshAccessToken();
-    if (refreshed) {
+    const refreshed = await refreshSession();
+    if (refreshed.status === "renewed") {
       return apiRequest<T>(path, { ...options, retryOnUnauthorized: false });
     }
+    if (refreshed.status === "unavailable") {
+      // Not a sign-out: the screen shows the error and the user can retry.
+      throw new ApiError(503, "Servidor indisponível no momento. Tente novamente em instantes.");
+    }
 
-    setAccessToken(null);
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("techsoil:session-expired"));
     }

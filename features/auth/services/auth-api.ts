@@ -1,4 +1,4 @@
-import { apiRequest, setAccessToken } from "@/shared/api/api-client";
+import { apiRequest, refreshSession as refreshSharedSession, setAccessToken } from "@/shared/api/api-client";
 import type {
   AuthResponse,
   AuthUser,
@@ -25,8 +25,6 @@ export function changePassword(currentPassword: string, newPassword: string) {
   });
 }
 
-let sessionRefreshPromise: Promise<AuthResponse> | null = null;
-
 export async function login(credentials: LoginCredentials) {
   const session = await apiRequest<AuthResponse>("/auth/login", {
     method: "POST",
@@ -38,23 +36,9 @@ export async function login(credentials: LoginCredentials) {
   return session;
 }
 
+/** Restores the session from the HttpOnly cookie; shares the in-flight refresh. */
 export function refreshSession() {
-  if (!sessionRefreshPromise) {
-    sessionRefreshPromise = apiRequest<AuthResponse>("/auth/refresh", {
-      method: "POST",
-      authenticated: false,
-      retryOnUnauthorized: false,
-    })
-      .then((session) => {
-        setAccessToken(session.access_token);
-        return session;
-      })
-      .finally(() => {
-        sessionRefreshPromise = null;
-      });
-  }
-
-  return sessionRefreshPromise;
+  return refreshSharedSession();
 }
 
 export async function logout() {

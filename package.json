@@ -16,7 +16,8 @@
     "test:admin": "node --test scripts/test-account-administration.mjs",
     "test:notifications": "node --test scripts/test-notifications.mjs",
     "test:alerts": "node --test scripts/test-alerts.mjs",
-    "test:organizations:browser": "node scripts/verify-organizations-browser.mjs"
+    "test:organizations:browser": "node scripts/verify-organizations-browser.mjs",
+    "test:session": "node --test scripts/test-session.mjs"
   },
   "dependencies": {
     "maplibre-gl": "^6.7.0",
