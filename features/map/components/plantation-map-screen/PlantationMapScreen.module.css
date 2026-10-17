@@ -20,6 +20,10 @@
 .workspace { height: min(690px, calc(100svh - 315px)); min-height: 530px; margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1fr) 340px; overflow: hidden; border: 1px solid #d9ddd4; border-radius: 18px; background: #fff; box-shadow: 0 14px 40px rgba(35,57,38,.08); }
 .mapCard { position: relative; min-width: 0; overflow: hidden; border-right: 1px solid #dde0d8; background: #dfe8da; }
 .mapBadge { position: absolute; z-index: 2; top: 15px; left: 15px; padding: 9px 12px; display: flex; align-items: center; gap: 7px; color: #2e4a35; border: 1px solid rgba(50,76,55,.12); border-radius: 99px; background: rgba(250,252,247,.9); box-shadow: 0 7px 20px rgba(19,41,24,.1); font-size: 9px; font-weight: 700; backdrop-filter: blur(9px); }
+.basemapToggle { position: absolute; z-index: 2; left: 15px; bottom: 30px; padding: 4px; display: flex; gap: 4px; border: 1px solid rgba(50,76,55,.12); border-radius: 99px; background: rgba(250,252,247,.92); box-shadow: 0 7px 20px rgba(19,41,24,.12); backdrop-filter: blur(9px); }
+.basemapToggle button { padding: 7px 13px; color: #2e4a35; border: 0; border-radius: 99px; background: transparent; font: inherit; font-size: 10px; font-weight: 700; cursor: pointer; }
+.basemapToggle button[aria-pressed="true"] { color: #f4f8ef; background: #315d32; }
+.basemapToggle button:focus-visible { outline: 2px solid #315d32; outline-offset: 2px; }
 .mapBadge i { width: 7px; height: 7px; border-radius: 50%; background: #7db553; box-shadow: 0 0 0 4px rgba(125,181,83,.13); }
 .drawingGuide { position: absolute; z-index: 3; top: 15px; left: 50%; min-width: 370px; padding: 10px; display: grid; grid-template-columns: 38px 1fr auto; align-items: center; gap: 10px; color: #f5f8ef; border: 1px solid rgba(223,255,158,.2); border-radius: 13px; background: rgba(19,49,30,.94); box-shadow: 0 12px 35px rgba(8,27,14,.26); transform: translateX(-50%); backdrop-filter: blur(10px); }
 .drawingGuide > span { width: 38px; height: 38px; display: grid; place-items: center; color: #17351f; border-radius: 10px; background: #b4e478; font-size: 13px; font-weight: 800; }

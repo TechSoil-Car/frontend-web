@@ -21,6 +21,7 @@ import type { SensorAlert, SensorLatest } from "@/features/sensors/types/sensor.
 import { sensorCoordinates, sensorMapStatus } from "../../utils/sensor-map";
 import { createSensorPopup } from "./sensor-popup";
 import { popupPanOffset } from "../../utils/popup-pan";
+import { SATELLITE_LAYER, addSatelliteLayer } from "../../utils/satellite";
 import styles from "./PlantationMap.module.css";
 
 const ROWS_SOURCE = "techsoil-rows";
@@ -53,6 +54,7 @@ type PlantationMapProps = {
   boundaryDraft: MapPoint[];
   plotDraft: MapPoint[];
   interactionMode: "row" | "boundary" | "plot" | null;
+  basemap: "map" | "satellite";
   onMapClick: (point: MapPoint) => void;
   onSelectRow: (rowId: string) => void;
   onSelectPlot: (plotId: string) => void;
@@ -155,7 +157,7 @@ function locationGeoJson(center: MapPoint | null): FeatureCollection<Point> {
   };
 }
 
-export function PlantationMap({ sensors, alerts, sensorFocus, rows, plots, selectedRowId, selectedPlotId, draftStart, draftEnd, center, zoom, boundary, boundaryDraft, plotDraft, interactionMode, onMapClick, onSelectRow, onSelectPlot }: PlantationMapProps) {
+export function PlantationMap({ sensors, alerts, sensorFocus, rows, plots, selectedRowId, selectedPlotId, draftStart, draftEnd, center, zoom, boundary, boundaryDraft, plotDraft, interactionMode, basemap, onMapClick, onSelectRow, onSelectPlot }: PlantationMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
   const onMapClickRef = useRef(onMapClick);
@@ -163,6 +165,7 @@ export function PlantationMap({ sensors, alerts, sensorFocus, rows, plots, selec
   const onSelectPlotRef = useRef(onSelectPlot);
   const interactionModeRef = useRef(interactionMode);
   const fittedRowsRef = useRef("");
+  const basemapRef = useRef(basemap);
 
   useEffect(() => { onMapClickRef.current = onMapClick; }, [onMapClick]);
   useEffect(() => { onSelectRowRef.current = onSelectRow; }, [onSelectRow]);
@@ -188,6 +191,7 @@ export function PlantationMap({ sensors, alerts, sensorFocus, rows, plots, selec
     map.addControl(new ScaleControl({ unit: "metric", maxWidth: 110 }), "bottom-right");
 
     map.on("load", () => {
+      addSatelliteLayer(map, basemapRef.current === "satellite");
       map.addSource(ROWS_SOURCE, { type: "geojson", data: rowsGeoJson([], null) });
       map.addSource(BOUNDARY_SOURCE, { type: "geojson", data: boundaryGeoJson(null) });
       map.addLayer({ id: "techsoil-boundary-fill", type: "fill", source: BOUNDARY_SOURCE, paint: { "fill-color": "#79ae50", "fill-opacity": .18 } });
@@ -273,6 +277,12 @@ export function PlantationMap({ sensors, alerts, sensorFocus, rows, plots, selec
       mapRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    basemapRef.current = basemap;
+    const map = mapRef.current;
+    if (map?.getLayer(SATELLITE_LAYER)) map.setLayoutProperty(SATELLITE_LAYER, "visibility", basemap === "satellite" ? "visible" : "none");
+  }, [basemap]);
 
   useEffect(() => {
     const map = mapRef.current;

@@ -1,4 +1,5 @@
-.map { position: absolute; inset: 0; background: #dfe8da; }
+/* MapLibre's stylesheet sets .maplibregl-map { position: relative }, which would collapse the container to 0px; keep it absolute regardless of stylesheet order. */
+.map, .map:global(.maplibregl-map) { position: absolute; inset: 0; background: #dfe8da; }
 .sensorMarker { width: 32px; height: 32px; border: 3px solid #fff; border-radius: 50%; color: #fff; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px #0005; }
 .sensorMarker:focus-visible { outline: 3px solid #173b26; outline-offset: 3px; }
 .normal { background: #387a35; }

@@ -1,0 +1,11 @@
+/* Absolute regardless of MapLibre's stylesheet order (it sets position: relative). */
+.snapshot, .snapshot:global(.maplibregl-map) { position: absolute; inset: 0; z-index: -3; background: #1b3a25; }
+.marker { width: 30px; height: 30px; padding: 0; border: 3px solid #fff; border-radius: 50%; background: #9dd967; box-shadow: 0 0 0 6px rgba(157,217,103,.25), 0 6px 16px rgba(0,0,0,.35); cursor: pointer; }
+.marker:hover { filter: brightness(1.12); }
+.marker:focus-visible { outline: 3px solid #dfff9e; outline-offset: 3px; }
+.normal { background: #9dd967; }
+.attention { background: #e5b45b; box-shadow: 0 0 0 6px rgba(229,180,91,.28), 0 6px 16px rgba(0,0,0,.35); }
+.offline { background: #6c7a72; box-shadow: 0 0 0 6px rgba(108,122,114,.3), 0 6px 16px rgba(0,0,0,.35); }
+.selected { box-shadow: 0 0 0 9px rgba(223,255,158,.35), 0 8px 20px rgba(0,0,0,.4); }
+.snapshot :global(.maplibregl-ctrl-attrib) { color: rgba(255,255,255,.82); background: rgba(11,32,18,.55); font-size: 8px; }
+.snapshot :global(.maplibregl-ctrl-attrib a) { color: inherit; }

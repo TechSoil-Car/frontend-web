@@ -41,6 +41,7 @@ function PlantationMapContent({ plantation }: { plantation: Plantation }) {
   const monitoring = useSensorMonitoring(plantation.id);
   const [sensorFocus, setSensorFocus] = useState<{ coordinates: [number, number]; request: number } | null>(null);
   const [panelTab, setPanelTab] = useState<"plots" | "rows" | "sensors">("plots");
+  const [basemap, setBasemap] = useState<"map" | "satellite">("map");
   const [selectedPlotId, setSelectedPlotId] = useState<string | null>(null);
   const [drawingPlot, setDrawingPlot] = useState(false);
   const [plotDraft, setPlotDraft] = useState<MapPoint[]>([]);
@@ -218,8 +219,12 @@ function PlantationMapContent({ plantation }: { plantation: Plantation }) {
 
     <section className={styles.workspace}>
       <div className={styles.mapCard}>
-        <PlantationMap sensors={monitoring.sensors} alerts={monitoring.alerts} sensorFocus={sensorFocus} rows={rows} plots={plots} selectedRowId={selectedRowId} selectedPlotId={selectedPlotId} draftStart={draftStart} draftEnd={draftEnd} center={center} zoom={plantation.mapZoom ?? 16} boundary={savedBoundary} boundaryDraft={setupOpen ? perimeterPoints : []} plotDraft={plotDraft} interactionMode={interactionMode} onMapClick={handleMapClick} onSelectRow={(rowId) => { setSelectedRowId(rowId); setPanelTab("rows"); }} onSelectPlot={(plotId) => { setSelectedPlotId(plotId); setPanelTab("plots"); }} />
+        <PlantationMap sensors={monitoring.sensors} alerts={monitoring.alerts} sensorFocus={sensorFocus} rows={rows} plots={plots} selectedRowId={selectedRowId} selectedPlotId={selectedPlotId} draftStart={draftStart} draftEnd={draftEnd} center={center} zoom={plantation.mapZoom ?? 16} boundary={savedBoundary} boundaryDraft={setupOpen ? perimeterPoints : []} plotDraft={plotDraft} interactionMode={interactionMode} basemap={basemap} onMapClick={handleMapClick} onSelectRow={(rowId) => { setSelectedRowId(rowId); setPanelTab("rows"); }} onSelectPlot={(plotId) => { setSelectedPlotId(plotId); setPanelTab("plots"); }} />
         <div className={styles.mapBadge}><i /> {setupOpen ? "Configuração da propriedade" : "Mapa operacional"}</div>
+        <div className={styles.basemapToggle} role="group" aria-label="Tipo de mapa">
+          <button type="button" aria-pressed={basemap === "map"} onClick={() => setBasemap("map")}>Mapa</button>
+          <button type="button" aria-pressed={basemap === "satellite"} onClick={() => setBasemap("satellite")}>Satélite</button>
+        </div>
         {drawingBoundary && <div className={styles.drawingGuide}><span>{perimeterPoints.length + 1}</span><div><strong>Marque os limites da propriedade</strong><small>Clique nos cantos do terreno para formar o contorno</small></div></div>}
         {drawingPlot && <div className={styles.drawingGuide}><span>{plotDraft.length + 1}</span><div><strong>Marque os limites do talhão</strong><small>Clique nos cantos da área; o polígono fecha ao salvar</small></div></div>}
         {drawingRow && <div className={styles.drawingGuide}><span>{draftStart ? "2" : "1"}</span><div><strong>{draftStart ? "Agora marque o ponto final" : "Marque o início da linha"}</strong><small>Clique diretamente no mapa</small></div><button type="button" onClick={resetRowDraft}>Cancelar</button></div>}
