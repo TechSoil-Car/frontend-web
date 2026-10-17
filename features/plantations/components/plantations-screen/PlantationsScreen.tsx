@@ -424,13 +424,6 @@ export function PlantationsScreen() {
                         plantação
                       </button>
                       <button
-                        className={styles.secondaryButton}
-                        type="button"
-                        onClick={() => router.push("/dashboard/mapa")}
-                      >
-                        Editar área no mapa
-                      </button>
-                      <button
                         className={styles.removeButton}
                         type="button"
                         onClick={() => {
