@@ -151,7 +151,7 @@ function renderScreen(
     if (name === "next/link") return { default: "a" };
     if (name.endsWith(".module.css")) return { default: {} };
     if (name === "../../utils/alert-view") return exports;
-    if (name === "@/features/auth")
+    if (name === "@/features/auth/context/AuthContext")
       return { useAuth: () => ({ user: { systemRole } }) };
     if (name === "@/features/plantations/context/PlantationContext")
       return { usePlantations: () => ({ selectedPlantation: selected }) };

@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useAuth } from "@/features/auth";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import { useOrganizations } from "@/features/organizations/context/OrganizationContext";
 import * as plantationsApi from "../services/plantations-api";
 import type {

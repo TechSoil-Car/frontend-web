@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { getProfile, type UserProfile } from "@/features/auth";
+import { getProfile, type UserProfile } from "@/features/auth/services/auth-api";
 import { profileError } from "../utils/profile-error";
 
 /** Perfil da conta conectada, com nova tentativa após falha. */

@@ -1,7 +1,7 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
-import { changePassword } from "@/features/auth";
+import { changePassword } from "@/features/auth/services/auth-api";
 import { EditIcon } from "./EditIcon";
 import { profileError } from "../../utils/profile-error";
 import styles from "./ProfileScreen.module.css";

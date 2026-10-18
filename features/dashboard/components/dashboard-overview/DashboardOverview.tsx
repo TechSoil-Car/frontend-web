@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useAuth } from "@/features/auth";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import { PlantationSnapshot } from "@/features/map/components/plantation-snapshot/PlantationSnapshot";
 import { sensorCoordinates } from "@/features/map/utils/sensor-map";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";

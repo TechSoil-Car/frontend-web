@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@/features/auth";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
 import { useSensorMonitoring } from "@/features/sensors/hooks/use-sensor-monitoring";

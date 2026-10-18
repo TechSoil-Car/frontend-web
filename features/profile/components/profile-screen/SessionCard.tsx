@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/features/auth";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import styles from "./ProfileScreen.module.css";
 
 export function SessionCard() {

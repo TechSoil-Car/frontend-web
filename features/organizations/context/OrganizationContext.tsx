@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useAuth } from "@/features/auth";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import { listOrganizations } from "../services/organizations-api";
 import type { OrganizationMembership } from "../types/organization.types";
 

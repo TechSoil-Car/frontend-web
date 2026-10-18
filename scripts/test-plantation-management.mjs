@@ -65,7 +65,7 @@ function mount(items = [first, second], selected = "a", fail = false) {
     require: (name) => {
       if (name === "react") return react;
       if (name === "react/jsx-runtime") return { jsx, jsxs: jsx };
-      if (name === "@/features/auth")
+      if (name === "@/features/auth/context/AuthContext")
         return {
           useAuth: () => ({
             status: "authenticated",

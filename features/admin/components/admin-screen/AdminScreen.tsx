@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@/features/auth";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import { errorMessage } from "@/shared/api/error-message";
 import { ADMIN_ERROR, useAdminData } from "../../hooks/use-admin-data";
 import { inviteUser, revokeAdminInvite } from "../../services/admin-api";

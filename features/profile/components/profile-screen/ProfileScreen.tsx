@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/features/auth";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import { useProfile } from "../../hooks/use-profile";
 import { PasswordForm } from "./PasswordForm";
 import { ProfileForm } from "./ProfileForm";

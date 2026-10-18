@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, ViewTransition } from "react";
-import { useAuth } from "@/features/auth";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import { useOrganizations } from "@/features/organizations/context/OrganizationContext";
 import { roleLabel } from "@/features/organizations/types/organization.types";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";

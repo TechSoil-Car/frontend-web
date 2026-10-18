@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useEffect, useState, ViewTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/features/auth";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { DashboardHeader } from "../dashboard-header/DashboardHeader";
 import { DashboardSidebar } from "../dashboard-sidebar/DashboardSidebar";

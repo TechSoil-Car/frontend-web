@@ -1,5 +1,5 @@
 import { DashboardIcon } from "../dashboard-icons/DashboardIcon";
-import { useAuth } from "@/features/auth";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import styles from "./DashboardHeader.module.css";
 import { NotificationBell } from "@/features/notifications";
