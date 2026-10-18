@@ -13,7 +13,7 @@ import {
   setWorkerUrl,
 } from "maplibre-gl";
 import type { MapLayerMouseEvent } from "maplibre-gl";
-import type { BoundaryPolygon } from "@/features/plantations";
+import type { BoundaryPolygon } from "@/features/plantations/types/plantation.types";
 import type { PlantationPlot } from "../../types/plantation-plot.types";
 import type { MapPoint, PlantationRow } from "../../types/plantation-row.types";
 import { hasCoordinates } from "../../types/plantation-row.types";

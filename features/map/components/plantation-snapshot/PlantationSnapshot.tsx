@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { GeoJSONSource, LngLatBounds, Map, Marker, NavigationControl, setWorkerUrl } from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
-import type { BoundaryPolygon } from "@/features/plantations";
+import type { BoundaryPolygon } from "@/features/plantations/types/plantation.types";
 import type { SensorAlert, SensorLatest } from "@/features/sensors/types/sensor.types";
 import { SATELLITE_LAYER, SATELLITE_SOURCE, satelliteSource } from "../../utils/satellite";
 import { sensorCoordinates, sensorMapStatus } from "../../utils/sensor-map";

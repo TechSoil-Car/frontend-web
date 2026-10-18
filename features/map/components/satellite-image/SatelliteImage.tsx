@@ -1,4 +1,4 @@
-import type { BoundaryPolygon } from "@/features/plantations";
+import type { BoundaryPolygon } from "@/features/plantations/types/plantation.types";
 import { SATELLITE_TILES_URL } from "../../utils/satellite";
 import styles from "./SatelliteImage.module.css";
 

@@ -1,4 +1,4 @@
-import type { BoundaryPolygon } from "@/features/plantations";
+import type { BoundaryPolygon } from "@/features/plantations/types/plantation.types";
 
 export type PlantationPlot = {
   id: string;

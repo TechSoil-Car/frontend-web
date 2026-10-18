@@ -2,8 +2,8 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
-import { usePlantations } from "@/features/plantations";
-import type { BoundaryPolygon, Plantation } from "@/features/plantations";
+import { usePlantations } from "@/features/plantations/context/PlantationContext";
+import type { BoundaryPolygon, Plantation } from "@/features/plantations/types/plantation.types";
 import { ApiError } from "@/shared/api/api-client";
 import { useSensorMonitoring } from "@/features/sensors/hooks/use-sensor-monitoring";
 import { sensorCoordinates } from "../../utils/sensor-map";
