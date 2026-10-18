@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ApiError } from "@/shared/api/api-client";
+import { errorMessage } from "@/shared/api/error-message";
 import * as plotsApi from "../services/plantation-plots-api";
 import type {
   CreatePlantationPlotInput,
@@ -26,9 +26,7 @@ export function usePlantationPlots(plantationId: string | undefined) {
       setStatus("ready");
     } catch (requestError) {
       setError(
-        requestError instanceof ApiError
-          ? requestError.message
-          : "Não foi possível carregar os talhões.",
+        errorMessage(requestError, "Não foi possível carregar os talhões."),
       );
       setStatus("error");
     }

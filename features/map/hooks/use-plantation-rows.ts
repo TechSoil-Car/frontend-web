@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ApiError } from "@/shared/api/api-client";
+import { errorMessage } from "@/shared/api/error-message";
 import * as rowsApi from "../services/plantation-rows-api";
 import type { CreatePlantationRowInput, PlantationRow, PlantationRowsStatus } from "../types/plantation-row.types";
 
@@ -19,7 +19,7 @@ export function usePlantationRows(plantationId: string | undefined) {
       setRows(await rowsApi.listPlantationRows(plantationId));
       setStatus("ready");
     } catch (requestError) {
-      setError(requestError instanceof ApiError ? requestError.message : "Não foi possível carregar as linhas desta plantação.");
+      setError(errorMessage(requestError, "Não foi possível carregar as linhas desta plantação."));
       setStatus("error");
     }
   }, [plantationId]);

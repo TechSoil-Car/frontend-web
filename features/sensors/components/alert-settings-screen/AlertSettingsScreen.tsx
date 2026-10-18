@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
-import { ApiError } from "@/shared/api/api-client";
+import { errorMessage } from "@/shared/api/error-message";
 import { BackLink } from "@/shared/components/back-link/BackLink";
 import * as sensorsApi from "../../services/sensors-api";
 import type { AlertSettings, UpdateAlertSettingsInput } from "../../types/sensor.types";
@@ -68,7 +68,7 @@ export function AlertSettingsScreen() {
       setSettings(saved);
       setMessage({ tone: "success", text: "Configurações salvas. As próximas leituras usarão estes limites." });
     } catch (error) {
-      setMessage({ tone: "error", text: error instanceof ApiError ? error.message : "Não foi possível salvar as configurações." });
+      setMessage({ tone: "error", text: errorMessage(error, "Não foi possível salvar as configurações.") });
     } finally {
       setSaving(false);
     }

@@ -4,7 +4,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import type { BoundaryPolygon, Plantation } from "@/features/plantations/types/plantation.types";
-import { ApiError } from "@/shared/api/api-client";
+import { errorMessage } from "@/shared/api/error-message";
 import { useSensorMonitoring } from "@/features/sensors/hooks/use-sensor-monitoring";
 import { sensorCoordinates } from "../../utils/sensor-map";
 import { SensorsMapPanel } from "../sensors-map-panel/SensorsMapPanel";
@@ -135,7 +135,7 @@ function PlantationMapContent({ plantation }: { plantation: Plantation }) {
       resetRowDraft();
       setSelectedRowId(created.id);
     } catch (requestError) {
-      setFormError(requestError instanceof ApiError ? requestError.message : "Não foi possível salvar esta linha.");
+      setFormError(errorMessage(requestError, "Não foi possível salvar esta linha."));
     } finally {
       setSaving(false);
     }
@@ -152,7 +152,7 @@ function PlantationMapContent({ plantation }: { plantation: Plantation }) {
       setDrawingBoundary(false);
       setSetupOpen(false);
     } catch (requestError) {
-      setFormError(requestError instanceof ApiError ? requestError.message : "Não foi possível salvar o perímetro.");
+      setFormError(errorMessage(requestError, "Não foi possível salvar o perímetro."));
     } finally {
       setSaving(false);
     }
