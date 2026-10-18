@@ -1,4 +1,4 @@
-import { ResetPasswordScreen } from "@/features/auth/components/password-recovery/ResetPasswordScreen";
+import { ResetPasswordScreen } from "@/features/auth";
 
 export const metadata = {
   title: "Redefinir senha | TechSoil",

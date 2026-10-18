@@ -3,13 +3,12 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ApiError, apiRequest } from "@/shared/api/api-client";
+import { listPlantations } from "@/features/plantations/services/plantations-api";
+import { errorMessage } from "@/shared/api/error-message";
 import { useAuth } from "../../context/AuthContext";
 import { ArrowIcon } from "@/app/landing-art";
 import { PasswordInput } from "../auth-form/PasswordInput";
 import styles from "../auth-form/AuthForm.module.css";
-
-type Plantation = { id: string };
 
 export function LoginForm() {
   const [submitting, setSubmitting] = useState(false);
@@ -45,22 +44,26 @@ export function LoginForm() {
         return;
       }
     } catch (error) {
-      if (error instanceof ApiError && error.status === 401) {
-        setFeedback("E-mail ou senha inválidos.");
-      } else if (error instanceof ApiError && error.status === 429) {
-        setFeedback("Muitas tentativas. Aguarde um minuto e tente novamente.");
-      } else {
-        setFeedback(
+      setFeedback(
+        errorMessage(
+          error,
           "Não foi possível acessar o painel. Verifique sua conexão e tente novamente.",
-        );
-      }
+          {
+            byStatus: {
+              401: "E-mail ou senha inválidos.",
+              429: "Muitas tentativas. Aguarde um minuto e tente novamente.",
+            },
+            serverMessage: false,
+          },
+        ),
+      );
       setSubmitting(false);
       loginStarted.current = false;
       return;
     }
 
     try {
-      const plantations = await apiRequest<Plantation[]>("/plantations");
+      const plantations = await listPlantations();
       router.replace(
         plantations.length === 1 ? "/dashboard" : "/dashboard/plantacoes",
       );

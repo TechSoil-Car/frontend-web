@@ -1,36 +1,24 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { ApiError, apiRequest, setAccessToken } from "@/shared/api/api-client";
+import { errorMessage } from "@/shared/api/error-message";
 import { ArrowIcon } from "@/app/landing-art";
+import { useResetToken } from "../../hooks/use-reset-token";
+import { resetPassword } from "../../services/auth-api";
 import { PasswordChecklist, PasswordInput } from "../auth-form/PasswordInput";
 import styles from "../auth-form/AuthForm.module.css";
 import { AuthShell } from "../auth-shell/AuthShell";
 import { RecoverySteps } from "./RecoverySteps";
 
-// Token lido do link, guardado só em memória. Se a tela for montada de novo (o React faz isso
-// em desenvolvimento), a URL já está sem o "#token" e o valor vem daqui.
-let capturedToken: string | null = null;
-
 export function ResetPasswordScreen() {
-  const [token, setToken] = useState<string | null>(null);
+  const { token, clearToken } = useResetToken();
   const [saving, setSaving] = useState(false);
   const [complete, setComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Só para a lista de requisitos; o envio continua lendo o FormData.
   const [typedPassword, setTypedPassword] = useState("");
   const [typedConfirmation, setTypedConfirmation] = useState("");
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      const value = new URLSearchParams(window.location.hash.slice(1)).get("token");
-      if (value !== null) capturedToken = /^[A-Za-z0-9_-]{43}$/.test(value) ? value : "";
-      setToken(capturedToken ?? "");
-      // Hold the secret only in memory; no query string or local storage.
-      window.history.replaceState(null, "", "/reset-password");
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, []);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!token) return;
@@ -49,22 +37,16 @@ export function ResetPasswordScreen() {
     setSaving(true);
     setError(null);
     try {
-      await apiRequest("/auth/reset-password", {
-        method: "POST",
-        authenticated: false,
-        retryOnUnauthorized: false,
-        body: JSON.stringify({ token, password }),
-      });
+      await resetPassword(token, password);
       setComplete(true);
-      setToken("");
-      capturedToken = null;
-      setAccessToken(null);
+      clearToken();
       window.dispatchEvent(new Event("techsoil:session-expired"));
     } catch (failure) {
       setError(
-        failure instanceof ApiError
-          ? failure.message
-          : "Não foi possível redefinir a senha. Tente novamente.",
+        errorMessage(
+          failure,
+          "Não foi possível redefinir a senha. Tente novamente.",
+        ),
       );
     } finally {
       setSaving(false);

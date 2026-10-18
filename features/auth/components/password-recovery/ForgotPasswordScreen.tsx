@@ -2,8 +2,9 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { ApiError, apiRequest } from "@/shared/api/api-client";
+import { errorMessage } from "@/shared/api/error-message";
 import { ArrowIcon } from "@/app/landing-art";
+import { requestPasswordReset } from "../../services/auth-api";
 import styles from "../auth-form/AuthForm.module.css";
 import { AuthShell } from "../auth-shell/AuthShell";
 import { RecoverySteps } from "./RecoverySteps";
@@ -20,18 +21,14 @@ export function ForgotPasswordScreen() {
     setSaving(true);
     setError(null);
     try {
-      await apiRequest("/auth/forgot-password", {
-        method: "POST",
-        authenticated: false,
-        retryOnUnauthorized: false,
-        body: JSON.stringify({ email }),
-      });
+      await requestPasswordReset(email);
       setSent(true);
     } catch (failure) {
       setError(
-        failure instanceof ApiError
-          ? failure.message
-          : "Não foi possível solicitar a recuperação. Tente novamente.",
+        errorMessage(
+          failure,
+          "Não foi possível solicitar a recuperação. Tente novamente.",
+        ),
       );
     } finally {
       setSaving(false);

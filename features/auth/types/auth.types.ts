@@ -17,3 +17,10 @@ export type LoginCredentials = {
 
 /** "unavailable": the session could not be checked (server/network); it is kept. */
 export type AuthStatus = "loading" | "authenticated" | "unauthenticated" | "unavailable";
+
+export type InvitePreview = {
+  name: string;
+  email: string;
+  plantationName: string | null;
+  requiresActivation: boolean;
+};

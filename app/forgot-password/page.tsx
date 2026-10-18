@@ -1,4 +1,4 @@
-import { ForgotPasswordScreen } from "@/features/auth/components/password-recovery/ForgotPasswordScreen";
+import { ForgotPasswordScreen } from "@/features/auth";
 
 export const metadata = {
   title: "Recuperar senha | TechSoil",

@@ -1,4 +1,4 @@
-import { AcceptInviteScreen } from "@/features/auth/components/accept-invite-screen/AcceptInviteScreen";
+import { AcceptInviteScreen } from "@/features/auth";
 
 export const metadata = {
   title: "Aceitar convite | TechSoil",

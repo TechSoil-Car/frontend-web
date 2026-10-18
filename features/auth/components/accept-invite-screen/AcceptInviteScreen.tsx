@@ -3,21 +3,16 @@
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ApiError, apiRequest } from "@/shared/api/api-client";
+import { errorMessage } from "@/shared/api/error-message";
 import { useAuth } from "../../context/AuthContext";
+import { useInvitePreview } from "../../hooks/use-invite-preview";
+import { acceptInvite } from "../../services/auth-api";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { ArrowIcon } from "@/app/landing-art";
 import { PasswordChecklist, PasswordInput } from "../auth-form/PasswordInput";
 import styles from "../auth-form/AuthForm.module.css";
 import { AuthShell } from "../auth-shell/AuthShell";
 import { InviteBadge, type InviteBadgeState } from "./InviteBadge";
-
-type Preview = {
-  name: string;
-  email: string;
-  plantationName: string | null;
-  requiresActivation: boolean;
-};
 
 export function AcceptInviteScreen({ token }: { token: string }) {
   const router = useRouter();
@@ -26,40 +21,10 @@ export function AcceptInviteScreen({ token }: { token: string }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [accepted, setAccepted] = useState(false);
-  const [preview, setPreview] = useState<Preview | null>(null);
-  const [previewError, setPreviewError] = useState<string | null>(null);
-  const [attempt, setAttempt] = useState(0);
+  const { preview, error: previewError, retry } = useInvitePreview(token);
   // Só para a lista de requisitos; o envio continua lendo o FormData.
   const [typedPassword, setTypedPassword] = useState("");
   const [typedConfirmation, setTypedConfirmation] = useState("");
-
-  useEffect(() => {
-    if (!token) return;
-    let active = true;
-    apiRequest<Preview>("/invites/preview", {
-      method: "POST",
-      authenticated: false,
-      retryOnUnauthorized: false,
-      body: JSON.stringify({ token }),
-    })
-      .then((data) => {
-        if (active) {
-          setPreview(data);
-          setPreviewError(null);
-        }
-      })
-      .catch((error: unknown) => {
-        if (active)
-          setPreviewError(
-            error instanceof ApiError
-              ? error.message
-              : "Não foi possível consultar o convite.",
-          );
-      });
-    return () => {
-      active = false;
-    };
-  }, [token, attempt]);
 
   useEffect(() => {
     if (!accepted || !preview || user?.email !== preview.email) return;
@@ -97,19 +62,15 @@ export function AcceptInviteScreen({ token }: { token: string }) {
     setSaving(true);
     setError(null);
     try {
-      await apiRequest("/invites/accept", {
-        method: "POST",
-        authenticated: false,
-        retryOnUnauthorized: false,
-        body: JSON.stringify({ token, password }),
-      });
+      await acceptInvite(token, password);
       setAccepted(true);
       window.history.replaceState(null, "", "/accept-invite");
     } catch (requestError) {
       setError(
-        requestError instanceof ApiError
-          ? requestError.message
-          : "Não foi possível aceitar o convite. Tente novamente.",
+        errorMessage(
+          requestError,
+          "Não foi possível aceitar o convite. Tente novamente.",
+        ),
       );
     } finally {
       setSaving(false);
@@ -216,10 +177,7 @@ export function AcceptInviteScreen({ token }: { token: string }) {
           <button
             className={styles.secondary}
             type="button"
-            onClick={() => {
-              setPreviewError(null);
-              setAttempt((value) => value + 1);
-            }}
+            onClick={retry}
           >
             Tentar novamente
           </button>

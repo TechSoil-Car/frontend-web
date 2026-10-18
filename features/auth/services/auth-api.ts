@@ -2,6 +2,7 @@ import { apiRequest, refreshSession as refreshSharedSession, setAccessToken } fr
 import type {
   AuthResponse,
   AuthUser,
+  InvitePreview,
   LoginCredentials,
 } from "../types/auth.types";
 
@@ -51,4 +52,40 @@ export async function logout() {
   } finally {
     setAccessToken(null);
   }
+}
+
+const publicRequest = { authenticated: false, retryOnUnauthorized: false } as const;
+
+export function requestPasswordReset(email: string) {
+  return apiRequest<void>("/auth/forgot-password", {
+    ...publicRequest,
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+/** Troca a senha pelo link do email; o servidor encerra todas as sessões da conta. */
+export async function resetPassword(token: string, password: string) {
+  await apiRequest<void>("/auth/reset-password", {
+    ...publicRequest,
+    method: "POST",
+    body: JSON.stringify({ token, password }),
+  });
+  setAccessToken(null);
+}
+
+export function previewInvite(token: string) {
+  return apiRequest<InvitePreview>("/invites/preview", {
+    ...publicRequest,
+    method: "POST",
+    body: JSON.stringify({ token }),
+  });
+}
+
+export function acceptInvite(token: string, password: string) {
+  return apiRequest<void>("/invites/accept", {
+    ...publicRequest,
+    method: "POST",
+    body: JSON.stringify({ token, password }),
+  });
 }
