@@ -156,6 +156,18 @@ function renderScreen(
           return { DashboardIcon: "icon" };
         if (name === "@/features/sensors/hooks/use-sensor-monitoring")
           return { useSensorMonitoring: () => monitoring };
+        // Estados vazios/carregamento: só o texto importa para as verificações.
+        if (name === "@/shared/components/empty-state/EmptyState")
+          return {
+            EmptyState: ({ title, text, children }) => ({
+              type: "section",
+              props: { children: [title, text, children] },
+            }),
+            LoadingState: ({ title, text }) => ({
+              type: "div",
+              props: { children: [title, text] },
+            }),
+          };
         throw new Error(`Unexpected import ${name}`);
       },
     },
