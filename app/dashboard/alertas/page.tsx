@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AlertsScreen } from "@/features/alerts/AlertsScreen";
+import { AlertsScreen } from "@/features/alerts";
 
 export const metadata: Metadata = {
   title: "Alertas ativos | TechSoil Systems",

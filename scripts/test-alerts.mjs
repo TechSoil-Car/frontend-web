@@ -8,7 +8,7 @@ const exports = {};
 runInNewContext(
   ts.transpileModule(
     readFileSync(
-      new URL("../features/alerts/alert-view.ts", import.meta.url),
+      new URL("../features/alerts/utils/alert-view.ts", import.meta.url),
       "utf8",
     ),
     { compilerOptions: { module: ts.ModuleKind.CommonJS } },
@@ -120,58 +120,63 @@ function renderScreen(
   selected = { id: "farm", name: "Fazenda" },
   systemRole = "USER",
 ) {
-  const screenExports = {};
   const jsx = (type, props) => ({ type, props });
-  runInNewContext(
-    ts.transpileModule(
-      readFileSync(
-        new URL("../features/alerts/AlertsScreen.tsx", import.meta.url),
-        "utf8",
-      ),
-      {
-        compilerOptions: {
-          module: ts.ModuleKind.CommonJS,
-          jsx: ts.JsxEmit.ReactJSX,
+  // Tela e subcomponentes da pasta são carregados de verdade; o resto é simulado.
+  const component = (file) => {
+    const moduleExports = {};
+    runInNewContext(
+      ts.transpileModule(
+        readFileSync(
+          new URL(`../features/alerts/components/alerts-screen/${file}.tsx`, import.meta.url),
+          "utf8",
+        ),
+        {
+          compilerOptions: {
+            module: ts.ModuleKind.CommonJS,
+            jsx: ts.JsxEmit.ReactJSX,
+          },
         },
-      },
-    ).outputText,
-    {
-      exports: screenExports,
-      require: (name) => {
-        if (name === "react")
-          return { useState: (initial) => [initial, () => {}] };
-        if (name === "react/jsx-runtime")
-          return { jsx, jsxs: jsx, Fragment: "fragment" };
-        if (name === "next/link") return { default: "a" };
-        if (name.endsWith(".module.css")) return { default: {} };
-        if (name === "./alert-view") return exports;
-        if (name === "@/features/auth")
-          return { useAuth: () => ({ user: { systemRole } }) };
-        if (name === "@/features/plantations/context/PlantationContext")
-          return { usePlantations: () => ({ selectedPlantation: selected }) };
-        if (
-          name ===
-          "@/features/dashboard/components/dashboard-icons/DashboardIcon"
-        )
-          return { DashboardIcon: "icon" };
-        if (name === "@/features/sensors/hooks/use-sensor-monitoring")
-          return { useSensorMonitoring: () => monitoring };
-        // Estados vazios/carregamento: só o texto importa para as verificações.
-        if (name === "@/shared/components/empty-state/EmptyState")
-          return {
-            EmptyState: ({ title, text, children }) => ({
-              type: "section",
-              props: { children: [title, text, children] },
-            }),
-            LoadingState: ({ title, text }) => ({
-              type: "div",
-              props: { children: [title, text] },
-            }),
+      ).outputText,
+      { exports: moduleExports, require },
+    );
+    return moduleExports;
+  };
+  const require = (name) => {
+    if (name.startsWith("./") && !name.endsWith(".css"))
+      return component(name.slice(2));
+    if (name === "react")
+      return { useState: (initial) => [initial, () => {}] };
+    if (name === "react/jsx-runtime")
+      return { jsx, jsxs: jsx, Fragment: "fragment" };
+    if (name === "next/link") return { default: "a" };
+    if (name.endsWith(".module.css")) return { default: {} };
+    if (name === "../../utils/alert-view") return exports;
+    if (name === "@/features/auth")
+      return { useAuth: () => ({ user: { systemRole } }) };
+    if (name === "@/features/plantations/context/PlantationContext")
+      return { usePlantations: () => ({ selectedPlantation: selected }) };
+    if (
+      name ===
+      "@/features/dashboard/components/dashboard-icons/DashboardIcon"
+    )
+      return { DashboardIcon: "icon" };
+    if (name === "@/features/sensors/hooks/use-sensor-monitoring")
+      return { useSensorMonitoring: () => monitoring };
+    // Estados vazios/carregamento: só o texto importa para as verificações.
+    if (name === "@/shared/components/empty-state/EmptyState")
+      return {
+        EmptyState: ({ title, text, children }) => ({
+          type: "section",
+          props: { children: [title, text, children] },
+        }),
+        LoadingState: ({ title, text }) => ({
+          type: "div",
+          props: { children: [title, text] },
+        }),
           };
         throw new Error(`Unexpected import ${name}`);
-      },
-    },
-  );
+  };
+  const screenExports = component("AlertsScreen");
   function text(node) {
     if (node == null || typeof node === "boolean") return "";
     if (typeof node === "string" || typeof node === "number")

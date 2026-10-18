@@ -6,16 +6,17 @@ import { useAuth } from "@/features/auth";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
 import { useSensorMonitoring } from "@/features/sensors/hooks/use-sensor-monitoring";
+import { EmptyState, LoadingState } from "@/shared/components/empty-state/EmptyState";
 import {
   defaultFilters,
   filterAlerts,
-  kindLabels,
-  recommendations,
   summarizeAlerts,
   type AlertFilters,
-} from "./alert-view";
+} from "../../utils/alert-view";
+import { AlertCard } from "./AlertCard";
+import { AlertFiltersBar } from "./AlertFiltersBar";
+import { AlertStats } from "./AlertStats";
 import styles from "./AlertsScreen.module.css";
-import { EmptyState, LoadingState } from "@/shared/components/empty-state/EmptyState";
 
 export function AlertsScreen() {
   const { user } = useAuth();
@@ -96,54 +97,11 @@ function ActiveAlerts({
           </Link>
         </div>
       </header>
-      <section
-        className={styles.stats}
-        aria-label="Resumo de todos os alertas da plantação"
-      >
-        {(
-          [
-            {
-              label: "Alertas ativos",
-              value: stats.total,
-              icon: "bell",
-              tone: "neutral",
-            },
-            {
-              label: "Críticos",
-              value: stats.critical,
-              icon: "alert",
-              tone: "critical",
-            },
-            {
-              label: "Atenção",
-              value: stats.warning,
-              icon: "alert",
-              tone: "warning",
-            },
-            {
-              label: "Sensores afetados",
-              value: stats.affectedSensors,
-              icon: "sensor",
-              tone: "neutral",
-            },
-          ] as const
-        ).map((item) => (
-          <article key={item.label}>
-            <span className={`${styles.statIcon} ${styles[item.tone]}`}>
-              <DashboardIcon name={item.icon} />
-            </span>
-            <div>
-              <small>{item.label}</small>
-              <strong>{hasSnapshot ? item.value : "—"}</strong>
-              <small>
-                {item.label === "Sensores afetados" && hasSnapshot
-                  ? `de ${sensors.length} cadastrados`
-                  : "na plantação selecionada"}
-              </small>
-            </div>
-          </article>
-        ))}
-      </section>
+      <AlertStats
+        stats={stats}
+        sensorCount={sensors.length}
+        hasSnapshot={hasSnapshot}
+      />
       <div className={styles.live}>
         <span>
           <i aria-hidden="true" />
@@ -188,68 +146,12 @@ function ActiveAlerts({
         )
       ) : (
         <>
-          <section className={styles.filters} aria-label="Filtrar alertas">
-            <label className={styles.search}>
-              <DashboardIcon name="search" size={17} />
-              <input
-                type="search"
-                aria-label="Buscar alertas por sensor ou descrição"
-                placeholder="Buscar sensor, identificador ou alerta..."
-                value={filters.search}
-                onChange={(event) => update("search", event.target.value)}
-              />
-            </label>
-            <label className={styles.select}>
-              Sensor
-              <select
-                value={selectedSensor}
-                onChange={(event) => update("sensor", event.target.value)}
-              >
-                <option value="all">Todos os sensores</option>
-                {sensors.map((sensor) => (
-                  <option key={sensor.device.id} value={sensor.device.id}>
-                    {sensor.device.name} · {sensor.device.deviceId}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className={styles.select}>
-              Tipo de alerta
-              <select
-                value={filters.kind}
-                onChange={(event) =>
-                  update("kind", event.target.value as AlertFilters["kind"])
-                }
-              >
-                <option value="all">Todos os tipos</option>
-                {Object.entries(kindLabels).map(([value, label]) => (
-                  <option value={value} key={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div
-              className={styles.severity}
-              role="group"
-              aria-label="Gravidade"
-            >
-              {(["all", "critical", "warning"] as const).map((value) => (
-                <button
-                  type="button"
-                  key={value}
-                  aria-pressed={filters.severity === value}
-                  onClick={() => update("severity", value)}
-                >
-                  {value === "all"
-                    ? "Todos"
-                    : value === "critical"
-                      ? "Críticos"
-                      : "Atenção"}
-                </button>
-              ))}
-            </div>
-          </section>
+          <AlertFiltersBar
+            filters={filters}
+            selectedSensor={selectedSensor}
+            sensors={sensors}
+            onChange={update}
+          />
           <div className={styles.resultHead}>
             <span role="status">
               {filteredAlerts.length}{" "}
@@ -267,50 +169,7 @@ function ActiveAlerts({
           {filteredAlerts.length ? (
             <section className={styles.list} aria-label="Alertas encontrados">
               {filteredAlerts.map((alert) => (
-                <article
-                  key={alert.id}
-                  className={`${styles.card} ${alert.severity === "critical" ? styles.criticalCard : styles.warningCard}`}
-                >
-                  <div className={styles.cardTop}>
-                    <span
-                      className={`${styles.badge} ${alert.severity === "critical" ? styles.critical : styles.warning}`}
-                    >
-                      <DashboardIcon name="alert" size={14} />
-                      {alert.severity === "critical" ? "Crítico" : "Atenção"}
-                    </span>
-                    <small>{kindLabels[alert.kind]}</small>
-                  </div>
-                  <h2>{alert.title}</h2>
-                  <p className={styles.device}>
-                    <DashboardIcon name="sensor" size={16} />
-                    <strong>{alert.device.name}</strong>
-                    <span>{alert.device.deviceId}</span>
-                  </p>
-                  <p className={styles.message}>{alert.message}</p>
-                  <div className={styles.recommendation}>
-                    <small>O QUE VERIFICAR</small>
-                    <p>{recommendations[alert.kind]}</p>
-                  </div>
-                  <footer>
-                    <span>
-                      {alert.occurredAt &&
-                      Number.isFinite(Date.parse(alert.occurredAt)) ? (
-                        <>
-                          Leitura relacionada
-                          <br />
-                          <time dateTime={alert.occurredAt}>
-                            {new Date(alert.occurredAt).toLocaleString("pt-BR")}
-                          </time>
-                        </>
-                      ) : (
-                        "Sem leitura recebida"
-                      )}
-                    </span>
-                    <Link href="/dashboard/sensores">
-                      Ver sensores <DashboardIcon name="arrow" size={15} />
-                    </Link>
-                  </footer>
-                </article>
+                <AlertCard key={alert.id} alert={alert} />
               ))}
             </section>
           ) : (
