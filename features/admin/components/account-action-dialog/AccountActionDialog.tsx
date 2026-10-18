@@ -1,12 +1,11 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
-import { ApiError, apiRequest } from "@/shared/api/api-client";
+import { errorMessage } from "@/shared/api/error-message";
 import { Modal } from "@/shared/components/modal/Modal";
 import styles from "@/shared/components/modal/Modal.module.css";
-import type { AdminUser } from "./types";
-
-export type AccountAction = "block" | "unblock" | "revoke-sessions";
+import { runAccountAction } from "../../services/admin-api";
+import type { AccountAction, AdminUser } from "../../types/admin.types";
 const labels: Record<AccountAction, string> = {
   block: "Bloquear conta",
   unblock: "Desbloquear conta",
@@ -44,16 +43,14 @@ export function AccountActionDialog({
     setBusy(true);
     setError(null);
     try {
-      const result = await apiRequest<{ message: string }>(
-        `/admin/users/${encodeURIComponent(account.id)}/${action}`,
-        { method: "POST" },
-      );
+      const result = await runAccountAction(account.id, action);
       onSuccess(result.message);
     } catch (requestError) {
       setError(
-        requestError instanceof ApiError
-          ? requestError.message
-          : "Não foi possível concluir a ação. Tente novamente.",
+        errorMessage(
+          requestError,
+          "Não foi possível concluir a ação. Tente novamente.",
+        ),
       );
     } finally {
       setBusy(false);

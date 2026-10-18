@@ -37,3 +37,18 @@ export type AdminOverview = {
   plantations: number;
   pendingInvites: number;
 };
+export type AdminData = {
+  overview: AdminOverview;
+  users: PageResult<AdminUser>;
+  plantations: PageResult<AdminPlantation>;
+  invites: PageResult<AdminInvite>;
+};
+export type AdminTab = "users" | "plantations" | "invites";
+export type AdminPages = Record<AdminTab, number>;
+export type AdminInviteInput = {
+  name: string;
+  email: string;
+  role: string;
+  plantationId?: string;
+};
+export type AccountAction = "block" | "unblock" | "revoke-sessions";
