@@ -141,7 +141,7 @@ const phoneStops = [
   { at: 0.65, label: "Nutrientes", text: "Nitrogênio, fósforo e potássio pela média das últimas leituras." },
 ];
 
-const SCREENSHOT_RATIO = 5066 / 780;
+const SCREENSHOT_RATIO = 5076 / 780;
 // Altura da barra de status desenhada no topo da tela do celular.
 const STATUS_BAR = 40;
 
@@ -229,10 +229,10 @@ export function HeroShowcase({ children }: { children: ReactNode }) {
             </div>
             <Image
               className={styles.phoneShot}
-              src="/landing/dashboard-mobile-full.png"
+              src="/landing/dashboard-mobile-full-v2.png"
               alt="Visão geral da TechSoil no celular: status dos sensores, leituras do solo, mapa de satélite, alertas e nutrientes"
               width={780}
-              height={5066}
+              height={5076}
               sizes="(max-width: 900px) 260px, 320px"
               preload
             />
@@ -276,14 +276,14 @@ const showcaseScreens = [
     id: "visao-geral",
     tab: "Visão geral",
     url: "app.techsoil.com.br/dashboard",
-    src: "/landing/dashboard-desktop.png",
+    src: "/landing/dashboard-desktop-v2.png",
     alt: "Visão geral do painel TechSoil com médias de umidade, temperatura, pH e condutividade, mapa de satélite e alertas ativos",
   },
   {
     id: "mapa",
     tab: "Mapa da plantação",
     url: "app.techsoil.com.br/dashboard/mapa",
-    src: "/landing/mapa-desktop.png",
+    src: "/landing/mapa-desktop-v2.png",
     alt: "Mapa da plantação com quatro talhões delimitados e oito sensores",
   },
 ];

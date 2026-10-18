@@ -28,7 +28,7 @@ const screens = [
     title: "A propriedade em um relance",
     text: "Médias das últimas leituras, sensores com sinal recente e os alertas que pedem atenção agora.",
     url: "app.techsoil.com.br/dashboard",
-    src: "/plataforma/visao-geral.png",
+    src: "/plataforma/visao-geral-v2.png",
     alt: "Visão geral do painel com médias de umidade, temperatura, pH e condutividade, mapa de satélite e alertas ativos",
     points: [
       { name: "Médias do solo", text: "Umidade, temperatura, pH e condutividade, com a faixa ideal ao lado." },
@@ -39,10 +39,10 @@ const screens = [
   {
     id: "mapa",
     label: "02 — Mapa da lavoura",
-    title: "Talhões e sensores no mapa",
+    title: "Talhões e sensores no satélite",
     text: "Desenhe o perímetro da propriedade, divida em talhões e veja onde cada sensor está.",
     url: "app.techsoil.com.br/dashboard/mapa",
-    src: "/plataforma/mapa.png",
+    src: "/plataforma/mapa-v2.png",
     alt: "Mapa da plantação com quatro talhões delimitados e oito sensores sobre a imagem de satélite",
     points: [
       { name: "Perímetro", text: "Traçado direto no mapa, com a área calculada em hectares." },
@@ -56,7 +56,7 @@ const screens = [
     title: "Cada sonda, leitura por leitura",
     text: "A lista mostra quem está online, quem precisa de atenção e quem parou de enviar. Ao abrir um sensor, você vê o agora e o histórico.",
     url: "app.techsoil.com.br/dashboard/sensores",
-    src: "/plataforma/sensores.png",
+    src: "/plataforma/sensores-v2.png",
     alt: "Tela de sensores com a lista de dispositivos e o detalhe do Sensor 01: umidade, temperatura, pH, condutividade e bateria",
     points: [
       { name: "Agora", text: "Os sete parâmetros da última leitura, com a faixa recomendada." },
@@ -196,7 +196,7 @@ export default function PlataformaPage() {
             </div>
             <Screenshot
               url="app.techsoil.com.br/dashboard/alertas"
-              src="/plataforma/alertas.png"
+              src="/plataforma/alertas-v2.png"
               alt="Tela de alertas ativos com contagem de críticos e de atenção e cartões de umidade baixa e pH fora da faixa"
             />
             <p className={styles.channels}>

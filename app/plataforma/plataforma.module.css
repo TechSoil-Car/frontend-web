@@ -100,14 +100,14 @@
 }
 
 .slotStatus {
-  top: 213px;
+  top: 216.4px;
   width: 231px;
   height: 44px;
   border-radius: 7px;
 }
 
 .slotMoisture {
-  top: 266.6px;
+  top: 269.6px;
   width: 112px;
   height: 93px;
   border-radius: 10px;
@@ -131,7 +131,7 @@
   --s0: 0.825;
   --dx: -170px;
   --dy: -80px;
-  top: 223px;
+  top: 226.4px;
   display: flex;
   width: 280px;
   height: 53px;
@@ -182,7 +182,7 @@
   --s0: 0.622;
   --dx: 170px;
   --dy: 150px;
-  top: 266.6px;
+  top: 279.6px;
   display: flex;
   width: 180px;
   height: 150px;

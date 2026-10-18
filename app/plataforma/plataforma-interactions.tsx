@@ -45,10 +45,10 @@ export function PhoneShowcase() {
             </div>
             <Image
               className={styles.deviceShot}
-              src="/landing/dashboard-mobile-full.png"
+              src="/landing/dashboard-mobile-full-v2.png"
               alt="Visão geral do painel TechSoil no celular: status dos sensores e médias do solo"
               width={780}
-              height={5066}
+              height={5076}
               sizes="260px"
               preload
             />

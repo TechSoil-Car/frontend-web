@@ -17,7 +17,7 @@
 .summary small { color: #778279; font-size: 8px; font-weight: 800; letter-spacing: .11em; }
 .summary strong { max-width: 320px; margin-top: 6px; overflow: hidden; color: #2c382f; font: 650 19px/1.15 var(--font-display), sans-serif; text-overflow: ellipsis; white-space: nowrap; }
 .summary p { margin: 6px 0 0; color: #68746c; font-size: 10px; }
-.workspace { height: min(690px, calc(100svh - 315px)); min-height: 530px; margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1fr) 340px; overflow: hidden; border: 1px solid #d9ddd4; border-radius: 18px; background: #fff; box-shadow: 0 14px 40px rgba(35,57,38,.08); }
+.workspace { height: min(690px, calc(100svh - 315px)); min-height: 530px; margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1fr) 340px; grid-template-rows: minmax(0, 1fr); overflow: hidden; border: 1px solid #d9ddd4; border-radius: 18px; background: #fff; box-shadow: 0 14px 40px rgba(35,57,38,.08); }
 .mapCard { position: relative; min-width: 0; overflow: hidden; border-right: 1px solid #dde0d8; background: #dfe8da; }
 .mapBadge { position: absolute; z-index: 2; top: 15px; left: 15px; padding: 9px 12px; display: flex; align-items: center; gap: 7px; color: #2e4a35; border: 1px solid rgba(50,76,55,.12); border-radius: 99px; background: rgba(250,252,247,.9); box-shadow: 0 7px 20px rgba(19,41,24,.1); font-size: 9px; font-weight: 700; backdrop-filter: blur(9px); }
 .basemapToggle { position: absolute; z-index: 2; left: 15px; bottom: 30px; padding: 4px; display: flex; gap: 4px; border: 1px solid rgba(50,76,55,.12); border-radius: 99px; background: rgba(250,252,247,.92); box-shadow: 0 7px 20px rgba(19,41,24,.12); backdrop-filter: blur(9px); }
@@ -50,7 +50,8 @@
 .emptyMap strong { display: block; margin-top: 15px; font: 650 15px/1.3 var(--font-display), sans-serif; }
 .emptyMap p { margin: 7px 0 0; color: #6d7a71; font-size: 10px; line-height: 1.5; }
 .emptyMap button { min-height: 39px; margin-top: 15px; padding: 0 14px; color: #18341f; border: 0; border-radius: 8px; background: #ace072; font: 700 10px var(--font-body), sans-serif; cursor: pointer; }
-.rowsPanel { min-width: 0; padding: 18px 16px 0; display: flex; flex-direction: column; background: #fbfcf8; }
+/* A linha da grade fica na altura do contêiner; com muitos talhões o painel rola por dentro em vez de esticar o mapa (que cortava o botão Mapa/Satélite) */
+.rowsPanel { min-width: 0; min-height: 0; overflow-y: auto; padding: 18px 16px 0; display: flex; flex-direction: column; background: #fbfcf8; }
 .panelTabs { margin-bottom: 16px; padding: 4px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; border-radius: 10px; background: #ecefe8; }
 .panelTabs button { min-height: 35px; display: flex; align-items: center; justify-content: center; gap: 7px; color: #707c72; border: 0; border-radius: 7px; background: transparent; font: 700 9px var(--font-body), sans-serif; cursor: pointer; }
 .panelTabs button[aria-selected="true"] { color: #34513a; background: #fff; box-shadow: 0 3px 10px rgba(45,65,47,.08); }
@@ -91,7 +92,7 @@
 @keyframes map-spin { to { transform: rotate(360deg); } }
 
 @media (hover: hover) and (pointer: fine) { .summary article:hover { border-color: #c9d7c1; box-shadow: 0 15px 32px rgba(42,68,45,.09); transform: translateY(-4px) scale(1.01); } }
-@media (max-width: 1120px) { .workspace { height: auto; min-height: 0; grid-template-columns: 1fr; overflow: visible; } .mapCard { height: 570px; border-right: 0; border-bottom: 1px solid #dde0d8; } .rowsPanel { min-height: 310px; } .rowList { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; } .rowCard { margin-top: 0; } }
+@media (max-width: 1120px) { .workspace { height: auto; min-height: 0; grid-template-columns: 1fr; grid-template-rows: none; overflow: visible; } .rowsPanel { overflow-y: visible; } .mapCard { height: 570px; border-right: 0; border-bottom: 1px solid #dde0d8; } .rowsPanel { min-height: 310px; } .rowList { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; } .rowCard { margin-top: 0; } }
 @media (max-width: 720px) { .page { padding: 25px 15px 40px; } .heading { align-items: flex-start; flex-direction: column; } .headingActions { width: 100%; } .headingActions > button { flex: 1; } .summary { grid-template-columns: 1fr; } .summary article { min-height: 90px; } .mapCard { height: 520px; } .drawingGuide { top: 67px; width: calc(100% - 24px); min-width: 0; } .mapBadge { left: 12px; } .savePanel { right: 12px; bottom: 28px; width: calc(100% - 24px); } .rowList { grid-template-columns: 1fr; } }
 @media (max-width: 440px) { .mapCard { height: 480px; } .drawingGuide { grid-template-columns: 34px 1fr; } .drawingGuide > button { grid-column: 1 / -1; } }
 @media (prefers-reduced-motion: reduce) { .addButton, .editMapButton, .summary article, .rowCard { transition: none; } .addButton:hover, .editMapButton:hover, .summary article:hover, .rowCard:hover { transform: none; } }
