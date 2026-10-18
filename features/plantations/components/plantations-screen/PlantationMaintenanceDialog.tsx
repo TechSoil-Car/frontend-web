@@ -1,7 +1,7 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
-import { ApiError } from "@/shared/api/api-client";
+import { errorMessage } from "@/shared/api/error-message";
 import { Modal } from "@/shared/components/modal/Modal";
 import styles from "@/shared/components/modal/Modal.module.css";
 import { usePlantations } from "../../context/PlantationContext";
@@ -49,9 +49,10 @@ export function PlantationMaintenanceDialog({
       }
     } catch (error) {
       setError(
-        error instanceof ApiError
-          ? error.message
-          : "Não foi possível concluir. Verifique sua conexão e tente novamente.",
+        errorMessage(
+          error,
+          "Não foi possível concluir. Verifique sua conexão e tente novamente.",
+        ),
       );
       setBusy(false);
     }

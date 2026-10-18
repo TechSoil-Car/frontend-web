@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { runInNewContext } from "node:vm";
 import ts from "typescript";
+import { errorMessageModule } from "./error-message-module.mjs";
 
 const device = {
   id: "sensor-internal",
@@ -81,7 +82,7 @@ function mount(kind, action, fail = false, role = "OWNER") {
         return { jsx, jsxs: jsx, Fragment: "fragment" };
       if (name === "@/shared/components/modal/Modal") return { Modal: "modal" };
       if (name.endsWith(".module.css")) return { default: {} };
-      if (name === "@/shared/api/api-client") return { ApiError };
+      if (name === "@/shared/api/error-message") return errorMessageModule(ApiError);
       if (name === "../../services/sensors-api") return sensorApi;
       if (name === "../../context/PlantationContext")
         return { usePlantations: () => plantationApi };

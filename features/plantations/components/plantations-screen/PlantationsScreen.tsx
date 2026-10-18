@@ -1,44 +1,21 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { useOrganizations } from "@/features/organizations/context/OrganizationContext";
-import { roleLabel } from "@/features/organizations/types/organization.types";
-import { FormEvent, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
-import { ApiError } from "@/shared/api/api-client";
-import { SatelliteImage } from "@/features/map/components/satellite-image/SatelliteImage";
-import { usePlantations } from "../../context/PlantationContext";
-import type { Plantation, PlantationRole } from "../../types/plantation.types";
-import { PlantationMaintenanceDialog } from "./PlantationMaintenanceDialog";
-import styles from "./PlantationsScreen.module.css";
+import { useOrganizations } from "@/features/organizations/context/OrganizationContext";
+import { errorMessage } from "@/shared/api/error-message";
 import { EmptyState, LoadingState } from "@/shared/components/empty-state/EmptyState";
-
-type PlantationFilter = "all" | PlantationRole | "shared";
-
-const filters: Array<{ label: string; value: PlantationFilter }> = [
-  { label: "Todas", value: "all" },
-  { label: "Administradas por mim", value: "OWNER" },
-  { label: "Compartilhadas", value: "shared" },
-];
-
-function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(value));
-}
+import { usePlantations } from "../../context/PlantationContext";
+import { plantationFilters, usePlantationList } from "../../hooks/use-plantation-list";
+import type { Plantation } from "../../types/plantation.types";
+import { CreatePlantationDialog } from "./CreatePlantationDialog";
+import { PlantationCard } from "./PlantationCard";
+import { PlantationDetails } from "./PlantationDetails";
+import { PlantationMaintenanceDialog } from "./PlantationMaintenanceDialog";
+import { PlantationsSummary } from "./PlantationsSummary";
+import styles from "./PlantationsScreen.module.css";
 
 export function PlantationsScreen() {
   const router = useRouter();
@@ -52,8 +29,6 @@ export function PlantationsScreen() {
     createPlantation,
     reloadPlantations,
   } = usePlantations();
-  const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<PlantationFilter>("all");
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
@@ -63,29 +38,16 @@ export function PlantationsScreen() {
   } | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
-  const visiblePlantations = useMemo(
-    () =>
-      plantations.filter((plantation) => {
-        const normalizedQuery = query.trim().toLocaleLowerCase("pt-BR");
-        const searchable =
-          `${plantation.name} ${plantation.location ?? ""}`.toLocaleLowerCase(
-            "pt-BR",
-          );
-        return (
-          (filter === "all" || (filter === "shared" ? plantation.role !== "OWNER" : plantation.role === filter)) &&
-          (!normalizedQuery || searchable.includes(normalizedQuery))
-        );
-      }),
-    [filter, plantations, query],
-  );
-
-  const ownerCount = plantations.filter(
-    (plantation) => plantation.role === "OWNER",
-  ).length;
-  const sharedCount = plantations.length - ownerCount;
-  const locationCount = new Set(
-    plantations.map((plantation) => plantation.location).filter(Boolean),
-  ).size;
+  const {
+    query,
+    setQuery,
+    filter,
+    setFilter,
+    visiblePlantations,
+    ownerCount,
+    sharedCount,
+    locationCount,
+  } = usePlantationList(plantations);
 
   async function handleCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -103,9 +65,10 @@ export function PlantationsScreen() {
       formElement.reset();
     } catch (error) {
       setCreateError(
-        error instanceof ApiError
-          ? error.message
-          : "Não foi possível criar a plantação. Tente novamente.",
+        errorMessage(
+          error,
+          "Não foi possível criar a plantação. Tente novamente.",
+        ),
       );
     } finally {
       setCreating(false);
@@ -170,48 +133,12 @@ export function PlantationsScreen() {
         </p>
       )}
 
-      <section className={styles.summary} aria-label="Resumo das plantações">
-        <article>
-          <span className={styles.summaryIcon}>
-            <DashboardIcon name="field" />
-          </span>
-          <div>
-            <small>PROPRIEDADES</small>
-            <strong>{plantations.length}</strong>
-            <p>vinculadas à sua conta</p>
-          </div>
-        </article>
-        <article>
-          <span className={styles.summaryIcon}>
-            <DashboardIcon name="settings" />
-          </span>
-          <div>
-            <small>SOB MINHA GESTÃO</small>
-            <strong>{ownerCount}</strong>
-            <p>acesso como proprietário</p>
-          </div>
-        </article>
-        <article>
-          <span className={styles.summaryIcon}>
-            <DashboardIcon name="team" />
-          </span>
-          <div>
-            <small>COMPARTILHADAS</small>
-            <strong>{sharedCount}</strong>
-            <p>acesso como membro</p>
-          </div>
-        </article>
-        <article>
-          <span className={styles.summaryIcon}>
-            <DashboardIcon name="location" />
-          </span>
-          <div>
-            <small>LOCALIZAÇÕES</small>
-            <strong>{locationCount}</strong>
-            <p>locais informados</p>
-          </div>
-        </article>
-      </section>
+      <PlantationsSummary
+        total={plantations.length}
+        ownerCount={ownerCount}
+        sharedCount={sharedCount}
+        locationCount={locationCount}
+      />
 
       {plantations.length === 0 ? (
         <section className={styles.firstPlantation}>
@@ -249,7 +176,7 @@ export function PlantationsScreen() {
               />
             </div>
             <div className={styles.filters}>
-              {filters.map((item) => (
+              {plantationFilters.map((item) => (
                 <button
                   className={filter === item.value ? styles.filterActive : ""}
                   type="button"
@@ -275,60 +202,12 @@ export function PlantationsScreen() {
               </div>
               {visiblePlantations.length ? (
                 visiblePlantations.map((plantation) => (
-                  <button
-                    className={`${styles.plantationCard} ${selectedPlantation?.id === plantation.id ? styles.cardSelected : ""}`}
-                    type="button"
+                  <PlantationCard
                     key={plantation.id}
-                    onClick={() => selectPlantation(plantation.id)}
-                  >
-                    <span className={styles.cardImage}>
-                      <PlantationPicture plantation={plantation} size={190} />
-                      <i
-                        className={
-                          plantation.role === "OWNER"
-                            ? styles.owner
-                            : styles.member
-                        }
-                      >
-                        <b />
-                        {roleLabel(plantation.role)}
-                      </i>
-                    </span>
-                    <span className={styles.cardContent}>
-                      <span className={styles.cardTitle}>
-                        <span>
-                          <strong>{plantation.name}</strong>
-                          <small>
-                            {plantation.location || "Localização não informada"}
-                          </small>
-                        </span>
-                        <DashboardIcon name="chevron" size={17} />
-                      </span>
-                      <span className={styles.cardMeta}>
-                        <span>
-                          <small>CADASTRADA EM</small>
-                          <strong>{formatDate(plantation.createdAt)}</strong>
-                        </span>
-                        <span>
-                          <small>SEU ACESSO</small>
-                          <strong>
-                            {plantation.role === "OWNER"
-                              ? "Gestão completa"
-                              : "Monitoramento"}
-                          </strong>
-                        </span>
-                      </span>
-                      <span className={styles.selectionState}>
-                        {selectedPlantation?.id === plantation.id ? (
-                          <>
-                            <i /> Plantação ativa no painel
-                          </>
-                        ) : (
-                          "Selecionar esta propriedade"
-                        )}
-                      </span>
-                    </span>
-                  </button>
+                    plantation={plantation}
+                    selected={selectedPlantation?.id === plantation.id}
+                    onSelect={() => selectPlantation(plantation.id)}
+                  />
                 ))
               ) : (
                 <EmptyState
@@ -341,95 +220,14 @@ export function PlantationsScreen() {
             </section>
 
             {selectedPlantation && (
-              <aside
-                className={styles.details}
-                aria-label={`Resumo de ${selectedPlantation.name}`}
-              >
-                <div className={styles.detailHero}>
-                  <PlantationPicture plantation={selectedPlantation} size={190} />
-                  <div />
-                  <span className={styles.detailStatus}>
-                    <i /> Selecionada
-                  </span>
-                  <span className={styles.detailIdentity}>
-                    <b>{initials(selectedPlantation.name)}</b>
-                    <span>
-                      <strong>{selectedPlantation.name}</strong>
-                      <small>
-                        {selectedPlantation.location ||
-                          "Localização não informada"}
-                      </small>
-                    </span>
-                  </span>
-                </div>
-                <div className={styles.detailBody}>
-                  <p className={styles.detailKicker}>ÁREA DE TRABALHO ATIVA</p>
-                  <h2>Pronta para monitoramento</h2>
-                  <p className={styles.detailCopy}>
-                    Sensores, alertas e missões do painel serão associados a
-                    esta plantação.
-                  </p>
-                  <div className={styles.detailMetrics}>
-                    <article>
-                      <small>Nível de acesso</small>
-                      <strong>
-                        {roleLabel(selectedPlantation.role)}
-                      </strong>
-                      <span>
-                        {selectedPlantation.role === "OWNER"
-                          ? "Pode gerenciar recursos"
-                          : "Pode acompanhar a operação"}
-                      </span>
-                    </article>
-                    <article>
-                      <small>Data de cadastro</small>
-                      <strong>
-                        {formatDate(selectedPlantation.createdAt)}
-                      </strong>
-                      <span>Registro sincronizado</span>
-                    </article>
-                  </div>
-                  <button
-                    className={styles.openButton}
-                    type="button"
-                    onClick={() => router.push("/dashboard")}
-                  >
-                    Abrir painel <DashboardIcon name="arrow" size={17} />
-                  </button>
-                  {selectedPlantation.role === "OWNER" && (
-                    <>
-                      <button
-                        className={styles.secondaryButton}
-                        type="button"
-                        onClick={() => {
-                          setNotice(null);
-                          setMaintenance({
-                            plantation: selectedPlantation,
-                            action: "edit",
-                          });
-                        }}
-                      >
-                        <DashboardIcon name="settings" size={16} /> Editar
-                        plantação
-                      </button>
-                      <button
-                        className={styles.removeButton}
-                        type="button"
-                        onClick={() => {
-                          setNotice(null);
-                          setMaintenance({
-                            plantation: selectedPlantation,
-                            action: "remove",
-                          });
-                        }}
-                      >
-                        <DashboardIcon name="trash" size={16} /> Remover
-                        plantação
-                      </button>
-                    </>
-                  )}
-                </div>
-              </aside>
+              <PlantationDetails
+                plantation={selectedPlantation}
+                onOpen={() => router.push("/dashboard")}
+                onMaintenance={(action) => {
+                  setNotice(null);
+                  setMaintenance({ plantation: selectedPlantation, action });
+                }}
+              />
             )}
           </div>
         </>
@@ -451,103 +249,13 @@ export function PlantationsScreen() {
           />
         )}
       {createOpen && canCreate && (
-        <div className={styles.modalLayer} role="presentation">
-          <button
-            className={styles.modalBackdrop}
-            type="button"
-            aria-label="Fechar cadastro"
-            onClick={() => !creating && setCreateOpen(false)}
-          />
-          <section
-            className={styles.modal}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="new-plantation-title"
-          >
-            <div className={styles.modalHead}>
-              <span>
-                <DashboardIcon name="field" />
-              </span>
-              <div>
-                <p>NOVA PROPRIEDADE</p>
-                <h2 id="new-plantation-title">Cadastrar plantação</h2>
-              </div>
-              <button
-                type="button"
-                aria-label="Fechar"
-                onClick={() => setCreateOpen(false)}
-                disabled={creating}
-              >
-                ×
-              </button>
-            </div>
-            <p className={styles.modalIntro}>
-              Comece pelo essencial. Depois você poderá adicionar dispositivos,
-              fileiras e membros.
-            </p>
-            <form className={styles.createForm} onSubmit={handleCreate}>
-              <label htmlFor="plantation-name">Nome da plantação</label>
-              <input
-                id="plantation-name"
-                name="name"
-                minLength={2}
-                maxLength={120}
-                placeholder="Ex.: Fazenda Santa Clara"
-                autoFocus
-                disabled={creating}
-                required
-              />
-              <label htmlFor="plantation-location">
-                Localização <span>opcional</span>
-              </label>
-              <input
-                id="plantation-location"
-                name="location"
-                maxLength={240}
-                placeholder="Ex.: Londrina, Paraná"
-                disabled={creating}
-              />
-              {createError && (
-                <p className={styles.formError} role="alert">
-                  {createError}
-                </p>
-              )}
-              <div className={styles.formActions}>
-                <button
-                  type="button"
-                  onClick={() => setCreateOpen(false)}
-                  disabled={creating}
-                >
-                  Cancelar
-                </button>
-                <button type="submit" disabled={creating}>
-                  {creating ? "Criando..." : "Criar plantação"}
-                </button>
-              </div>
-            </form>
-          </section>
-        </div>
+        <CreatePlantationDialog
+          creating={creating}
+          error={createError}
+          onClose={() => setCreateOpen(false)}
+          onSubmit={handleCreate}
+        />
       )}
     </main>
-  );
-}
-
-/** Real satellite picture of the plantation, or a placeholder until it is located. */
-function PlantationPicture({ plantation, size }: { plantation: Plantation; size: number }) {
-  if (plantation.centerLatitude == null || plantation.centerLongitude == null)
-    return (
-      <span className={styles.noLocation}>
-        <DashboardIcon name="location" size={20} />
-        Localização pendente
-      </span>
-    );
-  return (
-    <SatelliteImage
-      latitude={plantation.centerLatitude}
-      longitude={plantation.centerLongitude}
-      zoom={plantation.mapZoom}
-      boundary={plantation.boundaryGeoJson}
-      size={size}
-    />
   );
 }
