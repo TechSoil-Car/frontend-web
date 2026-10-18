@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ApiError } from "@/shared/api/api-client";
+import { errorMessage } from "@/shared/api/error-message";
 import {
   listNotifications,
   readAllNotifications,
   readNotification,
-  type NotificationPage,
-} from "./notifications-api";
+} from "../services/notifications-api";
+import type { NotificationPage } from "../types/notification.types";
 
 export function useNotifications(
   plantationId: string | undefined,
@@ -44,10 +44,10 @@ export function useNotifications(
       if (request === version.current)
         setFailure({
           key,
-          message:
-            requestError instanceof ApiError
-              ? requestError.message
-              : "Não foi possível consultar as notificações.",
+          message: errorMessage(
+            requestError,
+            "Não foi possível consultar as notificações.",
+          ),
         });
     }
   }, [plantationId, page, filter, key]);
@@ -80,9 +80,10 @@ export function useNotifications(
       return true;
     } catch (requestError) {
       setError(
-        requestError instanceof ApiError
-          ? requestError.message
-          : "Não foi possível marcar como lida. Tente novamente.",
+        errorMessage(
+          requestError,
+          "Não foi possível marcar como lida. Tente novamente.",
+        ),
       );
       return false;
     } finally {

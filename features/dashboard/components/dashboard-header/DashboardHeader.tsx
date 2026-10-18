@@ -2,7 +2,7 @@ import { DashboardIcon } from "../dashboard-icons/DashboardIcon";
 import { useAuth } from "@/features/auth";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import styles from "./DashboardHeader.module.css";
-import { NotificationBell } from "@/features/notifications/NotificationBell";
+import { NotificationBell } from "@/features/notifications";
 
 type DashboardHeaderProps = { onMenuOpen: () => void };
 

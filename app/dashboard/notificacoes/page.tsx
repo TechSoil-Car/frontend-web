@@ -1,4 +1,4 @@
-import { NotificationsScreen } from "@/features/notifications/NotificationsScreen";
+import { NotificationsScreen } from "@/features/notifications";
 
 export default async function NotificationsPage({
   searchParams,

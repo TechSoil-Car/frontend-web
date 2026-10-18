@@ -4,9 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
 import { Modal } from "@/shared/components/modal/Modal";
-import { useNotifications } from "./use-notifications";
-import { NotificationCard } from "./NotificationCard";
-import styles from "./Notifications.module.css";
+import { useNotifications } from "../../hooks/use-notifications";
+import { NotificationCard } from "../notification-card/NotificationCard";
+import styles from "../Notifications.module.css";
 
 export function NotificationBell({ plantationId }: { plantationId?: string }) {
   const [open, setOpen] = useState(false);

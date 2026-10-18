@@ -3,15 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
-import { ApiError } from "@/shared/api/api-client";
 import { BackLink } from "@/shared/components/back-link/BackLink";
-import { useNotifications } from "./use-notifications";
-import { NotificationCard } from "./NotificationCard";
-import {
-  getNotificationPreferences,
-  updateNotificationPreferences,
-} from "./notifications-api";
-import styles from "./Notifications.module.css";
+import { useNotifications } from "../../hooks/use-notifications";
+import { NotificationCard } from "../notification-card/NotificationCard";
+import { EmailPreference } from "./EmailPreference";
+import styles from "../Notifications.module.css";
 import { EmptyState, LoadingState } from "@/shared/components/empty-state/EmptyState";
 
 export function NotificationsScreen({
@@ -169,91 +165,5 @@ function History({
         <Link href="/dashboard/alertas">Consultar alertas atuais</Link>
       </p>
     </main>
-  );
-}
-
-function EmailPreference() {
-  const [enabled, setEnabled] = useState<boolean | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [attempt, setAttempt] = useState(0);
-  useEffect(() => {
-    let active = true;
-    getNotificationPreferences()
-      .then((result) => {
-        if (active) {
-          setEnabled(result.alertEmailsEnabled);
-          setError(null);
-        }
-      })
-      .catch(() => {
-        if (active)
-          setError("Não foi possível consultar sua preferência de e-mails.");
-      });
-    return () => {
-      active = false;
-    };
-  }, [attempt]);
-  async function toggle() {
-    if (busy || enabled === null) return;
-    setBusy(true);
-    setError(null);
-    try {
-      setEnabled(
-        (await updateNotificationPreferences(!enabled)).alertEmailsEnabled,
-      );
-    } catch (requestError) {
-      setError(
-        requestError instanceof ApiError
-          ? requestError.message
-          : "Não foi possível salvar sua preferência.",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <section className={styles.preference} aria-labelledby="email-preference">
-      <div>
-        <h2 id="email-preference">Alertas por e-mail</h2>
-        <p>
-          Receba novos alertas de todas as suas plantações no e-mail da sua
-          conta, mesmo fora do painel. Uma mensagem por ocorrência; sem envio
-          retroativo.
-        </p>
-        <small>
-          O envio depende do provedor de e-mail configurado. Falhas ficam
-          indicadas no histórico.
-        </small>
-        {error && (
-          <p className={styles.error} role="alert">
-            {error}{" "}
-            <button
-              type="button"
-              onClick={() => setAttempt((value) => value + 1)}
-            >
-              Tentar novamente
-            </button>
-          </p>
-        )}
-      </div>
-      <label className={styles.emailToggle}>
-        <input
-          type="checkbox"
-          checked={enabled === true}
-          disabled={busy || enabled === null}
-          onChange={() => void toggle()}
-        />
-        <span>
-          {busy
-            ? "Salvando..."
-            : enabled === null
-              ? "Carregando..."
-              : enabled
-                ? "Ativado"
-                : "Desativado"}
-        </span>
-      </label>
-    </section>
   );
 }

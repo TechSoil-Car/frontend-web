@@ -1,5 +1,5 @@
-import type { NotificationItem } from "./notifications-api";
-import styles from "./Notifications.module.css";
+import type { NotificationItem } from "../../types/notification.types";
+import styles from "../Notifications.module.css";
 
 const emailLabels: Record<string, string> = {
   disabled: "E-mail desativado na detecção",

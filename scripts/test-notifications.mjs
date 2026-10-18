@@ -3,10 +3,11 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { runInNewContext } from "node:vm";
 import ts from "typescript";
+import { errorMessageModule } from "./error-message-module.mjs";
 
 const code = ts.transpileModule(
   readFileSync(
-    new URL("../features/notifications/use-notifications.ts", import.meta.url),
+    new URL("../features/notifications/hooks/use-notifications.ts", import.meta.url),
     "utf8",
   ),
   { compilerOptions: { module: ts.ModuleKind.CommonJS } },
@@ -91,8 +92,8 @@ function mount(...args) {
     },
     require: (name) => {
       if (name === "react") return react;
-      if (name === "@/shared/api/api-client") return { ApiError };
-      if (name === "./notifications-api")
+      if (name === "@/shared/api/error-message") return errorMessageModule(ApiError);
+      if (name === "../services/notifications-api")
         return {
           listNotifications: (...args) => {
             const d = deferred();
