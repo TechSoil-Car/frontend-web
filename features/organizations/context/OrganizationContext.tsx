@@ -9,8 +9,8 @@ import {
   useState,
 } from "react";
 import { useAuth } from "@/features/auth";
-import { apiRequest } from "@/shared/api/api-client";
-import type { OrganizationMembership } from "./types";
+import { listOrganizations } from "../services/organizations-api";
+import type { OrganizationMembership } from "../types/organization.types";
 
 type OrganizationContextValue = {
   memberships: OrganizationMembership[];
@@ -64,7 +64,7 @@ function OrganizationSession({
       setStatus("loading");
       try {
         const items = enabled
-          ? await apiRequest<OrganizationMembership[]>("/organizations")
+          ? await listOrganizations()
           : [];
         if (request !== generation.current) return;
         setMemberships(items);

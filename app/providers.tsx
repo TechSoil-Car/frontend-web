@@ -2,7 +2,7 @@
 
 import { AuthProvider } from "@/features/auth/context/AuthContext";
 import { PlantationProvider } from "@/features/plantations/context/PlantationContext";
-import { OrganizationProvider } from "@/features/organizations/OrganizationContext";
+import { OrganizationProvider } from "@/features/organizations/context/OrganizationContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return <AuthProvider><OrganizationProvider><PlantationProvider>{children}</PlantationProvider></OrganizationProvider></AuthProvider>;

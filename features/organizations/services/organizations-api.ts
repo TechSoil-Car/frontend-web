@@ -3,12 +3,18 @@ import type {
   Organization,
   OrganizationInvite,
   OrganizationMember,
+  OrganizationMembership,
   OrganizationRole,
-} from "../types";
+} from "../types/organization.types";
 
 export type OrganizationPlantation = { id: string; name: string };
 
 const base = (organizationId: string) => `/organizations/${organizationId}`;
+
+/** Organizações da conta conectada, com o papel em cada uma. */
+export function listOrganizations() {
+  return apiRequest<OrganizationMembership[]>("/organizations");
+}
 
 export function createOrganization(name: string) {
   return apiRequest<Organization>("/organizations", {

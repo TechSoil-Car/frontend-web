@@ -3,10 +3,10 @@
 import { useMemo, useState } from "react";
 import { useAuth } from "@/features/auth";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
-import { useOrganizations } from "../../OrganizationContext";
+import { useOrganizations } from "../../context/OrganizationContext";
 import { useOrganizationTeam } from "../../hooks/use-organization-team";
 import * as organizationsApi from "../../services/organizations-api";
-import { roleLabel, type OrganizationMember, type OrganizationMembership, type OrganizationRole } from "../../types";
+import { roleLabel, type OrganizationMember, type OrganizationMembership, type OrganizationRole } from "../../types/organization.types";
 import { MemberRow } from "./MemberRow";
 import { DangerZone, OrganizationCard, PendingInvites } from "./OrganizationPanel";
 import { ConfirmDialog, CreateOrganizationDialog, InviteDialog, type Confirmation } from "./TeamDialogs";

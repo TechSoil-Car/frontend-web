@@ -1,6 +1,6 @@
 "use client";
 
-import { roleLabel } from "@/features/organizations/types";
+import { roleLabel } from "@/features/organizations/types/organization.types";
 import type {
   AccountAction,
   AdminData,

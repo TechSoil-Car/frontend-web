@@ -3,10 +3,10 @@
 import { useState, type FormEvent } from "react";
 import { Modal } from "@/shared/components/modal/Modal";
 import modal from "@/shared/components/modal/Modal.module.css";
-import { errorMessage } from "../../hooks/use-organization-team";
+import { teamError } from "../../hooks/use-organization-team";
 import type { OrganizationPlantation } from "../../services/organizations-api";
 import * as organizationsApi from "../../services/organizations-api";
-import type { OrganizationRole } from "../../types";
+import type { OrganizationRole } from "../../types/organization.types";
 import styles from "./TeamScreen.module.css";
 
 const field = (form: FormData, name: string) => String(form.get(name) ?? "").trim();
@@ -33,7 +33,7 @@ export function CreateOrganizationDialog({ onClose, onCreated }: { onClose: () =
       await onCreated(created.id);
       onClose();
     } catch (reason) {
-      setError(errorMessage(reason));
+      setError(teamError(reason));
       setBusy(false);
     }
   }

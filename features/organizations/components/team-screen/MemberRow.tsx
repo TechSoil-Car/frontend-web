@@ -2,7 +2,7 @@
 
 import { useId, useState, type FormEvent } from "react";
 import type { OrganizationPlantation } from "../../services/organizations-api";
-import { roleLabel, type OrganizationMember, type OrganizationRole } from "../../types";
+import { roleLabel, type OrganizationMember, type OrganizationRole } from "../../types/organization.types";
 import { RoleOptions } from "./TeamDialogs";
 import styles from "./TeamScreen.module.css";
 

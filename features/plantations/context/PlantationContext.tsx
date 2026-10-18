@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { useAuth } from "@/features/auth";
-import { useOrganizations } from "@/features/organizations/OrganizationContext";
+import { useOrganizations } from "@/features/organizations/context/OrganizationContext";
 import * as plantationsApi from "../services/plantations-api";
 import type {
   CreatePlantationInput,

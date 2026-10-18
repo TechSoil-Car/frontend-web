@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
 import type { OrganizationPlantation } from "../../services/organizations-api";
-import { roleLabel, type OrganizationInvite, type OrganizationMembership } from "../../types";
+import { roleLabel, type OrganizationInvite, type OrganizationMembership } from "../../types/organization.types";
 import styles from "./TeamScreen.module.css";
 
 const ROLE_GUIDE = [

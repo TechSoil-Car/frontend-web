@@ -2,16 +2,17 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
-import { ApiError } from "@/shared/api/api-client";
-import { useOrganizations } from "../OrganizationContext";
+import { errorMessage } from "@/shared/api/error-message";
+import { useOrganizations } from "../context/OrganizationContext";
 import * as organizationsApi from "../services/organizations-api";
 import type { OrganizationPlantation } from "../services/organizations-api";
-import type { OrganizationInvite, OrganizationMember, OrganizationMembership } from "../types";
+import type { OrganizationInvite, OrganizationMember, OrganizationMembership } from "../types/organization.types";
 
-export const errorMessage = (error: unknown) =>
-  error instanceof ApiError
-    ? error.message
-    : "Não foi possível concluir. Confira sua conexão e tente novamente.";
+export const teamError = (error: unknown) =>
+  errorMessage(
+    error,
+    "Não foi possível concluir. Confira sua conexão e tente novamente.",
+  );
 
 /**
  * Team data of one organization. Members and invites are only requested by
@@ -50,7 +51,7 @@ export function useOrganizationTeam(membership: OrganizationMembership) {
         setPlantations([]);
         setMembers([]);
         setInvites([]);
-        setError(errorMessage(reason));
+        setError(teamError(reason));
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -82,7 +83,7 @@ export function useOrganizationTeam(membership: OrganizationMembership) {
         await reloadPlantations();
         return true;
       } catch (reason) {
-        setError(errorMessage(reason));
+        setError(teamError(reason));
         return false;
       } finally {
         setBusy(false);

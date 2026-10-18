@@ -73,7 +73,7 @@ function mount(items = [first, second], selected = "a", fail = false) {
           }),
         };
       if (name === "../services/plantations-api") return api;
-      if (name === "@/features/organizations/OrganizationContext") return { useOrganizations: () => ({ selected: { organization: { id: "org-a" } }, status: "ready" }) };
+      if (name === "@/features/organizations/context/OrganizationContext") return { useOrganizations: () => ({ selected: { organization: { id: "org-a" } }, status: "ready" }) };
       throw new Error(`Unexpected dependency: ${name}`);
     },
     window: {

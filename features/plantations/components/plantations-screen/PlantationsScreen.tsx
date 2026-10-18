@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useOrganizations } from "@/features/organizations/OrganizationContext";
-import { roleLabel } from "@/features/organizations/types";
+import { useOrganizations } from "@/features/organizations/context/OrganizationContext";
+import { roleLabel } from "@/features/organizations/types/organization.types";
 import { FormEvent, useMemo, useState } from "react";
 import { DashboardIcon } from "@/features/dashboard/components/dashboard-icons/DashboardIcon";
 import { ApiError } from "@/shared/api/api-client";

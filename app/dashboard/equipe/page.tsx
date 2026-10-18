@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { TeamScreen } from "@/features/organizations/components/team-screen/TeamScreen";
+import { TeamScreen } from "@/features/organizations";
 
 export const metadata: Metadata = {
   title: "Equipe | TechSoil Systems",
