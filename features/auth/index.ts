@@ -4,3 +4,4 @@ export { ForgotPasswordScreen } from "./components/password-recovery/ForgotPassw
 export { ResetPasswordScreen } from "./components/password-recovery/ResetPasswordScreen";
 export { useAuth } from "./context/AuthContext";
 export type { AuthUser, InvitePreview, LoginCredentials } from "./types/auth.types";
+export { changePassword, getProfile, type UserProfile } from "./services/auth-api";
