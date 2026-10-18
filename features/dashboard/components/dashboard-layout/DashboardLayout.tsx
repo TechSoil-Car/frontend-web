@@ -1,13 +1,14 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ViewTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { DashboardHeader } from "../dashboard-header/DashboardHeader";
 import { DashboardSidebar } from "../dashboard-sidebar/DashboardSidebar";
 import styles from "./DashboardLayout.module.css";
+import { LoadingState } from "@/shared/components/empty-state/EmptyState";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -75,9 +76,8 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
       !isProfilePage)
   ) {
     return (
-      <div className={styles.sessionLoading} role="status">
-        <span />
-        Preparando seu painel...
+      <div className={styles.sessionLoading}>
+        <LoadingState title="Preparando seu painel..." />
       </div>
     );
   }
@@ -87,7 +87,10 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
       <DashboardSidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
       <div className={styles.content}>
         <DashboardHeader onMenuOpen={() => setMenuOpen(true)} />
-        {children}
+        {/* Troca de tela com a mesma transição do site; barra lateral e cabeçalho ficam parados */}
+        <ViewTransition key={pathname} enter="page-enter" exit="page-exit" default="none">
+          {children}
+        </ViewTransition>
       </div>
     </div>
   );

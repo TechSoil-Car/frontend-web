@@ -3,13 +3,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, ViewTransition } from "react";
 import { useAuth } from "@/features/auth";
 import { useOrganizations } from "@/features/organizations/OrganizationContext";
 import { roleLabel } from "@/features/organizations/types";
 import { usePlantations } from "@/features/plantations/context/PlantationContext";
 import { DashboardIcon } from "../dashboard-icons/DashboardIcon";
 import styles from "./DashboardSidebar.module.css";
+
+// Linha verde do item ativo. Tem o mesmo nome em todos os itens: ao trocar de tela ela
+// desliza do item antigo até o novo, como a linha da aba no menu do site (globals.css).
+function ActiveIndicator() {
+  return (
+    <ViewTransition name="sidebar-indicator" share="nav-slide" default="none">
+      <span className={styles.indicator} aria-hidden="true" />
+    </ViewTransition>
+  );
+}
 
 const navigation = [
   {
@@ -115,6 +125,7 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
                   key={item.label}
                   onClick={onClose}
                 >
+                  {isActive && <ActiveIndicator />}
                   <DashboardIcon name={item.icon} />
                   <span>{item.label}</span>
                   {item.badge && <b>{item.badge}</b>}
@@ -134,6 +145,7 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
               href="/dashboard/admin"
               onClick={onClose}
             >
+              {pathname.startsWith("/dashboard/admin") && <ActiveIndicator />}
               <DashboardIcon name="team" />
               <span>Superadmin</span>
             </Link>
@@ -147,6 +159,7 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
                 }
                 onClick={onClose}
               >
+                {pathname.startsWith("/dashboard/equipe") && <ActiveIndicator />}
                 <DashboardIcon name="team" />
                 <span>Equipe</span>
               </Link>
@@ -159,6 +172,7 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
                 href="/dashboard/configuracoes/alertas"
                 onClick={onClose}
               >
+                {pathname.startsWith("/dashboard/configuracoes") && <ActiveIndicator />}
                 <DashboardIcon name="settings" />
                 <span>Configurações</span>
               </Link>

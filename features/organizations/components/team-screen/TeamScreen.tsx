@@ -11,6 +11,7 @@ import { MemberRow } from "./MemberRow";
 import { DangerZone, OrganizationCard, PendingInvites } from "./OrganizationPanel";
 import { ConfirmDialog, CreateOrganizationDialog, InviteDialog, type Confirmation } from "./TeamDialogs";
 import styles from "./TeamScreen.module.css";
+import { EmptyState, LoadingState } from "@/shared/components/empty-state/EmptyState";
 
 type RoleFilter = "all" | "OWNER" | "OPERATOR" | "VIEWER";
 const FILTERS: { value: RoleFilter; label: string }[] = [
@@ -49,17 +50,20 @@ export function TeamScreen() {
 
       {error && <p className={styles.alert} role="alert">{error}</p>}
       {status === "loading" ? (
-        <div className={styles.state} role="status"><span className={styles.spinner} /> Carregando permissões...</div>
+        <LoadingState variant="inline" title="Carregando permissões..." />
       ) : selected ? (
         <TeamWorkspace key={`${selected.organization.id}:${selected.role}`} membership={selected} inviting={inviting} onInviteClose={() => setInviting(false)} />
       ) : (
         status === "ready" && (
-          <section className={styles.emptyState}>
-            <span><DashboardIcon name="team" size={24} /></span>
-            <strong>Você ainda não participa de uma organização</strong>
-            <p>Crie uma organização para o seu cliente ou aceite um convite recebido por email.</p>
-            <button type="button" className={styles.addButton} onClick={() => setCreating(true)}><b>+</b> Nova organização</button>
-          </section>
+          <div className={styles.emptyBlock}>
+            <EmptyState
+              art="team"
+              title="Você ainda não participa de uma organização"
+              text="Crie uma organização para o seu cliente ou aceite um convite recebido por email."
+            >
+              <button type="button" className={styles.addButton} onClick={() => setCreating(true)}><b>+</b> Nova organização</button>
+            </EmptyState>
+          </div>
         )
       )}
 
@@ -148,7 +152,7 @@ function TeamWorkspace({ membership, inviting, onInviteClose }: { membership: Or
               </div>
             </div>
             {team.loading && !team.members.length ? (
-              <div className={styles.state} role="status"><span className={styles.spinner} /> Carregando equipe...</div>
+              <LoadingState variant="inline" title="Carregando equipe..." />
             ) : visibleMembers.length ? (
               <div className={styles.memberList}>
                 {visibleMembers.map((member) => (

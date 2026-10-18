@@ -67,9 +67,6 @@
 .sensorFoot { margin-top: 15px; padding-top: 10px; display: flex; align-items: center; gap: 9px; color: #68746c; border-top: 1px solid #eaebe5; font-size: 9px; }
 .sensorFoot > span { display: flex; align-items: center; gap: 4px; }
 .sensorFoot small { margin-left: auto; color: #737e76; font-size: 9px; }
-.empty { min-height: 360px; display: grid; place-items: center; align-content: center; gap: 8px; color: #879189; text-align: center; }
-.empty strong { color: #536057; font-size: 13px; }
-.empty p { margin: 0; font-size: 10px; }
 .details { padding: 20px; }
 .detailHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
 .detailIdentity { display: flex; align-items: center; gap: 12px; }
@@ -179,12 +176,11 @@
 .noData strong { margin-top: 12px; color: #435047; font-size: 13px; }
 .noData p { max-width: 380px; margin: 7px 0 0; font-size: 10px; line-height: 1.5; }
 .historyRange { margin: 9px 0 0 36px; display: flex; justify-content: space-between; color: #737e76; font-size: 9px; }
-.statePage, .emptyState { min-height: calc(100svh - 76px); padding: 30px; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #68766c; text-align: center; }
-.statePage strong, .emptyState strong { margin-top: 14px; color: #34443a; font: 650 17px var(--font-display), sans-serif; }
-.statePage p, .emptyState p { max-width: 420px; margin: 8px 0 0; font-size: 11px; line-height: 1.55; }
-.statePage button, .emptyState button { min-height: 41px; margin-top: 18px; padding: 0 16px; color: var(--ink); border: 0; border-radius: 9px; background: var(--lime); font-weight: 700; cursor: pointer; }
-.emptyState { min-height: 370px; margin-top: 16px; border: 1px dashed #ccd7c6; border-radius: 18px; background: #fff; }
-.emptyState > svg { color: #63894b; }
+.statePage { min-height: calc(100svh - 76px); padding: 30px; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #68766c; text-align: center; }
+.statePage strong { margin-top: 14px; color: #34443a; font: 650 17px var(--font-display), sans-serif; }
+.statePage p { max-width: 420px; margin: 8px 0 0; font-size: 11px; line-height: 1.55; }
+.emptyBlock { margin-top: 16px; }
+.statePage button { min-height: 41px; margin-top: 18px; padding: 0 16px; color: var(--ink); border: 0; border-radius: 9px; background: var(--lime); font-weight: 700; cursor: pointer; }
 .stateIcon { width: 48px; height: 48px; display: grid; place-items: center; color: #9b642f; border-radius: 14px; background: #f2e6d6; }
 .spinner { width: 28px; height: 28px; border: 3px solid #d9e1d4; border-top-color: #6e9c4a; border-radius: 50%; animation: sensor-spin .8s linear infinite; }
 @keyframes sensor-spin { to { transform: rotate(360deg); } }

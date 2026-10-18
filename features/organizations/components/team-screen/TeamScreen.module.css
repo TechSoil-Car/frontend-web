@@ -14,13 +14,7 @@
 .notice, .alert { margin: 20px 0 0; padding: 12px 15px; border-radius: 11px; font-size: 12px; line-height: 1.5; }
 .notice { color: #34582c; border: 1px solid #cfe3bf; background: #eef7e6; }
 .alert { color: #973f32; border: 1px solid #f0d3c8; background: #fff0eb; }
-.state { min-height: 160px; display: flex; align-items: center; justify-content: center; gap: 10px; color: #68746b; font-size: 12px; }
-.spinner { width: 18px; height: 18px; border: 2px solid #d2dbc9; border-top-color: #6d9849; border-radius: 50%; animation: teamSpin .8s linear infinite; }
-@keyframes teamSpin { to { transform: rotate(360deg); } }
-.emptyState { margin-top: 27px; padding: 50px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; border: 1px dashed #c9d6c0; border-radius: 17px; background: #f8faf4; }
-.emptyState > span { width: 52px; height: 52px; display: grid; place-items: center; color: var(--green-strong); border-radius: 14px; background: #e1ecd6; }
-.emptyState strong { font: 650 19px var(--font-display), sans-serif; }
-.emptyState p { max-width: 420px; margin: 0 0 8px; color: #68746b; font-size: 12px; line-height: 1.6; }
+.emptyBlock { margin-top: 27px; }
 
 /* Summary cards, with the same hover effect as the sensor and alert cards. */
 .summary { margin-top: 27px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
@@ -159,5 +153,5 @@
 @media (prefers-reduced-motion: reduce) {
   .summary article, .summary strong, .addButton, .secondaryButton { transition: none; }
   .summary article:hover, .summary article:hover strong { transform: none; }
-  .summary article:hover::after, .summary article:hover .summaryIcon, .spinner { animation: none; }
+  .summary article:hover::after, .summary article:hover .summaryIcon { animation: none; }
 }

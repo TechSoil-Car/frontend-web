@@ -1,0 +1,193 @@
+/* Estados vazios e de carregamento do painel */
+
+.empty,
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 40px 24px;
+  color: var(--ink);
+  text-align: center;
+}
+
+.card {
+  border: 1px solid #e7ecdf;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 5px 22px rgba(41, 69, 49, 0.03);
+}
+
+.plain {
+  background: transparent;
+}
+
+.page {
+  min-height: min(60vh, 520px);
+  justify-content: center;
+}
+
+.art,
+.loadingArt {
+  width: 112px;
+  height: 112px;
+  margin-bottom: 6px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+}
+
+.accent {
+  fill: var(--lime);
+}
+
+.soil {
+  fill: #efe9da;
+  stroke: none;
+}
+
+.wave {
+  stroke: var(--green);
+}
+
+/* Título com o marca-texto baixo dos títulos do site */
+.title {
+  display: inline;
+  background: linear-gradient(var(--lime), var(--lime)) 0 88% / 100% 32% no-repeat;
+  font-family: var(--font-display), Arial, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.text {
+  max-width: 420px;
+  margin: 0;
+  color: #68746b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* Botão padrão para ações sem classe própria; :where zera a especificidade,
+   então qualquer classe da tela (ex.: addButton) continua valendo. */
+:where(.actions) :where(a, button) {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid var(--lime);
+  border-radius: 10px;
+  background: var(--lime);
+  color: var(--ink);
+  cursor: pointer;
+  font: 700 13px var(--font-body), Arial, sans-serif;
+  transition: background-color 200ms ease, transform 200ms ease;
+}
+
+:where(.actions) :where(a, button):hover {
+  background: var(--lime-hover);
+  transform: translateY(-1px);
+}
+
+/* Carregamento */
+
+.loading > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.inline > div {
+  align-items: flex-start;
+}
+
+.loading .title {
+  font-size: 17px;
+}
+
+.ring1,
+.ring2 {
+  stroke: var(--green);
+  animation: signal 1.6s ease-out infinite;
+}
+
+.ring2 {
+  animation-delay: 0.3s;
+}
+
+.bar {
+  position: relative;
+  width: 140px;
+  height: 3px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #e7ecdf;
+}
+
+.bar::after {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  border-radius: inherit;
+  background: var(--lime-deep);
+  content: "";
+  animation: scan 1.2s ease-in-out infinite;
+}
+
+/* Versão em linha, para listas dentro de painéis */
+.inline {
+  flex-direction: row;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: left;
+}
+
+.inline .loadingArt {
+  width: 48px;
+  height: 48px;
+  margin: 0;
+}
+
+.inline .bar,
+.inline .text {
+  display: none;
+}
+
+.inline .title {
+  font-size: 14px;
+}
+
+@keyframes signal {
+  0% { opacity: 0; transform: translateY(4px); }
+  40% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-4px); }
+}
+
+@keyframes scan {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring1,
+  .ring2,
+  .bar::after {
+    animation: none;
+  }
+}

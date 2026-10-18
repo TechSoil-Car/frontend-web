@@ -15,6 +15,7 @@ import {
   getSensorState,
 } from "../../utils/sensor-status";
 import styles from "./SensorsScreen.module.css";
+import { EmptyState, LoadingState } from "@/shared/components/empty-state/EmptyState";
 
 type SensorFilter = "all" | "online" | "attention" | "offline";
 type SensorTab = "now" | "history" | "alerts";
@@ -162,10 +163,11 @@ function SensorsScreenContent() {
     );
   if (status === "loading" || status === "idle")
     return (
-      <main className={styles.statePage} role="status">
-        <span className={styles.spinner} />
-        <strong>Carregando sensores</strong>
-        <p>Consultando os dispositivos de {selectedPlantation.name}...</p>
+      <main className={styles.page}>
+        <LoadingState
+          title="Carregando sensores"
+          text={`Consultando os dispositivos de ${selectedPlantation.name}...`}
+        />
       </main>
     );
   if (status === "error")
@@ -291,19 +293,19 @@ function SensorsScreenContent() {
       </section>
 
       {sensors.length === 0 ? (
-        <section className={styles.emptyState}>
-          <DashboardIcon name="sensor" size={28} />
-          <strong>Nenhum sensor cadastrado</strong>
-          <p>
-            Cadastre o primeiro dispositivo para começar a receber leituras
-            desta plantação.
-          </p>
-          {selectedPlantation.role === "OWNER" && (
-            <button type="button" onClick={() => setCreateOpen(true)}>
-              Cadastrar sensor
-            </button>
-          )}
-        </section>
+        <div className={styles.emptyBlock}>
+          <EmptyState
+            art="sensor"
+            title="Nenhum sensor cadastrado"
+            text="Cadastre o primeiro dispositivo para começar a receber leituras desta plantação."
+          >
+            {selectedPlantation.role === "OWNER" && (
+              <button type="button" onClick={() => setCreateOpen(true)}>
+                Cadastrar sensor
+              </button>
+            )}
+          </EmptyState>
+        </div>
       ) : (
         <div className={styles.workspace}>
           <section className={styles.sensorList} aria-label="Lista de sensores">
@@ -397,11 +399,12 @@ function SensorsScreenContent() {
                   );
                 })
               ) : (
-                <div className={styles.empty}>
-                  <DashboardIcon name="search" size={24} />
-                  <strong>Nenhum sensor encontrado</strong>
-                  <p>Altere a busca ou remova os filtros.</p>
-                </div>
+                <EmptyState
+                  art="search"
+                  variant="plain"
+                  title="Nenhum sensor encontrado"
+                  text="Altere a busca ou remova os filtros."
+                />
               )}
             </div>
           </section>

@@ -12,6 +12,7 @@ import {
   updateNotificationPreferences,
 } from "./notifications-api";
 import styles from "./Notifications.module.css";
+import { EmptyState, LoadingState } from "@/shared/components/empty-state/EmptyState";
 
 export function NotificationsScreen({
   initialPlantationId,
@@ -117,19 +118,18 @@ function History({
             {error}
           </p>
         )}
-        {!data && !error && <p role="status">Carregando notificações...</p>}
+        {!data && !error && <LoadingState variant="inline" title="Carregando notificações..." />}
         {data && !data.data.length && (
-          <div className={styles.empty}>
-            <h2>
-              {filter === "unread"
+          <EmptyState
+            art="bell"
+            variant="plain"
+            title={
+              filter === "unread"
                 ? "Nenhuma notificação não lida"
-                : "Nenhuma ocorrência registrada"}
-            </h2>
-            <p>
-              O histórico começa com a ativação desta funcionalidade. A coleta
-              ocorre em segundo plano, aproximadamente a cada minuto.
-            </p>
-          </div>
+                : "Nenhuma ocorrência registrada"
+            }
+            text="O histórico começa com a ativação desta funcionalidade. A coleta ocorre em segundo plano, aproximadamente a cada minuto."
+          />
         )}
         {data?.data.map((item) => (
           <NotificationCard

@@ -156,12 +156,6 @@
   color: #976c20;
   background: #fbefd4;
 }
-.empty {
-  text-align: center;
-  padding: 30px 16px;
-  color: #6e7e6b;
-  font-size: 13px;
-}
 .error {
   color: #a64734 !important;
   padding: 12px;

@@ -15,6 +15,7 @@ import {
   type AlertFilters,
 } from "./alert-view";
 import styles from "./AlertsScreen.module.css";
+import { EmptyState, LoadingState } from "@/shared/components/empty-state/EmptyState";
 
 export function AlertsScreen() {
   const { user } = useAuth();
@@ -179,11 +180,11 @@ function ActiveAlerts({
       )}
       {!hasSnapshot ? (
         !refreshFailed && (
-          <section className={styles.empty} role="status">
-            <DashboardIcon name="sensor" size={28} />
-            <h2>Consultando alertas</h2>
-            <p>Buscando as leituras e regras da sua plantação...</p>
-          </section>
+          <LoadingState
+            variant="card"
+            title="Consultando alertas"
+            text="Buscando as leituras e regras da sua plantação..."
+          />
         )
       ) : (
         <>
@@ -313,25 +314,23 @@ function ActiveAlerts({
               ))}
             </section>
           ) : (
-            <section className={styles.empty}>
-              <DashboardIcon
-                name={sensors.length ? "bell" : "sensor"}
-                size={30}
-              />
-              <h2>
-                {!sensors.length
+            <EmptyState
+              art={!sensors.length ? "sensor" : filtering ? "search" : "clear"}
+              title={
+                !sensors.length
                   ? "Nenhum sensor cadastrado"
                   : filtering
                     ? "Nenhum alerta para estes filtros"
-                    : "Nenhum alerta ativo"}
-              </h2>
-              <p>
-                {!sensors.length
+                    : "Nenhum alerta ativo"
+              }
+              text={
+                !sensors.length
                   ? "Cadastre um sensor para iniciar o monitoramento desta plantação."
                   : filtering
                     ? "Experimente outro sensor, tipo ou gravidade, ou limpe a busca."
-                    : "Nenhuma condição de alerta está sendo detectada pelas regras habilitadas."}
-              </p>
+                    : "Nenhuma condição de alerta está sendo detectada pelas regras habilitadas."
+              }
+            >
               {!sensors.length && (
                 <Link href="/dashboard/sensores">Ir para sensores</Link>
               )}
@@ -343,7 +342,7 @@ function ActiveAlerts({
                   Limpar filtros
                 </button>
               )}
-            </section>
+            </EmptyState>
           )}
         </>
       )}

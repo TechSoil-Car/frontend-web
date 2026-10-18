@@ -12,6 +12,7 @@ import { usePlantations } from "../../context/PlantationContext";
 import type { Plantation, PlantationRole } from "../../types/plantation.types";
 import { PlantationMaintenanceDialog } from "./PlantationMaintenanceDialog";
 import styles from "./PlantationsScreen.module.css";
+import { EmptyState, LoadingState } from "@/shared/components/empty-state/EmptyState";
 
 type PlantationFilter = "all" | PlantationRole | "shared";
 
@@ -113,10 +114,11 @@ export function PlantationsScreen() {
 
   if (status === "loading" || status === "idle") {
     return (
-      <main className={styles.statePage} role="status">
-        <span className={styles.spinner} />
-        <strong>Carregando suas plantações</strong>
-        <p>Buscando propriedades e permissões atualizadas...</p>
+      <main className={styles.page}>
+        <LoadingState
+          title="Carregando suas plantações"
+          text="Buscando propriedades e permissões atualizadas..."
+        />
       </main>
     );
   }
@@ -329,11 +331,12 @@ export function PlantationsScreen() {
                   </button>
                 ))
               ) : (
-                <div className={styles.empty}>
-                  <DashboardIcon name="search" size={24} />
-                  <strong>Nenhuma plantação encontrada</strong>
-                  <p>Tente outro nome ou remova os filtros.</p>
-                </div>
+                <EmptyState
+                  art="search"
+                  variant="plain"
+                  title="Nenhuma plantação encontrada"
+                  text="Tente outro nome ou remova os filtros."
+                />
               )}
             </section>
 
