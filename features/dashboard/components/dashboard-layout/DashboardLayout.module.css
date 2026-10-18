@@ -1,8 +1,9 @@
 .dashboard { min-height: 100svh; color: #263229; background: var(--paper); }
 .content { min-width: 0; margin-left: 252px; }
-/* Títulos das telas com o marca-texto baixo do site, desenhado quando a tela abre */
-.content h1 { width: fit-content; max-width: 100%; background: linear-gradient(var(--lime), var(--lime)) 0 92% / 100% 0.26em no-repeat; animation: titleMark 600ms 150ms cubic-bezier(.2,.7,.2,1) both; }
-@keyframes titleMark { from { background-size: 0% 0.26em; } }
+/* Títulos das telas com a linha verde do site. Sublinhado em vez de fundo: fica sempre logo
+   abaixo do texto, qualquer que seja o espaçamento de linha de cada tela */
+.content h1 { padding-bottom: 0.16em; text-decoration: underline var(--lime); text-decoration-thickness: 0.16em; text-underline-offset: 0.12em; text-decoration-skip-ink: none; animation: titleMark 600ms 150ms ease both; }
+@keyframes titleMark { from { text-decoration-color: transparent; } }
 @media (prefers-reduced-motion: reduce) { .content h1 { animation: none; } }
 .sessionLoading { min-height: 100svh; display: flex; align-items: center; justify-content: center; background: var(--paper); }
 .sessionUnavailable { min-height: 100svh; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #4b6252; text-align: center; background: var(--paper); font: 13px var(--font-body), sans-serif; }
