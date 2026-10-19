@@ -482,3 +482,396 @@
     align-items: flex-start;
   }
 }
+
+/* Explorador 3D: palco com os controles por cima e a lista de peças clicáveis embaixo */
+
+.explorer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.stage {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  min-height: 360px;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(0deg, rgba(166, 221, 98, 0.1) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(90deg, rgba(166, 221, 98, 0.1) 0 1px, transparent 1px 28px),
+    var(--forest);
+  transition: background 600ms ease;
+}
+
+.stage[data-field] {
+  background: #cfdfd9;
+}
+
+.stageCanvas {
+  position: absolute;
+  inset: 0;
+}
+
+.stageCanvas canvas {
+  display: block;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.stage[data-ready] .stageCanvas canvas {
+  opacity: 1;
+}
+
+.stageLabel {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  color: var(--lime);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+
+.stage[data-field] .stageLabel {
+  color: var(--forest);
+}
+
+.stageMessage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  color: rgba(245, 243, 235, 0.75);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.views,
+.zoom,
+.stageControls {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.views {
+  top: 12px;
+  right: 12px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(16, 39, 28, 0.72);
+}
+
+.views button,
+.zoom button,
+.stageControls button {
+  border: 0;
+  color: var(--paper);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.views button {
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: none;
+}
+
+.views button:hover {
+  background: rgba(166, 221, 98, 0.2);
+}
+
+.zoom {
+  top: 58px;
+  right: 12px;
+  flex-direction: column;
+}
+
+.zoom button {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(16, 39, 28, 0.72);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.zoom button:hover {
+  background: rgba(16, 39, 28, 0.92);
+}
+
+.stageControls {
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+}
+
+.stageControls button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 1px solid rgba(245, 243, 235, 0.25);
+  background: rgba(16, 39, 28, 0.72);
+}
+
+.stageControls button:hover {
+  border-color: var(--lime);
+}
+
+.stageControls button[aria-pressed="true"] {
+  border-color: var(--lime);
+  background: var(--lime);
+  color: var(--ink);
+}
+
+.stageControls .primaryControl {
+  border-color: var(--lime);
+  background: var(--lime);
+  color: var(--ink);
+}
+
+.stageControls .primaryControl[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+[aria-pressed="true"] > .dot {
+  background: var(--forest);
+  opacity: 1;
+}
+
+.views button:focus-visible,
+.zoom button:focus-visible,
+.stageControls button:focus-visible,
+.partButton:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 2px;
+}
+
+.tip {
+  position: absolute;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 700;
+  pointer-events: none;
+  transform: translate(12px, -130%);
+  white-space: nowrap;
+}
+
+/* Painel da missão do carrinho */
+
+.hud {
+  position: absolute;
+  top: 44px;
+  left: 12px;
+  display: grid;
+  width: 250px;
+  max-width: calc(100% - 24px);
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid #e8e1d2;
+  background: rgba(250, 247, 238, 0.94);
+  font-size: 12.5px;
+}
+
+.hud[hidden] {
+  display: none;
+}
+
+.hudHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hudHead strong {
+  font-family: var(--font-display), Arial, sans-serif;
+  font-size: 14px;
+}
+
+.pill {
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pill[data-state="running"] {
+  border-color: var(--lime);
+  background: var(--lime);
+  color: var(--ink);
+}
+
+.pill[data-state="completed"] {
+  border-color: var(--forest);
+  background: var(--forest);
+  color: var(--paper);
+}
+
+.hud dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 12px;
+  margin: 0;
+}
+
+.hud dt {
+  color: var(--muted);
+}
+
+.hud dt,
+.hud dd,
+.hudHead strong {
+  white-space: nowrap;
+}
+
+.hud dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: right;
+}
+
+.topic {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.shot {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.shot canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--line);
+}
+
+.shot figcaption {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* Lista de peças: cada item seleciona a peça no modelo */
+
+.partGroups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.group li:has(.partButton) {
+  padding: 0;
+}
+
+.partButton {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0 -8px;
+  padding: 12px 8px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-sizing: content-box;
+}
+
+.partButton:hover:not(:disabled) strong {
+  text-decoration: underline;
+  text-decoration-color: var(--lime);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.partButton:disabled {
+  cursor: default;
+}
+
+.partButton[aria-pressed="true"] {
+  background: rgba(166, 221, 98, 0.28);
+  box-shadow: inset 4px 0 0 var(--lime);
+}
+
+.sectionNote {
+  max-width: 280px;
+  margin-top: 14px !important;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .stage {
+    aspect-ratio: 4 / 5;
+  }
+
+  .views {
+    top: 40px;
+    right: auto;
+    left: 12px;
+  }
+
+  .views button {
+    padding: 5px 9px;
+  }
+
+  .zoom {
+    top: 86px;
+  }
+
+  .hud {
+    top: 86px;
+    width: 200px;
+    gap: 6px;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .hudHead strong {
+    font-size: 13px;
+  }
+
+  .topic,
+  .shot {
+    display: none;
+  }
+
+  .stageControls button {
+    padding: 8px 11px;
+  }
+}

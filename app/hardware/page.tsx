@@ -7,12 +7,13 @@ import landing from "../page.module.css";
 import { CASE_OUTLINE } from "./case-outline";
 import { CaseViewer } from "./case-viewer";
 import styles from "./hardware.module.css";
+import { ModelExplorer, type ExplorerGroup } from "./model-explorer";
 import { PageTransition } from "../page-transition";
 
 export const metadata: Metadata = {
   title: "Hardware | TechSoil Systems",
   description:
-    "O sensor de solo TechSoil: sonda NPK 7 em 1, ESP32, GPS e energia solar em uma caixa impressa em 3D.",
+    "O sensor de solo TechSoil: sonda NPK 7 em 1, ESP32, GPS e energia solar em uma caixa impressa em 3D. E o carrinho de inspeção do vinhedo, em desenvolvimento.",
 };
 
 // Conteúdo conforme o guia "TechSoil — Hardware + Firmware" (rev. 16/10/2026).
@@ -22,29 +23,74 @@ const highlights = [
   { value: "Solar", label: "recarga pela tampa" },
 ];
 
-const layout = [
+const layout: ExplorerGroup[] = [
   {
     title: "Dentro da caixa",
     items: [
-      { name: "ESP32-WROOM-32", text: "Controlador encaixado no shield de expansão, com USB acessível para gravação." },
-      { name: "GPS NEO-6M", text: "Com antena voltada para o céu, longe dos fios de potência." },
-      { name: "Conversor RS485", text: "Módulo MAX3485 de 3,3 V que conversa com a sonda." },
-      { name: "TP4056 + MT3608", text: "Carga protegida da bateria e saída ajustada em 5,0 V." },
-      { name: "Bateria 18650", text: "Uma célula no holder, com polaridade marcada." },
+      { id: "esp32", name: "ESP32-WROOM-32", text: "Controlador encaixado no shield de expansão, com USB acessível para gravação." },
+      { id: "gps", name: "GPS NEO-6M", text: "Com antena voltada para o céu, longe dos fios de potência." },
+      { id: "rs485", name: "Conversor RS485", text: "Módulo MAX3485 de 3,3 V que conversa com a sonda." },
+      { id: "carga", name: "TP4056 + MT3608", text: "Carga protegida da bateria e saída ajustada em 5,0 V." },
+      { id: "bateria", name: "Bateria 18650", text: "Uma célula no holder, com polaridade marcada." },
     ],
   },
   {
     title: "Fora da caixa",
     items: [
-      { name: "Sonda NPK 7 em 1", text: "Fica enterrada no solo; só o cabo entra na caixa." },
-      { name: "Painel solar", text: "6 V / 6 W preso à tampa, com saída USB regulada de 5 V." },
+      { id: "sonda", name: "Sonda NPK 7 em 1", text: "Fica enterrada no solo; só o cabo entra na caixa." },
+      { id: "painel", name: "Painel solar", text: "6 V / 6 W preso à tampa, com saída USB regulada de 5 V." },
     ],
   },
   {
     title: "Na própria caixa",
     items: [
-      { name: "Prensa-cabos PG7", text: "Entradas vedadas para o cabo do sensor e o do painel." },
-      { name: "Junta e dobradiça", text: "Tampa articulada com vedação, aberta sem tracionar os fios." },
+      { id: "prensa", name: "Prensa-cabos PG7", text: "Entradas vedadas para o cabo do sensor e o do painel." },
+      { id: "caixa", name: "Junta e dobradiça", text: "Tampa articulada com vedação, aberta sem tracionar os fios." },
+    ],
+  },
+];
+
+// Carrinho: lista de componentes do MVP (29/06/2026). O veículo ainda não foi construído.
+const cartLayout: ExplorerGroup[] = [
+  {
+    title: "Visão e comunicação",
+    items: [
+      { id: "camera", name: "ESP32-CAM", text: "Tira as fotos, ajuda a achar o centro da fileira e envia as capturas por MQTT na base." },
+      { id: "sd", name: "Cartão microSD 16 GB", text: "Guarda as fotos até o servidor confirmar o recebimento de cada uma." },
+      { id: "gps", name: "GPS NEO-6M", text: "Posição aproximada de cada foto." },
+    ],
+  },
+  {
+    title: "Controle e movimento",
+    items: [
+      { id: "esp32", name: "ESP32 de controle", text: "Motores, encoders, obstáculos e parada segura." },
+      { id: "imu", name: "IMU MPU-6050", text: "Mede giro e inclinação para manter o rumo na fileira." },
+      { id: "motores", name: "4 motores GA25 com encoder", text: "Tração 4×4; o encoder mede a distância que decide cada foto." },
+      { id: "drivers", name: "2 drivers BTS7960", text: "Potência dos motores, um driver por lado." },
+      { id: "rodas", name: "Rodas off-road", text: "Cravos para terra, grama e cascalho entre as fileiras." },
+      { id: "chassi", name: "Chassi 4WD de alumínio", text: "Base com dois andares para a eletrônica." },
+    ],
+  },
+  {
+    title: "Segurança",
+    items: [
+      { id: "ultrassom", name: "2 ultrassônicos JSN-SR04T", text: "À prova d’água, disparam alternadamente para detectar obstáculos." },
+      { id: "parachoque", name: "Para-choque com micro-switches", text: "Encostou em algo, o carrinho para." },
+      { id: "emergencia", name: "Botão de emergência", text: "Corta os motores mesmo se os ESP32 travarem." },
+    ],
+  },
+  {
+    title: "Energia",
+    items: [
+      { id: "bateria", name: "Bateria LiPo 3S 5000 mAh", text: "11,1 V, recarregada na base com carregador balanceador." },
+      { id: "conversores", name: "2 conversores XL4015", text: "Reduzem a tensão da bateria para a eletrônica." },
+      { id: "painel", name: "Painel traseiro", text: "Chave geral, fusível, conector XT60 de carga e monitor de bateria." },
+    ],
+  },
+  {
+    title: "Carcaça",
+    items: [
+      { id: "carcaca", name: "Carcaça com a logo", text: "Proposta de design para impressão 3D, na cor da caixa do sensor." },
     ],
   },
 ];
@@ -130,22 +176,17 @@ export default function HardwarePage() {
           <Reveal className={styles.sectionHead}>
             <p className={landing.sectionLabel}>01 — Componentes</p>
             <h2>Dentro e fora da caixa</h2>
+            <p className={styles.sectionText}>
+              Gire a caixa, abra a tampa ou deixe o gabinete transparente. Clique em uma peça, no
+              modelo ou na lista, para ver onde ela fica.
+            </p>
+            <p className={styles.sectionNote}>
+              Gabinete do arquivo do Tinkercad. A posição dos componentes dentro dele é ilustrativa.
+            </p>
           </Reveal>
-          <div className={styles.layout}>
-            {layout.map((group, index) => (
-              <Reveal key={group.title} delay={index * 100} className={styles.group}>
-                <h3>{group.title}</h3>
-                <ul>
-                  {group.items.map((item) => (
-                    <li key={item.name}>
-                      <strong>{item.name}</strong>
-                      <span>{item.text}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal delay={100}>
+            <ModelExplorer model="sensor" label="Sensor de solo · modelo 3D" groups={layout} />
+          </Reveal>
         </section>
 
         <section className={styles.section} id="caixa">
@@ -196,6 +237,25 @@ export default function HardwarePage() {
                 </div>
               ))}
             </dl>
+          </Reveal>
+        </section>
+
+        <section className={styles.section} id="carrinho">
+          <Reveal className={styles.sectionHead}>
+            <p className={landing.sectionLabel}>05 — Em desenvolvimento</p>
+            <h2>O carrinho de inspeção</h2>
+            <p className={styles.sectionText}>
+              Ele percorre uma fileira do vinhedo sozinho, tira uma foto a cada metro e guarda tudo no
+              cartão. Na base, com Wi-Fi, envia as fotos para a plataforma, onde elas ajudam a encontrar
+              impurezas nas plantas.
+            </p>
+            <p className={styles.sectionNote}>
+              Modelo conceitual da versão final, feito a partir da lista de componentes. O sistema de
+              missões já existe na plataforma; o veículo ainda não foi construído.
+            </p>
+          </Reveal>
+          <Reveal delay={100}>
+            <ModelExplorer model="cart" label="Carrinho cart_01 · conceito" groups={cartLayout} />
           </Reveal>
         </section>
 
