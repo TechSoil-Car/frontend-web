@@ -95,7 +95,10 @@ const cartLayout: ExplorerGroup[] = [
   },
 ];
 
-const power = [
+type PowerStep = { name: string; detail: string };
+type Spec = { label: string; value: string; note?: string };
+
+const power: PowerStep[] = [
   { name: "Painel solar", detail: "5 V USB" },
   { name: "TP4056", detail: "carga protegida" },
   { name: "Bateria 18650", detail: "uma célula" },
@@ -103,7 +106,7 @@ const power = [
   { name: "ESP32 e sonda", detail: "medição e envio" },
 ];
 
-const specs = [
+const specs: Spec[] = [
   { label: "Parâmetros", value: "Umidade, temperatura, condutividade elétrica, pH, nitrogênio, fósforo e potássio" },
   { label: "Sonda", value: "Sensor de solo 7 em 1 com saída RS485 (Modbus), alimentação de 3,3 a 24 V" },
   { label: "Controlador", value: "ESP32-WROOM-32 com shield de expansão" },
@@ -113,6 +116,57 @@ const specs = [
   { label: "Gabinete", value: "Caixa própria projetada pela equipe e impressa em 3D, com tampa articulada, junta e prensa-cabos PG7" },
   { label: "Dimensões", value: "Corpo de 350 × 250 mm em planta; 402 mm com as abas de fixação", note: "Abas laterais com furo de 9 mm. Medidas do arquivo do Tinkercad." },
 ];
+
+// Carrinho: energia e ficha técnica a partir da lista de componentes do MVP e do contrato de missão.
+const cartPower: PowerStep[] = [
+  { name: "Carregador", detail: "balanceador, na base" },
+  { name: "Painel traseiro", detail: "XT60, fusível e chave geral" },
+  { name: "LiPo 3S", detail: "11,1 V · 5000 mAh" },
+  { name: "2× XL4015", detail: "tensão reduzida" },
+  { name: "Eletrônica", detail: "ESP32, câmera e sensores" },
+];
+
+const cartSpecs: Spec[] = [
+  { label: "Função", value: "Percorre sozinho uma fileira do vinhedo e fotografa as plantas ao longo do caminho", note: "Captura por distância (em metros) ou por tempo (em segundos), definida na missão." },
+  { label: "Câmera", value: "ESP32-CAM com cartão microSD de 16 GB", note: "Cada foto fica no cartão até o servidor confirmar o recebimento." },
+  { label: "Controle", value: "ESP32 dedicado a motores, encoders, obstáculos e parada segura, com IMU MPU-6050 para manter o rumo" },
+  { label: "Tração", value: "4×4 com quatro motores GA25 com encoder, dois drivers BTS7960 e rodas off-road", note: "O encoder mede a distância percorrida desde o início da fileira." },
+  { label: "Segurança", value: "Dois ultrassônicos JSN-SR04T à prova d’água, para-choque com micro-switches e botão de emergência", note: "O botão corta os motores mesmo se os ESP32 travarem." },
+  { label: "Comunicação", value: "Wi-Fi na base, com missões e fotos enviadas por MQTT", note: "Uma foto reenviada não vira duplicata na plataforma." },
+  { label: "Localização", value: "GPS NEO-6M", note: "Posição aproximada de cada foto." },
+  { label: "Energia", value: "Bateria LiPo 3S 5000 mAh (11,1 V), dois conversores XL4015 e painel traseiro com chave geral, fusível, XT60 e monitor de bateria" },
+  { label: "Estrutura", value: "Chassi 4WD de alumínio com dois andares para a eletrônica" },
+  { label: "Carcaça", value: "Proposta de design para impressão 3D, na cor da caixa do sensor e com a logo", note: "O veículo ainda não foi construído; as medidas do modelo 3D são aproximadas." },
+];
+
+function PowerChain({ steps }: { steps: PowerStep[] }) {
+  return (
+    <ol className={styles.power}>
+      {steps.map((step, index) => (
+        <li key={step.name} style={{ "--step": index } as CSSProperties}>
+          <strong>{step.name}</strong>
+          <span>{step.detail}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function SpecList({ specs }: { specs: Spec[] }) {
+  return (
+    <dl className={styles.specs}>
+      {specs.map((spec) => (
+        <div key={spec.label}>
+          <dt>{spec.label}</dt>
+          <dd>
+            {spec.value}
+            {spec.note && <small>{spec.note}</small>}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
 
 // Planta com cotas; as coordenadas do contorno já estão em milímetros.
 function CaseBlueprint() {
@@ -209,14 +263,7 @@ export default function HardwarePage() {
             <h2>Do sol até a leitura</h2>
           </Reveal>
           <Reveal delay={100}>
-            <ol className={styles.power}>
-              {power.map((step, index) => (
-                <li key={step.name} style={{ "--step": index } as CSSProperties}>
-                  <strong>{step.name}</strong>
-                  <span>{step.detail}</span>
-                </li>
-              ))}
-            </ol>
+            <PowerChain steps={power} />
           </Reveal>
         </section>
 
@@ -226,17 +273,7 @@ export default function HardwarePage() {
             <h2>Especificações</h2>
           </Reveal>
           <Reveal delay={100}>
-            <dl className={styles.specs}>
-              {specs.map((spec) => (
-                <div key={spec.label}>
-                  <dt>{spec.label}</dt>
-                  <dd>
-                    {spec.value}
-                    {spec.note && <small>{spec.note}</small>}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            <SpecList specs={specs} />
           </Reveal>
         </section>
 
@@ -256,6 +293,26 @@ export default function HardwarePage() {
           </Reveal>
           <Reveal delay={100}>
             <ModelExplorer model="cart" label="Carrinho cart_01 · conceito" groups={cartLayout} />
+          </Reveal>
+        </section>
+
+        <section className={`${styles.section} ${styles.powerSection}`}>
+          <Reveal className={styles.sectionHead}>
+            <p className={landing.sectionLabel}>06 — Energia do carrinho</p>
+            <h2>Da base até a fileira</h2>
+          </Reveal>
+          <Reveal delay={100}>
+            <PowerChain steps={cartPower} />
+          </Reveal>
+        </section>
+
+        <section className={styles.section}>
+          <Reveal className={styles.sectionHead}>
+            <p className={landing.sectionLabel}>07 — Ficha técnica do carrinho</p>
+            <h2>Especificações do cart_01</h2>
+          </Reveal>
+          <Reveal delay={100}>
+            <SpecList specs={cartSpecs} />
           </Reveal>
         </section>
 
