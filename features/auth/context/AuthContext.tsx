@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import * as authApi from "../services/auth-api";
-import { setAccessToken } from "@/shared/api/api-client";
+import { PANEL_OFFLINE, setAccessToken } from "@/shared/api/api-client";
 import type {
   AuthStatus,
   AuthUser,
@@ -31,7 +31,7 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [status, setStatus] = useState<AuthStatus>("loading");
+  const [status, setStatus] = useState<AuthStatus>(PANEL_OFFLINE ? "unauthenticated" : "loading");
   const [user, setUser] = useState<AuthUser | null>(null);
   const [passwordChanged, setPasswordChanged] = useState(false);
 
@@ -47,6 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // No backend to ask: without this every page of the public site would call the API.
+    if (PANEL_OFFLINE) return;
     let active = true;
 
     void authApi.refreshSession().then((result) => {

@@ -1,8 +1,25 @@
 import Link from "next/link";
 import { AlertFeed, SensorLive } from "@/app/landing-interactions";
+import { PANEL_OFFLINE } from "@/shared/api/api-client";
 import { AuthShell } from "../auth-shell/AuthShell";
 import { LoginForm } from "../login-form/LoginForm";
+import form from "../auth-form/AuthForm.module.css";
 import styles from "./LoginScreen.module.css";
+
+// Versão publicada só com o site: o painel aparece na demonstração ao vivo.
+function PanelOfflineNotice() {
+  return (
+    <div className={form.form}>
+      <p className={form.note} role="status">
+        <strong>O painel não está disponível nesta versão online do site.</strong> Ele funciona junto com os sensores
+        de campo e é apresentado na demonstração ao vivo do projeto.
+      </p>
+      <Link className={form.submit} href="/plataforma">
+        Ver como funciona a plataforma
+      </Link>
+    </div>
+  );
+}
 
 // Painel da direita: os mesmos widgets animados da home, com dados de exemplo.
 function LoginAside() {
@@ -50,7 +67,7 @@ export function LoginScreen() {
         </>
       }
     >
-      <LoginForm />
+      {PANEL_OFFLINE ? <PanelOfflineNotice /> : <LoginForm />}
     </AuthShell>
   );
 }

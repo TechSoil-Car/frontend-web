@@ -1,5 +1,11 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
+/**
+ * Site published without the backend (e.g. only the landing on Vercel): the panel is
+ * shown in the live demo, so login is replaced by a notice and no API call is made.
+ */
+export const PANEL_OFFLINE = process.env.NEXT_PUBLIC_PANEL_OFFLINE === "true";
+
 type ErrorPayload = {
   message?: string | string[];
   error?: string;
