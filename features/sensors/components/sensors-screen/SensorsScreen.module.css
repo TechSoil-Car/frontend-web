@@ -128,6 +128,11 @@
 .historyHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; }
 .historyHead > span { display: flex; align-items: center; gap: 6px; color: #627069; font-size: 9px; }
 .historyHead > span i { width: 6px; height: 6px; border-radius: 50%; background: #77ae4d; }
+.metricTabs { margin-top: 12px; padding: 3px; display: flex; flex-wrap: wrap; gap: 2px; border-radius: 9px; background: #f1f2ec; }
+.metricTabs button { min-height: 28px; padding: 0 11px; color: #717c74; border: 0; border-radius: 6px; background: transparent; font: 700 10px var(--font-body),sans-serif; cursor: pointer; }
+.metricTabs button:hover { color: #35503b; }
+.metricTabs button:focus-visible { outline: 2px solid #6ea443; outline-offset: 1px; }
+.metricTabs .metricActive { color: #35503b; background: #fff; box-shadow: 0 2px 8px rgba(45,59,47,.08); }
 .chart { position: relative; height: 150px; margin-top: 18px; padding-left: 36px; }
 .chartPlot { position: relative; height: 100%; border-bottom: 1px solid #e3e6de; background: repeating-linear-gradient(to bottom, #eceee8 0 1px, transparent 1px 25%); cursor: crosshair; touch-action: pan-y; }
 .chartPlot:focus-visible { outline: 2px solid #6ea443; outline-offset: 4px; border-radius: 4px; }

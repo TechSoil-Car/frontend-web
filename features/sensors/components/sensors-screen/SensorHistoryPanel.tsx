@@ -1,9 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import type { SensorReading } from "../../types/sensor.types";
 import type { HistoryStatus } from "../../hooks/use-sensor-history";
-import { HistoryChart } from "./HistoryChart";
+import { HISTORY_METRICS, HistoryChart } from "./HistoryChart";
 import styles from "./SensorsScreen.module.css";
 
-/** Aba Histórico: gráfico de umidade das leituras recentes. */
+/** Aba Histórico: gráfico das leituras recentes, uma métrica por vez. */
 export function SensorHistoryPanel({
   history,
   status,
@@ -11,12 +14,14 @@ export function SensorHistoryPanel({
   history: SensorReading[];
   status: HistoryStatus;
 }) {
+  const [metric, setMetric] = useState(HISTORY_METRICS[0]);
+
   return (
     <div className={styles.historyCard}>
       <div className={styles.historyHead}>
         <div>
           <p>LEITURAS RECENTES</p>
-          <h3>Variação da umidade</h3>
+          <h3>{metric.title}</h3>
         </div>
         <span>
           {status === "ready" && (
@@ -25,6 +30,20 @@ export function SensorHistoryPanel({
             </>
           )}
         </span>
+      </div>
+      <div className={styles.metricTabs} role="group" aria-label="Métrica do gráfico">
+        {HISTORY_METRICS.map((item) => (
+          <button
+            className={item.key === metric.key ? styles.metricActive : ""}
+            type="button"
+            key={item.key}
+            aria-pressed={item.key === metric.key}
+            title={item.name}
+            onClick={() => setMetric(item)}
+          >
+            {item.label}
+          </button>
+        ))}
       </div>
       {status === "loading" ? (
         <div className={styles.inlineState}>
@@ -36,7 +55,8 @@ export function SensorHistoryPanel({
         </div>
       ) : history.length ? (
         <>
-          <HistoryChart readings={history} />
+          {/* key: remonta o gráfico para repetir a animação ao trocar de métrica. */}
+          <HistoryChart key={metric.key} readings={history} metric={metric} />
           <div className={styles.historyRange}>
             <span>
               {new Date(
